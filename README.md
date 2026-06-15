@@ -1,42 +1,21 @@
 # Commschool · Digital CFO
 
-Internal financial dashboard for Commschool — courses P&L, corporate projects, fixed costs, and consolidated dashboard.
+Internal financial dashboard — Courses P&L, Corporate Projects, Fixed Costs.
 
-## Setup
+## Deploy to Streamlit Cloud (free)
+
+1. Push this repo to GitHub
+2. Go to share.streamlit.io
+3. Connect your GitHub repo
+4. Set **Main file path:** `app.py`
+5. Click Deploy → get a live URL
+
+## Run locally
 
 ```bash
-npm install
-npm start
+pip install -r requirements.txt
+streamlit run app.py
 ```
 
-Opens at http://localhost:3000
-
-## Deploy to GitHub Pages (free, shareable URL)
-
-1. Add to `package.json`:
-   ```json
-   "homepage": "https://YOUR_GITHUB_USERNAME.github.io/commschool-cfo"
-   ```
-
-2. Install gh-pages:
-   ```bash
-   npm install --save-dev gh-pages
-   ```
-
-3. Add to `package.json` scripts:
-   ```json
-   "predeploy": "npm run build",
-   "deploy": "gh-pages -d build"
-   ```
-
-4. Deploy:
-   ```bash
-   npm run deploy
-   ```
-
-Your app will be live at the homepage URL above.
-
-## Stack
-- React 18
-- Tailwind CSS
-- No backend — all data is in-app state
+## Password
+Stored in `app.py` line 9. Change `PASSCODE` to update it.
