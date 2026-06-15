@@ -56,45 +56,55 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap');
 
-[data-testid="stAppViewContainer"] { background: #0f1117; }
-[data-testid="stSidebar"] { background: #1a1d27; border-right: 1px solid #2e3350; }
-[data-testid="stSidebar"] * { color: #8b90a7 !important; }
-h1,h2,h3 { font-family: 'Space Grotesk', sans-serif !important; color: #e8eaf0 !important; }
-.stDataFrame { border: 1px solid #2e3350 !important; border-radius: 10px !important; }
+[data-testid="stAppViewContainer"] { background: #13111e; }
+[data-testid="stSidebar"] { background: #1c1830; border-right: 1px solid #2d2850; }
+[data-testid="stSidebar"] * { color: #b0aed0 !important; }
+[data-testid="stSidebar"] .stRadio label { color: #e0deff !important; font-weight: 500 !important; }
+h1,h2,h3 { font-family: 'Space Grotesk', sans-serif !important; color: #ffffff !important; }
+p, li, span { color: #d4d0f0; }
+.stDataFrame { border: 1px solid #2d2850 !important; border-radius: 10px !important; }
+[data-testid="stDataFrame"] * { color: #e8e6ff !important; }
+[data-testid="stSelectbox"] * { color: #e8e6ff !important; }
+[data-testid="stSelectbox"] > div { background: #1c1830 !important; border-color: #3d3870 !important; }
+.stSlider * { color: #e8e6ff !important; }
+.stTabs [data-baseweb="tab"] { color: #9d9bc0 !important; }
+.stTabs [aria-selected="true"] { color: #a78bfa !important; border-bottom-color: #a78bfa !important; }
 
 .kpi-card {
-    background: #1a1d27;
-    border: 1px solid #2e3350;
-    border-radius: 12px;
-    padding: 18px 20px;
+    background: linear-gradient(135deg, #1e1a35 0%, #221d3a 100%);
+    border: 1px solid #3d3870;
+    border-radius: 14px;
+    padding: 20px 22px;
     margin-bottom: 4px;
 }
-.kpi-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#555c7a; margin-bottom:6px; }
-.kpi-value { font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700; margin-bottom:3px; }
-.kpi-sub { font-size:11px; color:#8b90a7; }
-.kpi-pos { color: #00d4aa; }
-.kpi-neg { color: #ff5f7e; }
-.kpi-warn { color: #ffa94d; }
+.kpi-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#7c78a8; margin-bottom:8px; }
+.kpi-value { font-family:'Space Grotesk',sans-serif; font-size:24px; font-weight:700; margin-bottom:4px; }
+.kpi-sub { font-size:11px; color:#9d9bc0; }
+.kpi-pos { color: #34d399; }
+.kpi-neg { color: #f87171; }
+.kpi-warn { color: #fbbf24; }
 
 .insight-card {
-    background: #22263a;
-    border: 1px solid #2e3350;
-    border-radius: 8px;
-    padding: 12px 16px;
+    background: linear-gradient(135deg, #1e1a35 0%, #1a1d30 100%);
+    border: 1px solid #3d3870;
+    border-radius: 10px;
+    padding: 14px 18px;
     margin-bottom: 10px;
     display: flex;
     gap: 12px;
     align-items: flex-start;
 }
-.badge-pos { background:rgba(0,212,170,.15); color:#00d4aa; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
-.badge-neg { background:rgba(255,95,126,.15); color:#ff5f7e; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
-.badge-warn { background:rgba(255,169,77,.15); color:#ffa94d; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
-.badge-b2g { background:rgba(0,212,170,.12); color:#00d4aa; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:700; }
-.badge-b2b { background:rgba(108,99,255,.12); color:#6c63ff; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:700; }
+.badge-pos { background:rgba(52,211,153,.18); color:#34d399; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+.badge-neg { background:rgba(248,113,113,.18); color:#f87171; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+.badge-warn { background:rgba(251,191,36,.18); color:#fbbf24; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+.badge-b2g { background:rgba(52,211,153,.15); color:#34d399; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:700; }
+.badge-b2b { background:rgba(167,139,250,.15); color:#a78bfa; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:700; }
 
 div[data-testid="stHorizontalBlock"] > div { gap: 0.75rem; }
-.stButton > button { background: #6c63ff !important; color: white !important; border: none !important; border-radius: 8px !important; font-weight:600 !important; }
-.stButton > button:hover { background: #5a52e8 !important; }
+.stButton > button { background: linear-gradient(135deg, #34d399, #10b981) !important; color: #0a0a0a !important; border: none !important; border-radius: 8px !important; font-weight:700 !important; font-size:13px !important; }
+.stButton > button:hover { background: linear-gradient(135deg, #10b981, #059669) !important; }
+.stButton > button[kind="secondary"] { background: transparent !important; color: #9d9bc0 !important; border: 1px solid #3d3870 !important; font-weight:500 !important; }
+.stButton > button[kind="secondary"]:hover { border-color: #a78bfa !important; color: #e0deff !important; background: rgba(167,139,250,0.08) !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -221,12 +231,12 @@ def bar_chart(items, title=""):
         textfont=dict(size=10, color="#8b90a7"),
     ))
     fig.update_layout(
-        paper_bgcolor="#1a1d27", plot_bgcolor="#1a1d27",
-        font=dict(color="#8b90a7", size=11),
+        paper_bgcolor="#1e1a35", plot_bgcolor="#1e1a35",
+        font=dict(color="#b0aed0", size=11),
         margin=dict(t=20, b=10, l=10, r=10),
         height=220,
-        xaxis=dict(showgrid=False, tickfont=dict(size=10, color="#555c7a")),
-        yaxis=dict(showgrid=True, gridcolor="#2e3350", tickfont=dict(size=10)),
+        xaxis=dict(showgrid=False, tickfont=dict(size=10, color="#7c78a8")),
+        yaxis=dict(showgrid=True, gridcolor="#2d2850", tickfont=dict(size=10, color="#7c78a8")),
         showlegend=False,
     )
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
@@ -284,20 +294,20 @@ if page == "📊 Dashboard":
     with col1:
         st.markdown('<div class="kpi-card"><div class="kpi-label">📈 Revenue Mix</div></div>', unsafe_allow_html=True)
         bar_chart([
-            {"l":"Own Courses","v":own_r,"c":"#6c63ff"},
-            {"l":"GITA Courses","v":gita_r,"c":"#a39df0"},
-            {"l":"Corp B2B","v":b2b_r,"c":"#00d4aa"},
-            {"l":"Corp B2G","v":b2g_r,"c":"#4ec9b0"},
+            {"l":"Own Courses","v":own_r,"c":"#a78bfa"},
+            {"l":"GITA Courses","v":gita_r,"c":"#c4b5fd"},
+            {"l":"Corp B2B","v":b2b_r,"c":"#34d399"},
+            {"l":"Corp B2G","v":b2g_r,"c":"#6ee7b7"},
         ])
 
     with col2:
         st.markdown('<div class="kpi-card"><div class="kpi-label">💸 Cost Structure</div></div>', unsafe_allow_html=True)
         bar_chart([
-            {"l":"Salaries","v":sal_a,"c":"#ff5f7e"},
-            {"l":"Admin+Subs","v":sub_a,"c":"#a39df0"},
-            {"l":"Lecturer Fees","v":lec_t,"c":"#6c63ff"},
-            {"l":"Advertising","v":mkt_t,"c":"#ffa94d"},
-            {"l":"Corp COG","v":crp_c,"c":"#00d4aa"},
+            {"l":"Salaries","v":sal_a,"c":"#f87171"},
+            {"l":"Admin+Subs","v":sub_a,"c":"#c4b5fd"},
+            {"l":"Lecturer Fees","v":lec_t,"c":"#a78bfa"},
+            {"l":"Advertising","v":mkt_t,"c":"#fbbf24"},
+            {"l":"Corp COG","v":crp_c,"c":"#34d399"},
         ])
 
     st.markdown("### 💡 CFO Insights")
@@ -312,6 +322,148 @@ if page == "📊 Dashboard":
         ("💼", f"**2026 salary budget: {fmt(sal_a)}.** CEO = {pct(8929*12/sal_a*100)} of total payroll. H1 fixed budget: {fmt((sal_a+sub_a)//2)}."),
     ]:
         st.markdown(f"""<div class="insight-card"><span style="font-size:18px">{icon}</span><span style="font-size:13px;color:#8b90a7;line-height:1.6">{text}</span></div>""", unsafe_allow_html=True)
+
+
+    # ── QUARTERLY P&L ─────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("## 📅 Quarterly P&L — Company Profitability")
+    st.markdown('<p style="color:#9d9bc0;margin-top:-12px">Income vs Expenses vs Net Profit by quarter</p>', unsafe_allow_html=True)
+
+    # Q1: Jan+Feb+Mar
+    q1_sal = sum(sum(s["m"][i] for i in range(3)) for s in SALARIES)
+    q1_sub = sum(sum(s["m"][i] for i in range(3)) for s in SUBS)
+    q1_fixed = q1_sal + q1_sub
+    q1_courses = [c for c in COURSES if c["month"] in ["Jan","Feb","Mar"]]
+    q1_course_rev = sum(cpnl(c)["rx"] for c in q1_courses)
+    q1_course_costs = sum(cpnl(c)["cs"] for c in q1_courses)
+    q1_corp_rev = sum(p["revenue"] for p in CORP26 if any(m in p["period"] for m in ["Jan","Feb","Mar"]))
+    q1_corp_cog = sum(p["cog"] for p in CORP26 if any(m in p["period"] for m in ["Jan","Feb","Mar"]))
+    q1_income = q1_course_rev + q1_corp_rev
+    q1_expenses = q1_fixed + q1_course_costs + q1_corp_cog
+    q1_net = q1_income - q1_expenses
+
+    # Q2: Apr+May+Jun
+    q2_sal = sum(sum(s["m"][i] for i in range(3,6)) for s in SALARIES)
+    q2_sub = sum(sum(s["m"][i] for i in range(3,6)) for s in SUBS)
+    q2_fixed = q2_sal + q2_sub
+    q2_courses = [c for c in COURSES if c["month"] in ["Apr","May","Jun"]]
+    q2_course_rev = sum(cpnl(c)["rx"] for c in q2_courses)
+    q2_course_costs = sum(cpnl(c)["cs"] for c in q2_courses)
+    q2_corp_rev = sum(p["revenue"] for p in CORP26 if any(m in p["period"] for m in ["Apr","May","Jun"]))
+    q2_corp_cog = sum(p["cog"] for p in CORP26 if any(m in p["period"] for m in ["Apr","May","Jun"]))
+    q2_income = q2_course_rev + q2_corp_rev
+    q2_expenses = q2_fixed + q2_course_costs + q2_corp_cog
+    q2_net = q2_income - q2_expenses
+
+    # Q3: pipeline + estimated fixed (Jul+Aug+Sep)
+    q3_sal = sum(sum(s["m"][i] for i in range(6,9)) for s in SALARIES)
+    q3_sub = sum(sum(s["m"][i] for i in range(6,9)) for s in SUBS)
+    q3_fixed = q3_sal + q3_sub
+    q3_pipe_rev = sum(p["rev"] for p in PIPELINE if p["q"] == "Q3")
+    q3_pipe_cog = sum(p["cog"] for p in PIPELINE if p["q"] == "Q3")
+    q3_income = q3_pipe_rev
+    q3_expenses = q3_fixed + q3_pipe_cog
+    q3_net = q3_income - q3_expenses
+
+    # Q4: estimated fixed (Oct+Nov+Dec)
+    q4_sal = sum(sum(s["m"][i] for i in range(9,12)) for s in SALARIES)
+    q4_sub = sum(sum(s["m"][i] for i in range(9,12)) for s in SUBS)
+    q4_fixed = q4_sal + q4_sub
+    q4_pipe_rev = sum(p["rev"] for p in PIPELINE if p["q"] == "Q4")
+    q4_pipe_cog = sum(p["cog"] for p in PIPELINE if p["q"] == "Q4")
+    q4_income = q4_pipe_rev
+    q4_expenses = q4_fixed + q4_pipe_cog
+    q4_net = q4_income - q4_expenses
+
+    # KPI summary row
+    col1,col2,col3,col4 = st.columns(4)
+    quarters = [
+        ("Q1 · Jan–Mar", q1_income, q1_expenses, q1_net, "Actuals"),
+        ("Q2 · Apr–Jun", q2_income, q2_expenses, q2_net, "Actuals"),
+        ("Q3 · Jul–Sep", q3_income, q3_expenses, q3_net, "Pipeline est."),
+        ("Q4 · Oct–Dec", q4_income, q4_expenses, q4_net, "Pipeline est."),
+    ]
+    for col, (label, income, expenses, net, tag) in zip([col1,col2,col3,col4], quarters):
+        with col:
+            color = "kpi-pos" if net >= 0 else "kpi-neg"
+            st.markdown(f"""
+            <div class="kpi-card">
+                <div class="kpi-label">{label}</div>
+                <div class="kpi-value {color}">{fmt(net)}</div>
+                <div class="kpi-sub">↑ {fmt(income)} income · ↓ {fmt(expenses)} costs<br>
+                <span style="font-size:10px;color:#7c78a8">{tag}</span></div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Waterfall / grouped bar chart
+    fig_q = go.Figure()
+    qs = ["Q1\nActuals","Q2\nActuals","Q3\nPipeline","Q4\nPipeline"]
+    incomes   = [q1_income,   q2_income,   q3_income,   q4_income]
+    expenses_ = [q1_expenses, q2_expenses, q3_expenses, q4_expenses]
+    nets      = [q1_net,      q2_net,      q3_net,      q4_net]
+
+    fig_q.add_trace(go.Bar(name="Income", x=qs, y=incomes, marker_color="#34d399",
+        text=[fmt(v) for v in incomes], textposition="outside", textfont=dict(size=10,color="#34d399")))
+    fig_q.add_trace(go.Bar(name="Expenses", x=qs, y=expenses_, marker_color="#f87171",
+        text=[fmt(v) for v in expenses_], textposition="outside", textfont=dict(size=10,color="#f87171")))
+    fig_q.add_trace(go.Bar(name="Net Profit", x=qs, y=nets, marker_color="#a78bfa",
+        text=[fmt(v) for v in nets], textposition="outside", textfont=dict(size=10,color="#a78bfa")))
+
+    fig_q.update_layout(
+        barmode="group",
+        paper_bgcolor="#1e1a35", plot_bgcolor="#1e1a35",
+        font=dict(color="#b0aed0", size=11),
+        margin=dict(t=30, b=20, l=10, r=10),
+        height=320,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+                    font=dict(color="#b0aed0"), bgcolor="rgba(0,0,0,0)"),
+        xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#b0aed0")),
+        yaxis=dict(showgrid=True, gridcolor="#2d2850", tickfont=dict(size=10, color="#7c78a8")),
+    )
+    st.plotly_chart(fig_q, use_container_width=True, config={"displayModeBar": False})
+
+    # Detailed breakdown table
+    st.markdown("### 📊 Quarterly Breakdown Detail")
+    q_table = pd.DataFrame([
+        {"Quarter": "Q1 (Jan–Mar)", "Status": "✅ Actuals",
+         "Course Income ₾": int(q1_course_rev), "Corp Income ₾": int(q1_corp_rev), "Total Income ₾": int(q1_income),
+         "Fixed Costs ₾": int(q1_fixed), "Variable Costs ₾": int(q1_course_costs+q1_corp_cog), "Total Expenses ₾": int(q1_expenses),
+         "Net Profit ₾": int(q1_net), "Margin %": round(q1_net/q1_income*100,1) if q1_income else 0},
+        {"Quarter": "Q2 (Apr–Jun)", "Status": "✅ Actuals",
+         "Course Income ₾": int(q2_course_rev), "Corp Income ₾": int(q2_corp_rev), "Total Income ₾": int(q2_income),
+         "Fixed Costs ₾": int(q2_fixed), "Variable Costs ₾": int(q2_course_costs+q2_corp_cog), "Total Expenses ₾": int(q2_expenses),
+         "Net Profit ₾": int(q2_net), "Margin %": round(q2_net/q2_income*100,1) if q2_income else 0},
+        {"Quarter": "Q3 (Jul–Sep)", "Status": "🔮 Pipeline",
+         "Course Income ₾": 0, "Corp Income ₾": int(q3_pipe_rev), "Total Income ₾": int(q3_income),
+         "Fixed Costs ₾": int(q3_fixed), "Variable Costs ₾": int(q3_pipe_cog), "Total Expenses ₾": int(q3_expenses),
+         "Net Profit ₾": int(q3_net), "Margin %": round(q3_net/q3_income*100,1) if q3_income else 0},
+        {"Quarter": "Q4 (Oct–Dec)", "Status": "🔮 Pipeline",
+         "Course Income ₾": 0, "Corp Income ₾": int(q4_pipe_rev), "Total Income ₾": int(q4_income),
+         "Fixed Costs ₾": int(q4_fixed), "Variable Costs ₾": int(q4_pipe_cog), "Total Expenses ₾": int(q4_expenses),
+         "Net Profit ₾": int(q4_net), "Margin %": round(q4_net/q4_income*100,1) if q4_income else 0},
+        {"Quarter": "FULL YEAR", "Status": "—",
+         "Course Income ₾": int(q1_course_rev+q2_course_rev), "Corp Income ₾": int(q1_corp_rev+q2_corp_rev+q3_pipe_rev+q4_pipe_rev),
+         "Total Income ₾": int(q1_income+q2_income+q3_income+q4_income),
+         "Fixed Costs ₾": int(q1_fixed+q2_fixed+q3_fixed+q4_fixed),
+         "Variable Costs ₾": int(q1_course_costs+q1_corp_cog+q2_course_costs+q2_corp_cog+q3_pipe_cog+q4_pipe_cog),
+         "Total Expenses ₾": int(q1_expenses+q2_expenses+q3_expenses+q4_expenses),
+         "Net Profit ₾": int(q1_net+q2_net+q3_net+q4_net),
+         "Margin %": round((q1_net+q2_net+q3_net+q4_net)/(q1_income+q2_income+q3_income+q4_income)*100,1) if (q1_income+q2_income+q3_income+q4_income) else 0},
+    ])
+
+    st.dataframe(q_table, use_container_width=True, hide_index=True,
+        column_config={
+            "Course Income ₾": st.column_config.NumberColumn(format="₾ %d"),
+            "Corp Income ₾": st.column_config.NumberColumn(format="₾ %d"),
+            "Total Income ₾": st.column_config.NumberColumn(format="₾ %d"),
+            "Fixed Costs ₾": st.column_config.NumberColumn(format="₾ %d"),
+            "Variable Costs ₾": st.column_config.NumberColumn(format="₾ %d"),
+            "Total Expenses ₾": st.column_config.NumberColumn(format="₾ %d"),
+            "Net Profit ₾": st.column_config.NumberColumn(format="₾ %d"),
+            "Margin %": st.column_config.NumberColumn(format="%.1f%%"),
+        })
 
 # ── FIXED COSTS ───────────────────────────────────────────────────────────────
 elif page == "📌 Fixed Costs":
@@ -331,10 +483,16 @@ elif page == "📌 Fixed Costs":
             "Active Months": f"{sum(1 for v in s['m'] if v > 0)} months"
         })
     sal_df = pd.DataFrame(sal_rows)
-    st.dataframe(sal_df, use_container_width=True, hide_index=True)
+    edited_sal = st.data_editor(sal_df, use_container_width=True, hide_index=True, key="sal_editor",
+        column_config={
+            "Name / Role": st.column_config.TextColumn("Name / Role", width="large"),
+            f"{mn} (₾)": st.column_config.TextColumn(f"{mn} (₾)", disabled=True),
+            "Annual Budget (₾)": st.column_config.TextColumn("Annual Budget (₾)", disabled=True),
+            "Active Months": st.column_config.TextColumn("Active Months", disabled=True),
+        })
     sal_m = sum(s["m"][mi] for s in SALARIES)
     sal_a = sum(sum(s["m"]) for s in SALARIES)
-    st.markdown(f'<div style="background:#22263a;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Salaries · {mn}</span><span style="color:#00d4aa">{fmt(sal_m)} <span style="color:#555c7a;font-weight:400;font-size:12px">/ {fmt(sal_a)} annual</span></span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Salaries · {mn}</span><span style="color:#00d4aa">{fmt(sal_m)} <span style="color:#555c7a;font-weight:400;font-size:12px">/ {fmt(sal_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("### 🏢 Admin & Subscriptions")
     sub_rows = []
@@ -345,10 +503,15 @@ elif page == "📌 Fixed Costs":
             "Annual Budget (₾)": f"₾ {sum(s['m']):,}",
         })
     sub_df = pd.DataFrame(sub_rows)
-    st.dataframe(sub_df, use_container_width=True, hide_index=True)
+    st.data_editor(sub_df, use_container_width=True, hide_index=True, key="sub_editor",
+        column_config={
+            "Item": st.column_config.TextColumn("Item", width="large"),
+            f"{mn} (₾)": st.column_config.TextColumn(f"{mn} (₾)", disabled=True),
+            "Annual Budget (₾)": st.column_config.TextColumn("Annual Budget (₾)", disabled=True),
+        })
     sub_m = sum(s["m"][mi] for s in SUBS)
     sub_a = sum(sum(s["m"]) for s in SUBS)
-    st.markdown(f'<div style="background:#22263a;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#00d4aa">{fmt(sub_m)} <span style="color:#555c7a;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#00d4aa">{fmt(sub_m)} <span style="color:#555c7a;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     total = sal_m + sub_m
@@ -359,7 +522,21 @@ elif page == "🎓 Courses P&L":
     st.markdown("## 🎓 Courses P&L")
     st.markdown('<p style="color:#8b90a7;margin-top:-12px">2026 actuals · Net Profit = Revenue excl. VAT − Costs</p>', unsafe_allow_html=True)
 
-    month_filter = st.selectbox("Filter by month", ["All"] + MONTHS[:6])
+    if "co_month" not in st.session_state:
+        st.session_state.co_month = "All"
+
+    st.markdown('<p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7c78a8;margin-bottom:6px">Filter by month</p>', unsafe_allow_html=True)
+    month_opts = ["All"] + MONTHS[:6]
+    cols = st.columns(len(month_opts))
+    for i, m in enumerate(month_opts):
+        with cols[i]:
+            active = st.session_state.co_month == m
+            if st.button(m, key=f"co_m_{m}", use_container_width=True,
+                        type="primary" if active else "secondary"):
+                st.session_state.co_month = m
+                st.rerun()
+
+    month_filter = st.session_state.co_month
     filtered = COURSES if month_filter == "All" else [c for c in COURSES if c["month"] == month_filter]
 
     rows = []
@@ -385,13 +562,18 @@ elif page == "🎓 Courses P&L":
     tot_rx = sum(cpnl(c)["rx"] for c in filtered)
     tot_mg = round(tot_net / tot_rx * 100, 1) if tot_rx else 0
 
-    st.dataframe(
-        df.style
-          .format({"Revenue ₾": "₾ {:,.0f}", "Costs ₾": "₾ {:,.0f}", "Gross Profit ₾": "₾ {:,.0f}", "Net Profit ₾": "₾ {:,.0f}", "Margin %": "{:.1f}%"})
-          .map(lambda v: "color: #00d4aa" if isinstance(v, (int,float)) and v > 0 else ("color: #ff5f7e" if isinstance(v,(int,float)) and v < 0 else ""), subset=["Net Profit ₾","Gross Profit ₾"])
-          .map(lambda v: "color: #00d4aa" if isinstance(v,(int,float)) and v >= 50 else ("color: #ffa94d" if isinstance(v,(int,float)) and v >= 25 else ("color: #ff5f7e" if isinstance(v,(int,float)) and v > 0 else "")), subset=["Margin %"]),
-        use_container_width=True, hide_index=True
-    )
+    edited_courses = st.data_editor(df, use_container_width=True, hide_index=True, key="courses_editor",
+        column_config={
+            "Program": st.column_config.TextColumn("Program", width="large"),
+            "Month": st.column_config.TextColumn("Month", disabled=True),
+            "Students": st.column_config.NumberColumn("Students", min_value=0, step=1),
+            "Price ₾": st.column_config.NumberColumn("Price ₾", min_value=0, format="₾ %d"),
+            "Revenue ₾": st.column_config.NumberColumn("Revenue ₾", disabled=True, format="₾ %d"),
+            "Costs ₾": st.column_config.NumberColumn("Costs ₾", disabled=True, format="₾ %d"),
+            "Gross Profit ₾": st.column_config.NumberColumn("Gross Profit ₾", disabled=True, format="₾ %d"),
+            "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %d"),
+            "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
+        })
 
     col1,col2,col3,col4 = st.columns(4)
     with col1: kpi("Total Revenue", fmt(tot_rv), "", "kpi-pos")
@@ -439,58 +621,26 @@ elif page == "🏢 Corporate Projects":
     with col2: kpi("2026 Net Profit", fmt(tP26), f"Margin {pct(tP26/tR26*100 if tR26 else 0)}", "kpi-pos")
     with col3: kpi("Q3–Q4 Pipeline", fmt(pp_r), f"{len(PIPELINE)} projects incl. GITA H2", "kpi-warn")
 
-    tab1, tab2, tab3 = st.tabs(["📋 2026 Actuals", "📂 2025 History", "🔮 Pipeline"])
 
-    with tab1:
-        rows = []
-        for p in CORP26:
-            pf = p["revenue"] - p["cog"]
-            mg = pf / p["revenue"] * 100 if p["revenue"] else 0
-            rows.append({
-                "Project": p["name"], "Type": p["type"], "Period": p["period"],
-                "Revenue ₾": p["revenue"], "COG ₾": p["cog"],
-                "Net Profit ₾": int(pf), "Margin %": round(mg,1), "Status": p["status"]
-            })
-        df26 = pd.DataFrame(rows)
-        st.dataframe(
-            df26.style.format({"Revenue ₾":"₾ {:,.0f}","COG ₾":"₾ {:,.0f}","Net Profit ₾":"₾ {:,.0f}","Margin %":"{:.1f}%"})
-                .map(lambda v: "color:#00d4aa" if isinstance(v,(int,float)) and v>0 else "", subset=["Net Profit ₾"])
-                .map(lambda v: "color:#00d4aa" if isinstance(v,(int,float)) and v>=50 else ("color:#ffa94d" if isinstance(v,(int,float)) and v>=25 else "color:#ff5f7e"), subset=["Margin %"]),
-            use_container_width=True, hide_index=True
-        )
-        st.markdown(f'<div style="background:#22263a;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#00d4aa">{fmt(tR26)} revenue · {fmt(tP26)} profit · {pct(tP26/tR26*100 if tR26 else 0)} margin</span></div>', unsafe_allow_html=True)
-
-    with tab2:
-        rows25 = []
-        for p in CORP25:
-            rows25.append({
-                "Company": p["co"], "Project": p["pr"], "Type": p["type"], "Period": p["period"],
-                "Revenue ₾": p["rev"], "Cost ₾": p["cost"],
-                "Profit ₾": p["profit"], "Margin %": p["margin"]
-            })
-        df25 = pd.DataFrame(rows25)
-        t25r = df25["Revenue ₾"].sum(); t25p = df25["Profit ₾"].sum()
-        st.dataframe(
-            df25.style.format({"Revenue ₾":"₾ {:,.0f}","Cost ₾":"₾ {:,.0f}","Profit ₾":"₾ {:,.0f}","Margin %":"{:.1f}%"})
-                .map(lambda v: "color:#00d4aa" if isinstance(v,(int,float)) and v>0 else "", subset=["Profit ₾"]),
-            use_container_width=True, hide_index=True
-        )
-        st.markdown(f'<div style="background:#22263a;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2025</span><span style="color:#00d4aa">{fmt(t25r)} revenue · {fmt(t25p)} profit · {pct(t25p/t25r*100 if t25r else 0)} margin</span></div>', unsafe_allow_html=True)
-
-    with tab3:
-        rowspp = []
-        for p in PIPELINE:
-            pf = p["rev"] - p["cog"]
-            mg = pf / p["rev"] * 100 if p["rev"] else 0
-            rowspp.append({
-                "Project": p["name"], "Type": p["type"], "Quarter": p["q"],
-                "Est. Revenue ₾": p["rev"], "Est. COG ₾": p["cog"],
-                "Est. Profit ₾": int(pf), "Margin %": round(mg,1), "Stage": p["stage"]
-            })
-        dfpp = pd.DataFrame(rowspp)
-        tppr = dfpp["Est. Revenue ₾"].sum(); tppp = dfpp["Est. Profit ₾"].sum()
-        st.dataframe(
-            dfpp.style.format({"Est. Revenue ₾":"₾ {:,.0f}","Est. COG ₾":"₾ {:,.0f}","Est. Profit ₾":"₾ {:,.0f}","Margin %":"{:.1f}%"}),
-            use_container_width=True, hide_index=True
-        )
-        st.markdown(f'<div style="background:#22263a;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Pipeline Total</span><span style="color:#ffa94d">{fmt(tppr)} est. revenue · {fmt(tppp)} est. profit</span></div>', unsafe_allow_html=True)
+    rows = []
+    for p in CORP26:
+        pf = p["revenue"] - p["cog"]
+        mg = pf / p["revenue"] * 100 if p["revenue"] else 0
+        rows.append({
+            "Project": p["name"], "Type": p["type"], "Period": p["period"],
+            "Revenue ₾": p["revenue"], "COG ₾": p["cog"],
+            "Net Profit ₾": int(pf), "Margin %": round(mg,1), "Status": p["status"]
+        })
+    df26 = pd.DataFrame(rows)
+    st.data_editor(df26, use_container_width=True, hide_index=True, key="corp26_editor",
+        column_config={
+            "Project": st.column_config.TextColumn("Project", width="large"),
+            "Type": st.column_config.SelectboxColumn("Type", options=["B2B","B2G"]),
+            "Period": st.column_config.TextColumn("Period"),
+            "Revenue ₾": st.column_config.NumberColumn("Revenue ₾", min_value=0, format="₾ %d"),
+            "COG ₾": st.column_config.NumberColumn("COG ₾", min_value=0, format="₾ %d"),
+            "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %d"),
+            "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
+            "Status": st.column_config.SelectboxColumn("Status", options=["Paid","Active","Pending","Upcoming"]),
+        })
+    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#00d4aa">{fmt(tR26)} revenue · {fmt(tP26)} profit · {pct(tP26/tR26*100 if tR26 else 0)} margin</span></div>', unsafe_allow_html=True)
