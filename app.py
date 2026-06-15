@@ -20,27 +20,42 @@ def check_auth():
     if not st.session_state.authenticated:
         st.markdown("""
         <style>
-        .login-box {
-            max-width: 400px;
-            margin: 8vh auto 0;
-            padding: 2.5rem;
-            background: #1a1d27;
-            border: 1px solid #2e3350;
-            border-radius: 16px;
+        [data-testid="stAppViewContainer"] { background: #13111e !important; }
+        [data-testid="stHeader"] { background: #13111e !important; }
+        .stTextInput > div > div {
+            background: #1e1a35 !important;
+            border: 1px solid #3d3870 !important;
+            border-radius: 10px !important;
+            color: #e0deff !important;
         }
-        .login-label { font-size:10px; font-weight:700; letter-spacing:2px; color:#555c7a; text-transform:uppercase; margin-bottom:4px; }
-        .login-title { font-size:24px; font-weight:700; color:#e8eaf0; margin-bottom:4px; }
-        .login-sub { font-size:13px; color:#8b90a7; margin-bottom:2rem; }
+        .stTextInput input {
+            color: #e0deff !important;
+            background: transparent !important;
+        }
+        .stTextInput input::placeholder { color: #4a4870 !important; }
+        .stTextInput label { color: #7c78a8 !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
+        .stButton > button {
+            background: linear-gradient(135deg, #34d399, #10b981) !important;
+            color: #0a0a0a !important; border: none !important;
+            border-radius: 10px !important; font-weight:700 !important; font-size:14px !important;
+        }
+        .stButton > button:hover { background: linear-gradient(135deg, #10b981, #059669) !important; }
+        .stAlert { background: rgba(248,113,113,0.1) !important; border: 1px solid rgba(248,113,113,0.3) !important; border-radius: 8px !important; color: #f87171 !important; }
         </style>
         """, unsafe_allow_html=True)
 
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            st.markdown('<div style="text-align:center;margin-top:8vh">', unsafe_allow_html=True)
-            st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:2px;color:#555c7a;text-transform:uppercase">COMMSCHOOL</p>', unsafe_allow_html=True)
-            st.markdown('<h1 style="font-size:28px;font-weight:700;color:#e8eaf0;margin:0">Digital <span style="color:#6c63ff">CFO</span></h1>', unsafe_allow_html=True)
-            st.markdown('<p style="font-size:13px;color:#8b90a7;margin-bottom:2rem">Internal financial dashboard</p>', unsafe_allow_html=True)
+            st.markdown('<div style="margin-top:10vh">', unsafe_allow_html=True)
+            st.markdown('''<div style="text-align:center;margin-bottom:2rem">
+                <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#4a4870;text-transform:uppercase;margin-bottom:8px">COMMSCHOOL</p>
+                <h1 style="font-size:32px;font-weight:700;color:#ffffff;margin:0;font-family:Space Grotesk,sans-serif">
+                    Digital <span style="color:#a78bfa">CFO</span>
+                </h1>
+                <p style="font-size:13px;color:#7c78a8;margin-top:8px">Internal financial dashboard</p>
+            </div>''', unsafe_allow_html=True)
             pwd = st.text_input("Access Code", type="password", placeholder="Enter passcode")
+            st.markdown("<div style='margin-top:8px'>", unsafe_allow_html=True)
             if st.button("Enter →", use_container_width=True, type="primary"):
                 if pwd == PASSCODE:
                     st.session_state.authenticated = True
@@ -57,8 +72,10 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap');
 
 [data-testid="stAppViewContainer"] { background: #13111e; }
+[data-testid="stHeader"] { background: #13111e !important; border-bottom: 1px solid #2d2850 !important; }
 [data-testid="stSidebar"] { background: #1c1830; border-right: 1px solid #2d2850; }
 [data-testid="stSidebar"] * { color: #b0aed0 !important; }
+p, span, div { color: #d4d0f0; }
 [data-testid="stSidebar"] .stRadio label { color: #e0deff !important; font-weight: 500 !important; }
 h1,h2,h3 { font-family: 'Space Grotesk', sans-serif !important; color: #ffffff !important; }
 p, li, span { color: #d4d0f0; }
@@ -105,6 +122,83 @@ div[data-testid="stHorizontalBlock"] > div { gap: 0.75rem; }
 .stButton > button:hover { background: linear-gradient(135deg, #10b981, #059669) !important; }
 .stButton > button[kind="secondary"] { background: transparent !important; color: #9d9bc0 !important; border: 1px solid #3d3870 !important; font-weight:500 !important; }
 .stButton > button[kind="secondary"]:hover { border-color: #a78bfa !important; color: #e0deff !important; background: rgba(167,139,250,0.08) !important; }
+
+/* Hide nav trigger buttons — only the HTML links are visible */
+[data-testid="stSidebar"] .stButton > button {
+    position: absolute !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+[data-testid="stSidebar"] .stButton:has(button[kind="secondary"]) {
+    margin: -44px 0 0 0 !important;
+    height: 44px !important;
+    overflow: hidden !important;
+}
+/* Lock button exception — keep it visible */
+[data-testid="stSidebar"] .stButton:last-of-type > button {
+    position: relative !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    height: auto !important;
+    padding: 6px 12px !important;
+    margin: 0 !important;
+}
+/* Sidebar general cleanup */
+[data-testid="stSidebar"] .block-container { padding-top: 0 !important; }
+[data-testid="stSidebar"] hr { border-color: #2d2850 !important; margin: 12px 0 !important; }
+
+/* Main content */
+.block-container { padding-top: 2rem !important; max-width: 1200px; }
+
+/* Table styling */
+[data-testid="stDataFrame"] th { background: #1e1a35 !important; color: #7c78a8 !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
+[data-testid="stDataFrame"] td { color: #e0deff !important; font-size: 13px !important; }
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] { background: transparent !important; border-bottom: 1px solid #2d2850 !important; gap: 0 !important; }
+.stTabs [data-baseweb="tab"] { background: transparent !important; border: none !important; padding: 10px 20px !important; color: #7c78a8 !important; font-size: 13px !important; font-weight: 500 !important; }
+.stTabs [data-baseweb="tab"]:hover { color: #e0deff !important; }
+.stTabs [aria-selected="true"] { color: #a78bfa !important; border-bottom: 2px solid #a78bfa !important; }
+.stTabs [data-baseweb="tab-panel"] { padding-top: 1.5rem !important; }
+
+/* Input fields */
+.stTextInput > div > div {
+    background: #1e1a35 !important;
+    border: 1px solid #3d3870 !important;
+    border-radius: 10px !important;
+}
+.stTextInput input { color: #e0deff !important; }
+.stTextInput label { color: #7c78a8 !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
+.stNumberInput > div > div { background: #1e1a35 !important; border-color: #3d3870 !important; border-radius: 8px !important; }
+.stNumberInput input { color: #e0deff !important; }
+
+/* Alert / error boxes */
+.stAlert { background: rgba(248,113,113,0.1) !important; border: 1px solid rgba(248,113,113,0.25) !important; border-radius: 8px !important; }
+
+/* Success boxes */
+[data-baseweb="notification"][kind="positive"] { background: rgba(52,211,153,0.1) !important; border-color: rgba(52,211,153,0.3) !important; }
+
+/* Markdown text */
+.stMarkdown p { color: #d4d0f0 !important; }
+.stMarkdown h1,.stMarkdown h2,.stMarkdown h3 { color: #ffffff !important; }
+
+/* Select boxes */
+[data-baseweb="select"] { background: #1e1a35 !important; border-color: #3d3870 !important; border-radius: 8px !important; }
+[data-baseweb="select"] * { color: #e0deff !important; }
+
+/* Slider */
+[data-testid="stSlider"] { padding: 0 4px !important; }
+[data-testid="stSlider"] .st-emotion-cache-1dp5vir { background: #a78bfa !important; }
+
+/* Metric/number colors */
+.stMetric { background: #1e1a35 !important; border: 1px solid #3d3870 !important; border-radius: 12px !important; padding: 16px !important; }
+
+/* Divider */
+hr { border-color: #2d2850 !important; margin: 1.5rem 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -135,28 +229,28 @@ SUBS = [
 ]
 
 COURSES = [
-    {"name":"Graphic Design","month":"Jan","students":3,"price":1250,"lecturer":2800,"mat":175,"mkt":1111,"zoom":40},
-    {"name":"Marketing Management","month":"Feb","students":4,"price":1500,"lecturer":3500,"mat":236,"mkt":1021,"zoom":40},
-    {"name":"Content Management","month":"Feb","students":0,"price":1400,"lecturer":0,"mat":0,"mkt":1638,"zoom":0},
-    {"name":"Data Analytics","month":"Feb","students":8,"price":1700,"lecturer":5357,"mat":420,"mkt":1225,"zoom":40},
-    {"name":"AI in Content","month":"Feb","students":8,"price":1400,"lecturer":3000,"mat":360,"mkt":1439,"zoom":40},
-    {"name":"AI Agents","month":"Mar","students":9,"price":1400,"lecturer":2551,"mat":405,"mkt":1542,"zoom":40},
-    {"name":"Data Science","month":"Mar","students":9,"price":2700,"lecturer":12117,"mat":405,"mkt":1369,"zoom":40},
-    {"name":"Growth Marketing","month":"Mar","students":17,"price":1500,"lecturer":4000,"mat":765,"mkt":569,"zoom":40},
-    {"name":"IT BA","month":"Apr","students":8,"price":1500,"lecturer":3571,"mat":400,"mkt":1334,"zoom":40},
-    {"name":"ADS","month":"Apr","students":14,"price":1400,"lecturer":5357,"mat":630,"mkt":1385,"zoom":40},
-    {"name":"AI SEO","month":"May","students":5,"price":1400,"lecturer":3061,"mat":265,"mkt":1651,"zoom":40},
-    {"name":"AI Essentials","month":"May","students":5,"price":1050,"lecturer":2551,"mat":265,"mkt":1557,"zoom":40},
-    {"name":"Data Analytics","month":"May","students":6,"price":1700,"lecturer":5357,"mat":310,"mkt":1210,"zoom":40},
-    {"name":"GITA: IT PM","month":"May","students":7,"price":1000,"lecturer":3571,"mat":355,"mkt":262,"zoom":40},
-    {"name":"GITA: Motion Design","month":"May","students":7,"price":1000,"lecturer":3000,"mat":355,"mkt":262,"zoom":40},
-    {"name":"GITA: IT BA","month":"May","students":7,"price":1000,"lecturer":3571,"mat":355,"mkt":262,"zoom":40},
-    {"name":"GITA: Python","month":"May","students":29,"price":2000,"lecturer":13500,"mat":1305,"mkt":262,"zoom":40},
-    {"name":"GITA: C#","month":"May","students":26,"price":2000,"lecturer":14000,"mat":1210,"mkt":262,"zoom":40},
-    {"name":"GITA: QA","month":"May","students":6,"price":1000,"lecturer":6300,"mat":310,"mkt":262,"zoom":40},
-    {"name":"GITA: Graphic Design","month":"May","students":13,"price":1000,"lecturer":3150,"mat":635,"mkt":262,"zoom":40},
-    {"name":"GITA: UI/UX Design","month":"May","students":15,"price":1000,"lecturer":3571,"mat":715,"mkt":262,"zoom":40},
-    {"name":"AI in Content","month":"Jun","students":12,"price":1400,"lecturer":2600,"mat":580,"mkt":1077,"zoom":40},
+    {"name":"Graphic Design",       "month":"Jan","students":3, "price":1250,"lecturer":2800,"inst":0,  "zoom":40,"mkt":1111,"mat":135, "rev":3750.00},
+    {"name":"Marketing Management", "month":"Feb","students":4, "price":1500,"lecturer":3500,"inst":56, "zoom":40,"mkt":1021,"mat":180, "rev":5900.00},
+    {"name":"Content Management",   "month":"Feb","students":0, "price":1400,"lecturer":0,   "inst":0,  "zoom":0, "mkt":1638,"mat":0,   "rev":0.00},
+    {"name":"Data Analytics",       "month":"Feb","students":8, "price":1700,"lecturer":5357,"inst":60, "zoom":40,"mkt":1225,"mat":360, "rev":13600.00},
+    {"name":"AI in Content",        "month":"Feb","students":8, "price":1400,"lecturer":3000,"inst":0,  "zoom":40,"mkt":1439,"mat":360, "rev":6720.00},
+    {"name":"AI Agents",            "month":"Mar","students":9, "price":1400,"lecturer":2551,"inst":0,  "zoom":40,"mkt":1542,"mat":405, "rev":12040.00},
+    {"name":"Data Science",         "month":"Mar","students":9, "price":2700,"lecturer":12117,"inst":0, "zoom":40,"mkt":1369,"mat":405, "rev":23760.00},
+    {"name":"Growth Marketing",     "month":"Mar","students":17,"price":1500,"lecturer":4000,"inst":0,  "zoom":40,"mkt":569, "mat":765, "rev":18776.17},
+    {"name":"IT BA",                "month":"Apr","students":8, "price":1500,"lecturer":3571,"inst":0,  "zoom":40,"mkt":1334,"mat":400, "rev":12000.00},
+    {"name":"ADS",                  "month":"Apr","students":14,"price":1400,"lecturer":5357,"inst":0,  "zoom":40,"mkt":1385,"mat":630, "rev":19600.00},
+    {"name":"AI SEO",               "month":"May","students":5, "price":1400,"lecturer":3061,"inst":0,  "zoom":40,"mkt":1651,"mat":265, "rev":7000.00},
+    {"name":"AI Essentials",        "month":"May","students":5, "price":1050,"lecturer":2551,"inst":0,  "zoom":40,"mkt":1557,"mat":265, "rev":5250.00},
+    {"name":"Data Analytics",       "month":"May","students":6, "price":1700,"lecturer":5357,"inst":0,  "zoom":40,"mkt":1210,"mat":310, "rev":10200.00},
+    {"name":"GITA: IT PM",          "month":"May","students":7, "price":1000,"lecturer":3571,"inst":0,  "zoom":40,"mkt":262, "mat":355, "rev":7000.00},
+    {"name":"GITA: Motion Design",  "month":"May","students":7, "price":1000,"lecturer":3000,"inst":0,  "zoom":40,"mkt":262, "mat":355, "rev":7000.00},
+    {"name":"GITA: IT BA",          "month":"May","students":7, "price":1000,"lecturer":3571,"inst":0,  "zoom":40,"mkt":262, "mat":355, "rev":7000.00},
+    {"name":"GITA: Python",         "month":"May","students":29,"price":2000,"lecturer":13500,"inst":0, "zoom":40,"mkt":262, "mat":1305,"rev":58000.00},
+    {"name":"GITA: C#",             "month":"May","students":26,"price":2000,"lecturer":14000,"inst":0, "zoom":40,"mkt":262, "mat":1210,"rev":52000.00},
+    {"name":"GITA: QA",             "month":"May","students":6, "price":1000,"lecturer":6300,"inst":0,  "zoom":40,"mkt":262, "mat":310, "rev":6000.00},
+    {"name":"GITA: Graphic Design", "month":"May","students":13,"price":1000,"lecturer":3150,"inst":0,  "zoom":40,"mkt":262, "mat":635, "rev":13000.00},
+    {"name":"GITA: UI/UX Design",   "month":"May","students":15,"price":1000,"lecturer":3571,"inst":0,  "zoom":40,"mkt":262, "mat":715, "rev":15000.00},
+    {"name":"AI in Content",        "month":"Jun","students":12,"price":1400,"lecturer":2600,"inst":0,  "zoom":40,"mkt":1077,"mat":580, "rev":16800.00},
 ]
 
 CORP26 = [
@@ -198,12 +292,13 @@ PIPELINE = [
 def fmt(n): return f"₾ {int(round(n)):,}"
 def pct(n): return f"{float(n):.1f}%"
 def cpnl(c):
-    rv = c["students"] * c["price"]
-    rx = rv / 1.18
-    cs = c["lecturer"] + c["mat"] + c["mkt"] + c["zoom"]
+    rv  = c.get("rev", c["students"] * c["price"])  # actual revenue incl. VAT
+    rx  = rv / 1.18                                  # revenue excl. VAT
+    cs  = c["lecturer"] + c.get("inst",0) + c["zoom"] + c["mkt"] + c["mat"]
+    gp  = rv - cs
     net = rx - cs
-    mg = net / rx * 100 if rx > 0 else 0
-    return {"rv": rv, "rx": rx, "cs": cs, "gp": rv - cs, "net": net, "mg": mg}
+    mg  = net / rx * 100 if rx > 0 else 0
+    return {"rv": rv, "rx": rx, "cs": cs, "gp": gp, "net": net, "mg": mg}
 
 def margin_badge(m):
     m = float(m)
@@ -228,7 +323,7 @@ def bar_chart(items, title=""):
         marker_color=colors,
         text=[fmt(i["v"]) for i in items],
         textposition="outside",
-        textfont=dict(size=10, color="#8b90a7"),
+        textfont=dict(size=10, color="#7c78a8"),
     ))
     fig.update_layout(
         paper_bgcolor="#1e1a35", plot_bgcolor="#1e1a35",
@@ -242,20 +337,61 @@ def bar_chart(items, title=""):
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
 # ── SIDEBAR ───────────────────────────────────────────────────────────────────
+if "page" not in st.session_state:
+    st.session_state.page = "📊 Dashboard"
+
+nav_items = [
+    ("📊", "Dashboard"),
+    ("📌", "Fixed Costs"),
+    ("🎓", "Courses P&L"),
+    ("🏢", "Corporate Projects"),
+]
+
 with st.sidebar:
-    st.markdown('<div style="padding:4px 0 16px"><p style="font-size:10px;font-weight:700;letter-spacing:2px;color:#555c7a;text-transform:uppercase;margin:0">COMMSCHOOL</p><h2 style="font-size:22px;font-weight:700;color:#e8eaf0;margin:0">Digital <span style="color:#6c63ff">CFO</span></h2></div>', unsafe_allow_html=True)
-    st.markdown("---")
-    page = st.radio("", ["📊 Dashboard", "📌 Fixed Costs", "🎓 Courses P&L", "🏢 Corporate Projects"], label_visibility="collapsed")
-    st.markdown("---")
-    st.markdown('<p style="font-size:10px;color:#555c7a">₾ GEL · 2026 · H1 actuals</p>', unsafe_allow_html=True)
-    if st.button("🔒 Lock", use_container_width=True):
+    st.markdown("""
+    <div style="padding:20px 16px 16px">
+        <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#4a4870;text-transform:uppercase;margin:0 0 6px">COMMSCHOOL</p>
+        <h2 style="font-size:24px;font-weight:700;color:#ffffff;margin:0;font-family:Space Grotesk,sans-serif">Digital <span style="color:#a78bfa">CFO</span></h2>
+    </div>
+    <hr style="border-color:#2d2850;margin:0 0 8px">
+    """, unsafe_allow_html=True)
+
+    for icon, label in nav_items:
+        full = f"{icon} {label}"
+        active = st.session_state.page == full
+        bg = "rgba(167,139,250,0.12)" if active else "transparent"
+        color = "#a78bfa" if active else "#b0aed0"
+        border = "#a78bfa" if active else "transparent"
+        st.markdown(f"""
+        <div style="margin:2px 0">
+            <a href="?nav={label}" target="_self" style="
+                display:flex;align-items:center;gap:10px;
+                padding:10px 16px;border-radius:8px;
+                background:{bg};border-left:3px solid {border};
+                color:{color};font-size:13px;font-weight:{'600' if active else '500'};
+                text-decoration:none;transition:all 0.15s;cursor:pointer;
+            " onmouseover="this.style.background='rgba(167,139,250,0.08)';this.style.color='#e0deff'"
+               onmouseout="this.style.background='{bg}';this.style.color='{color}'">
+                <span style="font-size:16px">{icon}</span>{label}
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button(label, key=f"nav_{label}", use_container_width=True):
+            st.session_state.page = full
+            st.rerun()
+
+    st.markdown('<hr style="border-color:#2d2850;margin:8px 0">', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:10px;color:#4a4870;padding:0 16px;margin-bottom:10px">₾ GEL · 2026 · H1 actuals</p>', unsafe_allow_html=True)
+    if st.button("🔒 Lock", key="lock_btn", use_container_width=True):
         st.session_state.authenticated = False
         st.rerun()
+
+page = st.session_state.page
 
 # ── DASHBOARD ─────────────────────────────────────────────────────────────────
 if page == "📊 Dashboard":
     st.markdown("## Financial Overview")
-    st.markdown('<p style="color:#8b90a7;margin-top:-12px">2026 H1 · Courses + Corporate actuals</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#7c78a8;margin-top:-12px">2026 H1 · Courses + Corporate actuals</p>', unsafe_allow_html=True)
 
     mi = MONTHS.index("Jun")  # default to Jun for H1 snapshot
     sal_m = sum(s["m"][mi] for s in SALARIES)
@@ -321,7 +457,7 @@ if page == "📊 Dashboard":
         ("📉", f"**Lowest margin:** {wrst_c['name']} ({wrst_c['month']}). Set a minimum enrollment threshold before launching."),
         ("💼", f"**2026 salary budget: {fmt(sal_a)}.** CEO = {pct(8929*12/sal_a*100)} of total payroll. H1 fixed budget: {fmt((sal_a+sub_a)//2)}."),
     ]:
-        st.markdown(f"""<div class="insight-card"><span style="font-size:18px">{icon}</span><span style="font-size:13px;color:#8b90a7;line-height:1.6">{text}</span></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="insight-card"><span style="font-size:18px">{icon}</span><span style="font-size:13px;color:#7c78a8;line-height:1.6">{text}</span></div>""", unsafe_allow_html=True)
 
 
     # ── QUARTERLY P&L ─────────────────────────────────────────────────────────
@@ -468,7 +604,7 @@ if page == "📊 Dashboard":
 # ── FIXED COSTS ───────────────────────────────────────────────────────────────
 elif page == "📌 Fixed Costs":
     st.markdown("## 📌 Fixed Costs")
-    st.markdown('<p style="color:#8b90a7;margin-top:-12px">2026 budget · select month to view</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#7c78a8;margin-top:-12px">2026 budget · select month to view</p>', unsafe_allow_html=True)
 
     mi = st.select_slider("Month", options=list(range(12)), format_func=lambda i: MONTHS[i], value=0)
     mn = MONTHS[mi]
@@ -492,7 +628,7 @@ elif page == "📌 Fixed Costs":
         })
     sal_m = sum(s["m"][mi] for s in SALARIES)
     sal_a = sum(sum(s["m"]) for s in SALARIES)
-    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Salaries · {mn}</span><span style="color:#00d4aa">{fmt(sal_m)} <span style="color:#555c7a;font-weight:400;font-size:12px">/ {fmt(sal_a)} annual</span></span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Salaries · {mn}</span><span style="color:#34d399">{fmt(sal_m)} <span style="color:#4a4870;font-weight:400;font-size:12px">/ {fmt(sal_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("### 🏢 Admin & Subscriptions")
     sub_rows = []
@@ -511,16 +647,16 @@ elif page == "📌 Fixed Costs":
         })
     sub_m = sum(s["m"][mi] for s in SUBS)
     sub_a = sum(sum(s["m"]) for s in SUBS)
-    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#00d4aa">{fmt(sub_m)} <span style="color:#555c7a;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#34d399">{fmt(sub_m)} <span style="color:#4a4870;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     total = sal_m + sub_m
-    st.markdown(f'<div style="background:#1a1d27;border:1px solid #2e3350;padding:16px 20px;border-radius:12px;font-family:Space Grotesk,sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between"><span>🔒 Total Fixed Costs · {mn}</span><span style="color:#ffa94d">{fmt(total)}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:#1e1a35;border:1px solid #3d3870;padding:16px 20px;border-radius:12px;font-family:Space Grotesk,sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between"><span>🔒 Total Fixed Costs · {mn}</span><span style="color:#ffa94d">{fmt(total)}</span></div>', unsafe_allow_html=True)
 
 # ── COURSES P&L ───────────────────────────────────────────────────────────────
 elif page == "🎓 Courses P&L":
     st.markdown("## 🎓 Courses P&L")
-    st.markdown('<p style="color:#8b90a7;margin-top:-12px">2026 actuals · Net Profit = Revenue excl. VAT − Costs</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#7c78a8;margin-top:-12px">2026 actuals · Net Profit = Revenue excl. VAT − Costs</p>', unsafe_allow_html=True)
 
     if "co_month" not in st.session_state:
         st.session_state.co_month = "All"
@@ -546,33 +682,45 @@ elif page == "🎓 Courses P&L":
             "Program": c["name"],
             "Month": c["month"],
             "Students": c["students"],
-            "Price ₾": c["price"],
-            "Revenue ₾": int(p["rv"]),
-            "Costs ₾": int(p["cs"]),
-            "Gross Profit ₾": int(p["gp"]),
-            "Net Profit ₾": int(p["net"]),
-            "Margin %": round(p["mg"], 1),
+            "Price w/VAT ₾": c["price"],
+            "Price w/o VAT ₾": round(c["price"] / 1.18, 0),
+            "Lecturer Fee ₾": c["lecturer"],
+            "Installment ₾": c.get("inst", 0),
+            "Zoom ₾": c["zoom"],
+            "Advertising ₾": c["mkt"],
+            "Merch ₾": c["mat"],
+            "Total Cost ₾": round(p["cs"], 2),
+            "Revenue ₾": round(p["rv"], 2),
+            "Gross Profit ₾": round(p["gp"], 2),
+            "Net Profit ₾": round(p["net"], 2),
+            "Profit Margin %": round(p["mg"], 2),
         })
 
     df = pd.DataFrame(rows)
-    tot_rv = df["Revenue ₾"].sum()
-    tot_cs = df["Costs ₾"].sum()
-    tot_gp = df["Gross Profit ₾"].sum()
+    tot_rv  = df["Revenue ₾"].sum()
+    tot_cs  = df["Total Cost ₾"].sum()
+    tot_gp  = df["Gross Profit ₾"].sum()
     tot_net = df["Net Profit ₾"].sum()
-    tot_rx = sum(cpnl(c)["rx"] for c in filtered)
-    tot_mg = round(tot_net / tot_rx * 100, 1) if tot_rx else 0
+    tot_rx  = sum(cpnl(c)["rx"] for c in filtered)
+    tot_mg  = round(tot_net / tot_rx * 100, 1) if tot_rx else 0
 
     edited_courses = st.data_editor(df, use_container_width=True, hide_index=True, key="courses_editor",
         column_config={
-            "Program": st.column_config.TextColumn("Program", width="large"),
-            "Month": st.column_config.TextColumn("Month", disabled=True),
-            "Students": st.column_config.NumberColumn("Students", min_value=0, step=1),
-            "Price ₾": st.column_config.NumberColumn("Price ₾", min_value=0, format="₾ %d"),
-            "Revenue ₾": st.column_config.NumberColumn("Revenue ₾", disabled=True, format="₾ %d"),
-            "Costs ₾": st.column_config.NumberColumn("Costs ₾", disabled=True, format="₾ %d"),
-            "Gross Profit ₾": st.column_config.NumberColumn("Gross Profit ₾", disabled=True, format="₾ %d"),
-            "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %d"),
-            "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
+            "Program":          st.column_config.TextColumn("Program", width="large"),
+            "Month":            st.column_config.TextColumn("Month", disabled=True),
+            "Students":         st.column_config.NumberColumn("Students", min_value=0, step=1),
+            "Price w/VAT ₾":    st.column_config.NumberColumn("Price w/VAT ₾", disabled=True, format="₾ %d"),
+            "Price w/o VAT ₾":  st.column_config.NumberColumn("Price w/o VAT ₾", disabled=True, format="₾ %d"),
+            "Lecturer Fee ₾":   st.column_config.NumberColumn("Lecturer Fee ₾", min_value=0, format="₾ %d"),
+            "Installment ₾":    st.column_config.NumberColumn("Installment ₾", min_value=0, format="₾ %d"),
+            "Zoom ₾":           st.column_config.NumberColumn("Zoom ₾", min_value=0, format="₾ %d"),
+            "Advertising ₾":    st.column_config.NumberColumn("Advertising ₾", min_value=0, format="₾ %d"),
+            "Merch ₾":          st.column_config.NumberColumn("Merch ₾", min_value=0, format="₾ %d"),
+            "Total Cost ₾":     st.column_config.NumberColumn("Total Cost ₾", disabled=True, format="₾ %.2f"),
+            "Revenue ₾":        st.column_config.NumberColumn("Revenue ₾", disabled=True, format="₾ %.2f"),
+            "Gross Profit ₾":   st.column_config.NumberColumn("Gross Profit ₾", disabled=True, format="₾ %.2f"),
+            "Net Profit ₾":     st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %.2f"),
+            "Profit Margin %":  st.column_config.NumberColumn("Profit Margin %", disabled=True, format="%.2f%%"),
         })
 
     col1,col2,col3,col4 = st.columns(4)
@@ -607,7 +755,7 @@ elif page == "🎓 Courses P&L":
 # ── CORPORATE ─────────────────────────────────────────────────────────────────
 elif page == "🏢 Corporate Projects":
     st.markdown("## 🏢 Corporate Projects")
-    st.markdown('<p style="color:#8b90a7;margin-top:-12px">B2B + B2G · 2026 actuals + 2025 history</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#7c78a8;margin-top:-12px">B2B + B2G · 2026 actuals + 2025 history</p>', unsafe_allow_html=True)
 
     tR26 = sum(p["revenue"] for p in CORP26)
     tC26 = sum(p["cog"] for p in CORP26)
@@ -643,4 +791,4 @@ elif page == "🏢 Corporate Projects":
             "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
             "Status": st.column_config.SelectboxColumn("Status", options=["Paid","Active","Pending","Upcoming"]),
         })
-    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#00d4aa">{fmt(tR26)} revenue · {fmt(tP26)} profit · {pct(tP26/tR26*100 if tR26 else 0)} margin</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#34d399">{fmt(tR26)} revenue · {fmt(tP26)} profit · {pct(tP26/tR26*100 if tR26 else 0)} margin</span></div>', unsafe_allow_html=True)
