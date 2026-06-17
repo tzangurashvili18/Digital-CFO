@@ -23,8 +23,8 @@ def check_auth():
         [data-testid="stAppViewContainer"] { background: #13111e !important; }
         [data-testid="stHeader"] { background: #13111e !important; }
         .stTextInput > div > div {
-            background: #1e1a35 !important;
-            border: 1px solid #3d3870 !important;
+            background: #1e1545 !important;
+            border: 1px solid #4c3d8f !important;
             border-radius: 10px !important;
             color: #e0deff !important;
         }
@@ -32,15 +32,15 @@ def check_auth():
             color: #e0deff !important;
             background: transparent !important;
         }
-        .stTextInput input::placeholder { color: #4a4870 !important; }
-        .stTextInput label { color: #7c78a8 !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
+        .stTextInput input::placeholder { color: #6d5bab !important; }
+        .stTextInput label { color: #9d8fff !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
         .stButton > button {
-            background: linear-gradient(135deg, #34d399, #10b981) !important;
+            background: linear-gradient(135deg, #2dffb8, #00e5a0) !important;
             color: #0a0a0a !important; border: none !important;
             border-radius: 10px !important; font-weight:700 !important; font-size:14px !important;
         }
-        .stButton > button:hover { background: linear-gradient(135deg, #10b981, #059669) !important; }
-        .stAlert { background: rgba(248,113,113,0.1) !important; border: 1px solid rgba(248,113,113,0.3) !important; border-radius: 8px !important; color: #f87171 !important; }
+        .stButton > button:hover { background: linear-gradient(135deg, #00e5a0, #00c988) !important; }
+        .stAlert { background: rgba(248,113,113,0.1) !important; border: 1px solid rgba(248,113,113,0.3) !important; border-radius: 8px !important; color: #ff6b8a !important; }
         </style>
         """, unsafe_allow_html=True)
 
@@ -48,11 +48,11 @@ def check_auth():
         with col2:
             st.markdown('<div style="margin-top:10vh">', unsafe_allow_html=True)
             st.markdown('''<div style="text-align:center;margin-bottom:2rem">
-                <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#4a4870;text-transform:uppercase;margin-bottom:8px">COMMSCHOOL</p>
+                <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#6d5bab;text-transform:uppercase;margin-bottom:8px">COMMSCHOOL</p>
                 <h1 style="font-size:32px;font-weight:700;color:#ffffff;margin:0;font-family:Space Grotesk,sans-serif">
-                    Digital <span style="color:#a78bfa">CFO</span>
+                    Digital <span style="color:#c4b5fd">CFO</span>
                 </h1>
-                <p style="font-size:13px;color:#7c78a8;margin-top:8px">Internal financial dashboard</p>
+                <p style="font-size:13px;color:#9d8fff;margin-top:8px">Internal financial dashboard</p>
             </div>''', unsafe_allow_html=True)
             pwd = st.text_input("Access Code", type="password", placeholder="Enter passcode")
             st.markdown("<div style='margin-top:8px'>", unsafe_allow_html=True)
@@ -71,39 +71,40 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap');
 
-[data-testid="stAppViewContainer"] { background: #13111e; }
-[data-testid="stHeader"] { background: #13111e !important; border-bottom: 1px solid #2d2850 !important; }
-[data-testid="stSidebar"] { background: #1c1830; border-right: 1px solid #2d2850; }
-[data-testid="stSidebar"] * { color: #b0aed0 !important; }
-p, span, div { color: #d4d0f0; }
+[data-testid="stAppViewContainer"] { background: #0d0b1a; }
+[data-testid="stHeader"] { background: #0d0b1a !important; border-bottom: 1px solid #4c3d8f !important; }
+[data-testid="stSidebar"] { background: #150f2e; border-right: 1px solid #4c3d8f; }
+[data-testid="stSidebar"] * { color: #c4b5fd !important; }
+p, span, div { color: #e2e0ff; }
 [data-testid="stSidebar"] .stRadio label { color: #e0deff !important; font-weight: 500 !important; }
 h1,h2,h3 { font-family: 'Space Grotesk', sans-serif !important; color: #ffffff !important; }
-p, li, span { color: #d4d0f0; }
-.stDataFrame { border: 1px solid #2d2850 !important; border-radius: 10px !important; }
-[data-testid="stDataFrame"] * { color: #e8e6ff !important; }
-[data-testid="stSelectbox"] * { color: #e8e6ff !important; }
-[data-testid="stSelectbox"] > div { background: #1c1830 !important; border-color: #3d3870 !important; }
-.stSlider * { color: #e8e6ff !important; }
-.stTabs [data-baseweb="tab"] { color: #9d9bc0 !important; }
-.stTabs [aria-selected="true"] { color: #a78bfa !important; border-bottom-color: #a78bfa !important; }
+p, li, span { color: #e2e0ff; }
+.stDataFrame { border: 1px solid #4c3d8f !important; border-radius: 10px !important; }
+[data-testid="stDataFrame"] * { color: #f0eeff !important; }
+[data-testid="stSelectbox"] * { color: #f0eeff !important; }
+[data-testid="stSelectbox"] > div { background: #1e1545 !important; border-color: #4c3d8f !important; }
+.stSlider * { color: #f0eeff !important; }
+.stTabs [data-baseweb="tab"] { color: #c4b5fd !important; }
+.stTabs [aria-selected="true"] { color: #c4b5fd !important; border-bottom-color: #c4b5fd !important; }
 
 .kpi-card {
-    background: linear-gradient(135deg, #1e1a35 0%, #221d3a 100%);
-    border: 1px solid #3d3870;
+    background: linear-gradient(135deg, #1e1545 0%, #251a55 100%);
+    border: 1px solid #4c3d8f;
     border-radius: 14px;
     padding: 20px 22px;
     margin-bottom: 4px;
+    box-shadow: 0 4px 24px rgba(124,90,255,0.12);
 }
-.kpi-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#7c78a8; margin-bottom:8px; }
+.kpi-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#9d8fff; margin-bottom:8px; }
 .kpi-value { font-family:'Space Grotesk',sans-serif; font-size:24px; font-weight:700; margin-bottom:4px; }
-.kpi-sub { font-size:11px; color:#9d9bc0; }
-.kpi-pos { color: #34d399; }
-.kpi-neg { color: #f87171; }
-.kpi-warn { color: #fbbf24; }
+.kpi-sub { font-size:11px; color:#c4b5fd; }
+.kpi-pos { color: #2dffb8; }
+.kpi-neg { color: #ff6b8a; }
+.kpi-warn { color: #ffd166; }
 
 .insight-card {
-    background: linear-gradient(135deg, #1e1a35 0%, #1a1d30 100%);
-    border: 1px solid #3d3870;
+    background: linear-gradient(135deg, #1e1545 0%, #1a1240 100%);
+    border: 1px solid #4c3d8f;
     border-radius: 10px;
     padding: 14px 18px;
     margin-bottom: 10px;
@@ -111,69 +112,81 @@ p, li, span { color: #d4d0f0; }
     gap: 12px;
     align-items: flex-start;
 }
-.badge-pos { background:rgba(52,211,153,.18); color:#34d399; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
-.badge-neg { background:rgba(248,113,113,.18); color:#f87171; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
-.badge-warn { background:rgba(251,191,36,.18); color:#fbbf24; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
-.badge-b2g { background:rgba(52,211,153,.15); color:#34d399; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:700; }
-.badge-b2b { background:rgba(167,139,250,.15); color:#a78bfa; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:700; }
+.badge-pos { background:rgba(45,255,184,.18); color:#2dffb8; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+.badge-neg { background:rgba(255,107,138,.18); color:#ff6b8a; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+.badge-warn { background:rgba(255,209,102,.18); color:#ffd166; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+.badge-b2g { background:rgba(45,255,184,.15); color:#2dffb8; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:700; }
+.badge-b2b { background:rgba(196,181,253,.15); color:#c4b5fd; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:700; }
 
 div[data-testid="stHorizontalBlock"] > div { gap: 0.75rem; }
-.stButton > button { background: linear-gradient(135deg, #34d399, #10b981) !important; color: #0a0a0a !important; border: none !important; border-radius: 8px !important; font-weight:700 !important; font-size:13px !important; }
-.stButton > button:hover { background: linear-gradient(135deg, #10b981, #059669) !important; }
-.stButton > button[kind="secondary"] { background: transparent !important; color: #9d9bc0 !important; border: 1px solid #3d3870 !important; font-weight:500 !important; }
-.stButton > button[kind="secondary"]:hover { border-color: #a78bfa !important; color: #e0deff !important; background: rgba(167,139,250,0.08) !important; }
+.stButton > button { background: linear-gradient(135deg, #2dffb8, #00e5a0) !important; color: #0a0a0a !important; border: none !important; border-radius: 8px !important; font-weight:700 !important; font-size:13px !important; }
+.stButton > button:hover { background: linear-gradient(135deg, #00e5a0, #00c988) !important; }
+.stButton > button[kind="secondary"] { background: transparent !important; color: #b8a8ff !important; border: 1px solid #4c3d8f !important; font-weight:500 !important; }
+.stButton > button[kind="secondary"]:hover { border-color: #c4b5fd !important; color: #e0deff !important; background: rgba(196,181,253,0.08) !important; }
 
-/* Hide nav trigger buttons — only the HTML links are visible */
+/* Nav buttons — invisible overlay over the HTML nav items */
 [data-testid="stSidebar"] .stButton > button {
     position: absolute !important;
+    top: -44px !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 44px !important;
     opacity: 0 !important;
-    pointer-events: none !important;
-    height: 0 !important;
+    cursor: pointer !important;
+    z-index: 10 !important;
+    border: none !important;
+    background: transparent !important;
     padding: 0 !important;
     margin: 0 !important;
-    border: none !important;
 }
-[data-testid="stSidebar"] .stButton:has(button[kind="secondary"]) {
-    margin: -44px 0 0 0 !important;
-    height: 44px !important;
-    overflow: hidden !important;
+[data-testid="stSidebar"] .stButton {
+    position: relative !important;
+    margin-top: 0 !important;
+    height: 0 !important;
 }
-/* Lock button exception — keep it visible */
+/* Lock button — visible, below the nav */
+[data-testid="stSidebar"] .stButton:last-of-type {
+    height: auto !important;
+    margin-top: 0 !important;
+}
 [data-testid="stSidebar"] .stButton:last-of-type > button {
     position: relative !important;
+    top: 0 !important;
     opacity: 1 !important;
-    pointer-events: auto !important;
     height: auto !important;
-    padding: 6px 12px !important;
-    margin: 0 !important;
+    padding: 8px 12px !important;
+    background: linear-gradient(135deg, #2dffb8, #00e5a0) !important;
+    color: #0a0a0a !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
 }
 /* Sidebar general cleanup */
 [data-testid="stSidebar"] .block-container { padding-top: 0 !important; }
-[data-testid="stSidebar"] hr { border-color: #2d2850 !important; margin: 12px 0 !important; }
+[data-testid="stSidebar"] hr { border-color: #3d3070 !important; margin: 12px 0 !important; }
 
 /* Main content */
 .block-container { padding-top: 2rem !important; max-width: 1200px; }
 
 /* Table styling */
-[data-testid="stDataFrame"] th { background: #1e1a35 !important; color: #7c78a8 !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
+[data-testid="stDataFrame"] th { background: #1e1545 !important; color: #9d8fff !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
 [data-testid="stDataFrame"] td { color: #e0deff !important; font-size: 13px !important; }
 
 /* Tabs */
-.stTabs [data-baseweb="tab-list"] { background: transparent !important; border-bottom: 1px solid #2d2850 !important; gap: 0 !important; }
-.stTabs [data-baseweb="tab"] { background: transparent !important; border: none !important; padding: 10px 20px !important; color: #7c78a8 !important; font-size: 13px !important; font-weight: 500 !important; }
+.stTabs [data-baseweb="tab-list"] { background: transparent !important; border-bottom: 1px solid #3d3070 !important; gap: 0 !important; }
+.stTabs [data-baseweb="tab"] { background: transparent !important; border: none !important; padding: 10px 20px !important; color: #9d8fff !important; font-size: 13px !important; font-weight: 500 !important; }
 .stTabs [data-baseweb="tab"]:hover { color: #e0deff !important; }
-.stTabs [aria-selected="true"] { color: #a78bfa !important; border-bottom: 2px solid #a78bfa !important; }
+.stTabs [aria-selected="true"] { color: #c4b5fd !important; border-bottom: 2px solid #a78bfa !important; }
 .stTabs [data-baseweb="tab-panel"] { padding-top: 1.5rem !important; }
 
 /* Input fields */
 .stTextInput > div > div {
-    background: #1e1a35 !important;
-    border: 1px solid #3d3870 !important;
+    background: #1e1545 !important;
+    border: 1px solid #4c3d8f !important;
     border-radius: 10px !important;
 }
 .stTextInput input { color: #e0deff !important; }
-.stTextInput label { color: #7c78a8 !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
-.stNumberInput > div > div { background: #1e1a35 !important; border-color: #3d3870 !important; border-radius: 8px !important; }
+.stTextInput label { color: #9d8fff !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
+.stNumberInput > div > div { background: #1e1545 !important; border-color: #4c3d8f !important; border-radius: 8px !important; }
 .stNumberInput input { color: #e0deff !important; }
 
 /* Alert / error boxes */
@@ -187,7 +200,7 @@ div[data-testid="stHorizontalBlock"] > div { gap: 0.75rem; }
 .stMarkdown h1,.stMarkdown h2,.stMarkdown h3 { color: #ffffff !important; }
 
 /* Select boxes */
-[data-baseweb="select"] { background: #1e1a35 !important; border-color: #3d3870 !important; border-radius: 8px !important; }
+[data-baseweb="select"] { background: #1e1545 !important; border-color: #4c3d8f !important; border-radius: 8px !important; }
 [data-baseweb="select"] * { color: #e0deff !important; }
 
 /* Slider */
@@ -195,10 +208,10 @@ div[data-testid="stHorizontalBlock"] > div { gap: 0.75rem; }
 [data-testid="stSlider"] .st-emotion-cache-1dp5vir { background: #a78bfa !important; }
 
 /* Metric/number colors */
-.stMetric { background: #1e1a35 !important; border: 1px solid #3d3870 !important; border-radius: 12px !important; padding: 16px !important; }
+.stMetric { background: #1e1545 !important; border: 1px solid #4c3d8f !important; border-radius: 12px !important; padding: 16px !important; }
 
 /* Divider */
-hr { border-color: #2d2850 !important; margin: 1.5rem 0 !important; }
+hr { border-color: #3d3070 !important; margin: 1.5rem 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -323,15 +336,15 @@ def bar_chart(items, title=""):
         marker_color=colors,
         text=[fmt(i["v"]) for i in items],
         textposition="outside",
-        textfont=dict(size=10, color="#7c78a8"),
+        textfont=dict(size=10, color="#9d8fff"),
     ))
     fig.update_layout(
-        paper_bgcolor="#1e1a35", plot_bgcolor="#1e1a35",
-        font=dict(color="#b0aed0", size=11),
+        paper_bgcolor="#1e1545", plot_bgcolor="#1e1545",
+        font=dict(color="#c4b5fd", size=11),
         margin=dict(t=20, b=10, l=10, r=10),
         height=220,
-        xaxis=dict(showgrid=False, tickfont=dict(size=10, color="#7c78a8")),
-        yaxis=dict(showgrid=True, gridcolor="#2d2850", tickfont=dict(size=10, color="#7c78a8")),
+        xaxis=dict(showgrid=False, tickfont=dict(size=10, color="#9d8fff")),
+        yaxis=dict(showgrid=True, gridcolor="#3d3070", tickfont=dict(size=10, color="#9d8fff")),
         showlegend=False,
     )
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
@@ -350,38 +363,39 @@ nav_items = [
 with st.sidebar:
     st.markdown("""
     <div style="padding:20px 16px 16px">
-        <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#4a4870;text-transform:uppercase;margin:0 0 6px">COMMSCHOOL</p>
-        <h2 style="font-size:24px;font-weight:700;color:#ffffff;margin:0;font-family:Space Grotesk,sans-serif">Digital <span style="color:#a78bfa">CFO</span></h2>
+        <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#6d5bab;text-transform:uppercase;margin:0 0 6px">COMMSCHOOL</p>
+        <h2 style="font-size:24px;font-weight:700;color:#ffffff;margin:0;font-family:Space Grotesk,sans-serif">Digital <span style="color:#c4b5fd">CFO</span></h2>
     </div>
-    <hr style="border-color:#2d2850;margin:0 0 8px">
+    <hr style="border-color:#3d3070;margin:0 0 8px">
     """, unsafe_allow_html=True)
 
     for icon, label in nav_items:
         full = f"{icon} {label}"
         active = st.session_state.page == full
-        bg = "rgba(167,139,250,0.12)" if active else "transparent"
-        color = "#a78bfa" if active else "#b0aed0"
-        border = "#a78bfa" if active else "transparent"
+        bg = "rgba(196,181,253,0.15)" if active else "transparent"
+        color = "#c4b5fd" if active else "#c4b5fd"
+        border = "#c4b5fd" if active else "transparent"
+        weight = "700" if active else "500"
         st.markdown(f"""
-        <div style="margin:2px 0">
-            <a href="?nav={label}" target="_self" style="
+        <div style="margin:2px 0;position:relative">
+            <div style="
                 display:flex;align-items:center;gap:10px;
                 padding:10px 16px;border-radius:8px;
                 background:{bg};border-left:3px solid {border};
-                color:{color};font-size:13px;font-weight:{'600' if active else '500'};
-                text-decoration:none;transition:all 0.15s;cursor:pointer;
-            " onmouseover="this.style.background='rgba(167,139,250,0.08)';this.style.color='#e0deff'"
-               onmouseout="this.style.background='{bg}';this.style.color='{color}'">
-                <span style="font-size:16px">{icon}</span>{label}
-            </a>
+                color:{color};font-size:13px;font-weight:{weight};
+                cursor:pointer;
+            ">
+                <span style="font-size:15px">{icon}</span>
+                <span>{label}</span>
+            </div>
         </div>
         """, unsafe_allow_html=True)
         if st.button(label, key=f"nav_{label}", use_container_width=True):
             st.session_state.page = full
             st.rerun()
 
-    st.markdown('<hr style="border-color:#2d2850;margin:8px 0">', unsafe_allow_html=True)
-    st.markdown('<p style="font-size:10px;color:#4a4870;padding:0 16px;margin-bottom:10px">₾ GEL · 2026 · H1 actuals</p>', unsafe_allow_html=True)
+    st.markdown('<hr style="border-color:#3d3070;margin:8px 0">', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:10px;color:#6d5bab;padding:0 16px;margin-bottom:10px">₾ GEL · 2026 · H1 actuals</p>', unsafe_allow_html=True)
     if st.button("🔒 Lock", key="lock_btn", use_container_width=True):
         st.session_state.authenticated = False
         st.rerun()
@@ -391,7 +405,7 @@ page = st.session_state.page
 # ── DASHBOARD ─────────────────────────────────────────────────────────────────
 if page == "📊 Dashboard":
     st.markdown("## Financial Overview")
-    st.markdown('<p style="color:#7c78a8;margin-top:-12px">2026 H1 · Courses + Corporate actuals</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#9d8fff;margin-top:-12px">2026 H1 · Courses + Corporate actuals</p>', unsafe_allow_html=True)
 
     mi = MONTHS.index("Jun")  # default to Jun for H1 snapshot
     sal_m = sum(s["m"][mi] for s in SALARIES)
@@ -430,20 +444,20 @@ if page == "📊 Dashboard":
     with col1:
         st.markdown('<div class="kpi-card"><div class="kpi-label">📈 Revenue Mix</div></div>', unsafe_allow_html=True)
         bar_chart([
-            {"l":"Own Courses","v":own_r,"c":"#a78bfa"},
+            {"l":"Own Courses","v":own_r,"c":"#c4b5fd"},
             {"l":"GITA Courses","v":gita_r,"c":"#c4b5fd"},
-            {"l":"Corp B2B","v":b2b_r,"c":"#34d399"},
+            {"l":"Corp B2B","v":b2b_r,"c":"#2dffb8"},
             {"l":"Corp B2G","v":b2g_r,"c":"#6ee7b7"},
         ])
 
     with col2:
         st.markdown('<div class="kpi-card"><div class="kpi-label">💸 Cost Structure</div></div>', unsafe_allow_html=True)
         bar_chart([
-            {"l":"Salaries","v":sal_a,"c":"#f87171"},
+            {"l":"Salaries","v":sal_a,"c":"#ff6b8a"},
             {"l":"Admin+Subs","v":sub_a,"c":"#c4b5fd"},
-            {"l":"Lecturer Fees","v":lec_t,"c":"#a78bfa"},
-            {"l":"Advertising","v":mkt_t,"c":"#fbbf24"},
-            {"l":"Corp COG","v":crp_c,"c":"#34d399"},
+            {"l":"Lecturer Fees","v":lec_t,"c":"#c4b5fd"},
+            {"l":"Advertising","v":mkt_t,"c":"#ffd166"},
+            {"l":"Corp COG","v":crp_c,"c":"#2dffb8"},
         ])
 
     st.markdown("### 💡 CFO Insights")
@@ -457,13 +471,13 @@ if page == "📊 Dashboard":
         ("📉", f"**Lowest margin:** {wrst_c['name']} ({wrst_c['month']}). Set a minimum enrollment threshold before launching."),
         ("💼", f"**2026 salary budget: {fmt(sal_a)}.** CEO = {pct(8929*12/sal_a*100)} of total payroll. H1 fixed budget: {fmt((sal_a+sub_a)//2)}."),
     ]:
-        st.markdown(f"""<div class="insight-card"><span style="font-size:18px">{icon}</span><span style="font-size:13px;color:#7c78a8;line-height:1.6">{text}</span></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="insight-card"><span style="font-size:18px">{icon}</span><span style="font-size:13px;color:#9d8fff;line-height:1.6">{text}</span></div>""", unsafe_allow_html=True)
 
 
     # ── QUARTERLY P&L ─────────────────────────────────────────────────────────
     st.markdown("---")
     st.markdown("## 📅 Quarterly P&L — Company Profitability")
-    st.markdown('<p style="color:#9d9bc0;margin-top:-12px">Income vs Expenses vs Net Profit by quarter</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#b8a8ff;margin-top:-12px">Income vs Expenses vs Net Profit by quarter</p>', unsafe_allow_html=True)
 
     # Q1: Jan+Feb+Mar
     q1_sal = sum(sum(s["m"][i] for i in range(3)) for s in SALARIES)
@@ -527,7 +541,7 @@ if page == "📊 Dashboard":
                 <div class="kpi-label">{label}</div>
                 <div class="kpi-value {color}">{fmt(net)}</div>
                 <div class="kpi-sub">↑ {fmt(income)} income · ↓ {fmt(expenses)} costs<br>
-                <span style="font-size:10px;color:#7c78a8">{tag}</span></div>
+                <span style="font-size:10px;color:#9d8fff">{tag}</span></div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -540,23 +554,23 @@ if page == "📊 Dashboard":
     expenses_ = [q1_expenses, q2_expenses, q3_expenses, q4_expenses]
     nets      = [q1_net,      q2_net,      q3_net,      q4_net]
 
-    fig_q.add_trace(go.Bar(name="Income", x=qs, y=incomes, marker_color="#34d399",
-        text=[fmt(v) for v in incomes], textposition="outside", textfont=dict(size=10,color="#34d399")))
-    fig_q.add_trace(go.Bar(name="Expenses", x=qs, y=expenses_, marker_color="#f87171",
-        text=[fmt(v) for v in expenses_], textposition="outside", textfont=dict(size=10,color="#f87171")))
-    fig_q.add_trace(go.Bar(name="Net Profit", x=qs, y=nets, marker_color="#a78bfa",
-        text=[fmt(v) for v in nets], textposition="outside", textfont=dict(size=10,color="#a78bfa")))
+    fig_q.add_trace(go.Bar(name="Income", x=qs, y=incomes, marker_color="#2dffb8",
+        text=[fmt(v) for v in incomes], textposition="outside", textfont=dict(size=10,color="#2dffb8")))
+    fig_q.add_trace(go.Bar(name="Expenses", x=qs, y=expenses_, marker_color="#ff6b8a",
+        text=[fmt(v) for v in expenses_], textposition="outside", textfont=dict(size=10,color="#ff6b8a")))
+    fig_q.add_trace(go.Bar(name="Net Profit", x=qs, y=nets, marker_color="#c4b5fd",
+        text=[fmt(v) for v in nets], textposition="outside", textfont=dict(size=10,color="#c4b5fd")))
 
     fig_q.update_layout(
         barmode="group",
-        paper_bgcolor="#1e1a35", plot_bgcolor="#1e1a35",
-        font=dict(color="#b0aed0", size=11),
+        paper_bgcolor="#1e1545", plot_bgcolor="#1e1545",
+        font=dict(color="#c4b5fd", size=11),
         margin=dict(t=30, b=20, l=10, r=10),
         height=320,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-                    font=dict(color="#b0aed0"), bgcolor="rgba(0,0,0,0)"),
-        xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#b0aed0")),
-        yaxis=dict(showgrid=True, gridcolor="#2d2850", tickfont=dict(size=10, color="#7c78a8")),
+                    font=dict(color="#c4b5fd"), bgcolor="rgba(0,0,0,0)"),
+        xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#c4b5fd")),
+        yaxis=dict(showgrid=True, gridcolor="#3d3070", tickfont=dict(size=10, color="#9d8fff")),
     )
     st.plotly_chart(fig_q, use_container_width=True, config={"displayModeBar": False})
 
@@ -604,9 +618,21 @@ if page == "📊 Dashboard":
 # ── FIXED COSTS ───────────────────────────────────────────────────────────────
 elif page == "📌 Fixed Costs":
     st.markdown("## 📌 Fixed Costs")
-    st.markdown('<p style="color:#7c78a8;margin-top:-12px">2026 budget · select month to view</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#9d8fff;margin-top:-12px">2026 budget · select month to view</p>', unsafe_allow_html=True)
 
-    mi = st.select_slider("Month", options=list(range(12)), format_func=lambda i: MONTHS[i], value=0)
+    if "fx_month" not in st.session_state:
+        st.session_state.fx_month = 0
+
+    cols = st.columns(12)
+    for i, m in enumerate(MONTHS):
+        with cols[i]:
+            active = st.session_state.fx_month == i
+            if st.button(m, key=f"fx_m_{i}", use_container_width=True,
+                        type="primary" if active else "secondary"):
+                st.session_state.fx_month = i
+                st.rerun()
+
+    mi = st.session_state.fx_month
     mn = MONTHS[mi]
 
     st.markdown("### 👥 Salaries")
@@ -628,7 +654,7 @@ elif page == "📌 Fixed Costs":
         })
     sal_m = sum(s["m"][mi] for s in SALARIES)
     sal_a = sum(sum(s["m"]) for s in SALARIES)
-    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Salaries · {mn}</span><span style="color:#34d399">{fmt(sal_m)} <span style="color:#4a4870;font-weight:400;font-size:12px">/ {fmt(sal_a)} annual</span></span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1545,#251a55);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Salaries · {mn}</span><span style="color:#2dffb8">{fmt(sal_m)} <span style="color:#6d5bab;font-weight:400;font-size:12px">/ {fmt(sal_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("### 🏢 Admin & Subscriptions")
     sub_rows = []
@@ -647,21 +673,21 @@ elif page == "📌 Fixed Costs":
         })
     sub_m = sum(s["m"][mi] for s in SUBS)
     sub_a = sum(sum(s["m"]) for s in SUBS)
-    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#34d399">{fmt(sub_m)} <span style="color:#4a4870;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1545,#251a55);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#2dffb8">{fmt(sub_m)} <span style="color:#6d5bab;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     total = sal_m + sub_m
-    st.markdown(f'<div style="background:#1e1a35;border:1px solid #3d3870;padding:16px 20px;border-radius:12px;font-family:Space Grotesk,sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between"><span>🔒 Total Fixed Costs · {mn}</span><span style="color:#ffa94d">{fmt(total)}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:#1e1545;border:1px solid #4c3d8f;padding:16px 20px;border-radius:12px;font-family:Space Grotesk,sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between"><span>🔒 Total Fixed Costs · {mn}</span><span style="color:#ffa94d">{fmt(total)}</span></div>', unsafe_allow_html=True)
 
 # ── COURSES P&L ───────────────────────────────────────────────────────────────
 elif page == "🎓 Courses P&L":
     st.markdown("## 🎓 Courses P&L")
-    st.markdown('<p style="color:#7c78a8;margin-top:-12px">2026 actuals · Net Profit = Revenue excl. VAT − Costs</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#9d8fff;margin-top:-12px">2026 actuals · Net Profit = Revenue excl. VAT − Costs</p>', unsafe_allow_html=True)
 
     if "co_month" not in st.session_state:
         st.session_state.co_month = "All"
 
-    st.markdown('<p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7c78a8;margin-bottom:6px">Filter by month</p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#9d8fff;margin-bottom:6px">Filter by month</p>', unsafe_allow_html=True)
     month_opts = ["All"] + MONTHS[:6]
     cols = st.columns(len(month_opts))
     for i, m in enumerate(month_opts):
@@ -707,9 +733,9 @@ elif page == "🎓 Courses P&L":
     edited_courses = st.data_editor(df, use_container_width=True, hide_index=True, key="courses_editor",
         column_config={
             "Program":          st.column_config.TextColumn("Program", width="large"),
-            "Month":            st.column_config.TextColumn("Month", disabled=True),
+            "Month":            st.column_config.SelectboxColumn("Month", options=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]),
             "Students":         st.column_config.NumberColumn("Students", min_value=0, step=1),
-            "Price w/VAT ₾":    st.column_config.NumberColumn("Price w/VAT ₾", disabled=True, format="₾ %d"),
+            "Price w/VAT ₾":    st.column_config.NumberColumn("Price w/VAT ₾", min_value=0, format="₾ %d"),
             "Price w/o VAT ₾":  st.column_config.NumberColumn("Price w/o VAT ₾", disabled=True, format="₾ %d"),
             "Lecturer Fee ₾":   st.column_config.NumberColumn("Lecturer Fee ₾", min_value=0, format="₾ %d"),
             "Installment ₾":    st.column_config.NumberColumn("Installment ₾", min_value=0, format="₾ %d"),
@@ -717,11 +743,12 @@ elif page == "🎓 Courses P&L":
             "Advertising ₾":    st.column_config.NumberColumn("Advertising ₾", min_value=0, format="₾ %d"),
             "Merch ₾":          st.column_config.NumberColumn("Merch ₾", min_value=0, format="₾ %d"),
             "Total Cost ₾":     st.column_config.NumberColumn("Total Cost ₾", disabled=True, format="₾ %.2f"),
-            "Revenue ₾":        st.column_config.NumberColumn("Revenue ₾", disabled=True, format="₾ %.2f"),
+            "Revenue ₾":        st.column_config.NumberColumn("Revenue ₾", min_value=0, format="₾ %.2f"),
             "Gross Profit ₾":   st.column_config.NumberColumn("Gross Profit ₾", disabled=True, format="₾ %.2f"),
             "Net Profit ₾":     st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %.2f"),
             "Profit Margin %":  st.column_config.NumberColumn("Profit Margin %", disabled=True, format="%.2f%%"),
-        })
+        },
+        num_rows="dynamic")
 
     col1,col2,col3,col4 = st.columns(4)
     with col1: kpi("Total Revenue", fmt(tot_rv), "", "kpi-pos")
@@ -755,7 +782,7 @@ elif page == "🎓 Courses P&L":
 # ── CORPORATE ─────────────────────────────────────────────────────────────────
 elif page == "🏢 Corporate Projects":
     st.markdown("## 🏢 Corporate Projects")
-    st.markdown('<p style="color:#7c78a8;margin-top:-12px">B2B + B2G · 2026 actuals + 2025 history</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#9d8fff;margin-top:-12px">B2B + B2G · 2026 actuals + 2025 history</p>', unsafe_allow_html=True)
 
     tR26 = sum(p["revenue"] for p in CORP26)
     tC26 = sum(p["cog"] for p in CORP26)
@@ -791,4 +818,4 @@ elif page == "🏢 Corporate Projects":
             "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
             "Status": st.column_config.SelectboxColumn("Status", options=["Paid","Active","Pending","Upcoming"]),
         })
-    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1a35,#221d3a);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#34d399">{fmt(tR26)} revenue · {fmt(tP26)} profit · {pct(tP26/tR26*100 if tR26 else 0)} margin</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:linear-gradient(135deg,#1e1545,#251a55);padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#2dffb8">{fmt(tR26)} revenue · {fmt(tP26)} profit · {pct(tP26/tR26*100 if tR26 else 0)} margin</span></div>', unsafe_allow_html=True)
