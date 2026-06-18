@@ -237,7 +237,7 @@ p, li { color: #374151 !important; }
 
 /* Tabs */
 .stTabs [data-baseweb="tab-list"] { background: transparent !important; border-bottom: 1px solid #e5e7eb !important; }
-.stTabs [data-baseweb="tab"] { background: transparent !important; color: #6b7280 !important; font-size:13px !important; font-weight:500 !important; }
+.stTabs [data-baseweb="tab"] { background: transparent !important; color: #6b7280 !important; font-size:13px !important; font-weight:500 !important; padding: 8px 24px !important; margin-right: 4px !important; }
 .stTabs [data-baseweb="tab"]:hover { color: #111827 !important; }
 .stTabs [aria-selected="true"] { color: #30B143 !important; border-bottom: 2px solid #30B143 !important; }
 
@@ -560,54 +560,6 @@ if page == "📊 Dashboard":
             {"l":"Advertising","v":mkt_t,"c":"#f59e0b"},
             {"l":"Corp COG","v":crp_c,"c":"#34d399"},
         ])
-
-    # ── CASH & RUNWAY ─────────────────────────────────────────────────────────
-    st.markdown("---")
-    _burn = (sum(sum(s["m"][MONTHS.index("Jun")] for s in st.session_state.fc_sal) for _ in [1]) +
-             sum(s["m"][MONTHS.index("Jun")] for s in st.session_state.fc_sub))
-    _burn_avg = (sal_a + sub_a) / 12  # avg monthly burn (sal + sub)
-
-    col_cash, col_info = st.columns([1, 2])
-    with col_cash:
-        new_cash = st.number_input(
-            "💵 Cash on Hand (₾)",
-            min_value=0, step=1000,
-            value=int(st.session_state.cash_balance),
-            help="Enter your current bank balance — saved automatically"
-        )
-        if new_cash != st.session_state.cash_balance:
-            st.session_state.cash_balance = new_cash
-            _save_state()
-
-    _cash    = st.session_state.cash_balance
-    _runway  = _cash / _burn_avg if _burn_avg > 0 else 0
-    _pending = sum(p["revenue"] for p in st.session_state.fc_corp26 if p.get("status") == "Pending")
-    _runway_color = "#16a34a" if _runway >= 6 else ("#d97706" if _runway >= 3 else "#ef4444")
-    _runway_label = "Strong 💪" if _runway >= 12 else ("Safe ✓" if _runway >= 6 else ("Watch ⚠️" if _runway >= 3 else "Critical 🔴"))
-    _runway_pct   = min(_runway / 24 * 100, 100)  # bar scales to 24 months
-
-    with col_info:
-        st.markdown(f"""
-        <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:16px 20px">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-                <div>
-                    <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">Runway</div>
-                    <div style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:{_runway_color}">{_runway:.1f} months</div>
-                    <div style="font-size:11px;color:#9ca3af;margin-top:2px">avg burn {fmt(_burn_avg)}/mo · {_runway_label}</div>
-                </div>
-                <div style="text-align:right;font-size:12px;color:#6b7280;line-height:1.8">
-                    <div>Cash: <b>{fmt(_cash)}</b></div>
-                    {'<div style="color:#d97706">Pending: <b>' + fmt(_pending) + '</b></div>' if _pending else ''}
-                </div>
-            </div>
-            <div style="background:#f3f4f6;border-radius:6px;height:8px;overflow:hidden">
-                <div style="background:{_runway_color};height:100%;width:{_runway_pct:.0f}%;border-radius:6px"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:#9ca3af">
-                <span>0</span><span>6 mo</span><span>12 mo</span><span>24 mo</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
 
     st.markdown("### 💡 CFO Insights")
     top_c  = max([c for c in st.session_state.fc_courses if cpnl(c)["rx"] > 0 and c.get("students",0) > 0], key=lambda c: cpnl(c)["mg"])
@@ -1972,14 +1924,14 @@ elif page == "💵 Cash Flow":
     st.markdown("## 💵 Cash Flow")
     st.markdown('<p style="color:#30B143;margin-top:-12px">Monthly cash in · cash out · running balance · 2026</p>', unsafe_allow_html=True)
 
-    # Opening balance input
+    # Current balance input
     col1, col2 = st.columns([1, 3])
     with col1:
         new_cash = st.number_input(
-            "Opening Balance (₾)",
+            "Current Balance (₾)",
             min_value=0, step=1000,
             value=int(st.session_state.cash_balance),
-            help="Your cash balance at the start of 2026"
+            help="Your bank balance today (June 2026) — H2 forecast projects forward from here"
         )
         if new_cash != st.session_state.cash_balance:
             st.session_state.cash_balance = new_cash
@@ -1987,46 +1939,43 @@ elif page == "💵 Cash Flow":
 
     opening = st.session_state.cash_balance
 
-    # Build month-by-month cash flow
-    # All 12 months (H1 actuals, H2 from forecast)
-    _all_cf_courses = st.session_state.fc_courses + st.session_state.fc_courses_h2
+    # Build forward cash flow: Jun pending costs + H2 (Jul–Dec)
+    # Jun revenue already in current balance; only costs remain to pay
+    CF_MONTHS = ["Jun (pending)", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    CF_IDX    = [5, 6, 7, 8, 9, 10, 11]
 
     def _corp_month(period):
-        """Return the 3-letter start month of a corp project period."""
         return period.replace("–", "-").split("-")[0].strip()[:3]
 
     cf_rows = []
     balance = opening
-    for i, month in enumerate(MONTHS):
-        # Cash IN: course revenue this month
-        _courses_m = [c for c in _all_cf_courses if c.get("month") == month]
+    for i, month in zip(CF_IDX, CF_MONTHS):
+        # Jun (pending) = costs only, revenue already in current balance
+        _is_jun_pending = month == "Jun (pending)"
+        _month_key = "Jun" if _is_jun_pending else month
+
+        # Cash IN: H2 forecast courses (zero for Jun pending)
+        _courses_m = [] if _is_jun_pending else [c for c in st.session_state.fc_courses_h2 if c.get("month") == _month_key]
         course_rev = sum(cpnl(c)["rv"] for c in _courses_m)
 
-        # Cash IN: corporate revenue starting this month
-        corp_rev_h1 = sum(p["revenue"] for p in st.session_state.fc_corp26
-                          if _corp_month(p.get("period", "")) == month)
-        corp_rev_h2 = sum(p["revenue"] for p in st.session_state.fc_corp_h2
-                          if _corp_month(p.get("period", "")) == month)
-        corp_rev = corp_rev_h1 + corp_rev_h2
+        # Cash IN: H2 corporate projects (zero for Jun pending)
+        corp_rev = 0 if _is_jun_pending else sum(p["revenue"] for p in st.session_state.fc_corp_h2
+                       if _corp_month(p.get("period", "")) == _month_key)
 
         total_in = course_rev + corp_rev
 
-        # Cash OUT: fixed costs this month (salaries + subs + marketing)
+        # Cash OUT: fixed costs this month
         fixed_out = (sum(s["m"][i] for s in st.session_state.fc_sal) +
                      sum(s["m"][i] for s in st.session_state.fc_sub) +
                      sum(s["m"][i] for s in st.session_state.fc_mkt))
 
-        # Cash OUT: lecturer fees paid end of course month
+        # Cash OUT: lecturer fees (paid end of course month)
         lec_out = sum(c["lecturer"] for c in _courses_m)
 
-        # Cash OUT: other variable course costs (mkt, mat, zoom) — paid during month
-        var_out = sum(c["mkt"] + c["mat"] + c["zoom"] for c in _courses_m)
-
-        # Cash OUT: corporate COG
-        corp_cog = (sum(p["cog"] for p in st.session_state.fc_corp26
-                        if _corp_month(p.get("period", "")) == month) +
-                    sum(p["cog"] for p in st.session_state.fc_corp_h2
-                        if _corp_month(p.get("period", "")) == month))
+        # Cash OUT: other variable costs (mkt, mat, zoom) + corp COG
+        var_out  = sum(c["mkt"] + c["mat"] + c["zoom"] for c in _courses_m)
+        corp_cog = 0 if _is_jun_pending else sum(p["cog"] for p in st.session_state.fc_corp_h2
+                       if _corp_month(p.get("period", "")) == _month_key)
 
         total_out = fixed_out + lec_out + var_out + corp_cog
         net = total_in - total_out
@@ -2034,7 +1983,7 @@ elif page == "💵 Cash Flow":
 
         cf_rows.append({
             "Month": month,
-            "Revenue In ₾": int(course_rev + corp_rev),
+            "Revenue In ₾": int(total_in),
             "Fixed Costs ₾": int(fixed_out),
             "Lecturer Fees ₾": int(lec_out),
             "Other Costs ₾": int(var_out + corp_cog),
@@ -2045,16 +1994,13 @@ elif page == "💵 Cash Flow":
 
     df_cf = pd.DataFrame(cf_rows)
 
-    # Summary KPIs
-    _total_in  = df_cf["Revenue In ₾"].sum()
-    _total_out = df_cf["Total Out ₾"].sum()
-    _end_bal   = df_cf["Balance ₾"].iloc[-1]
-    _best_month = df_cf.loc[df_cf["Net Cash ₾"].idxmax(), "Month"]
+    _end_bal = df_cf["Balance ₾"].iloc[-1]
+    _best_month  = df_cf.loc[df_cf["Net Cash ₾"].idxmax(), "Month"]
     _worst_month = df_cf.loc[df_cf["Net Cash ₾"].idxmin(), "Month"]
 
     col1, col2, col3, col4 = st.columns(4)
-    with col1: kpi("Opening Balance", fmt(opening), "Jan 2026", "kpi-pos")
-    with col2: kpi("Projected Closing", fmt(_end_bal), "Dec 2026", "kpi-pos" if _end_bal >= opening else "kpi-neg")
+    with col1: kpi("Current Balance", fmt(opening), "Jun 2026 (today)", "kpi-pos")
+    with col2: kpi("Projected Dec Balance", fmt(_end_bal), "after H2 costs + revenue", "kpi-pos" if _end_bal >= opening else "kpi-neg")
     with col3: kpi("Best Month", _best_month, fmt(df_cf.loc[df_cf["Net Cash ₾"].idxmax(), "Net Cash ₾"]) + " net", "kpi-pos")
     with col4: kpi("Weakest Month", _worst_month, fmt(df_cf.loc[df_cf["Net Cash ₾"].idxmin(), "Net Cash ₾"]) + " net", "kpi-warn")
 
@@ -2110,8 +2056,9 @@ elif page == "💵 Cash Flow":
     st.plotly_chart(fig_cf, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown(
-        '<p style="font-size:11px;color:#9ca3af;margin-top:-8px">💡 Corporate revenue assigned to start month of project period. '
-        'Lecturer fees paid at end of course month.</p>',
+        '<p style="font-size:11px;color:#9ca3af;margin-top:-8px">💡 Starting from current balance (Jun 2026). '
+        'Jun row = pending salaries + subs only (revenue already collected). '
+        'Corporate revenue assigned to project start month. Lecturer fees paid end of course month.</p>',
         unsafe_allow_html=True
     )
 
