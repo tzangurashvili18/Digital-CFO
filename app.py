@@ -12,6 +12,7 @@ def _save_state():
     payload = {
         "fc_sal":     st.session_state.get("fc_sal", []),
         "fc_sub":     st.session_state.get("fc_sub", []),
+        "fc_mkt":     st.session_state.get("fc_mkt", []),
         "fc_corp26":  st.session_state.get("fc_corp26", []),
         "fc_courses": st.session_state.get("fc_courses", []),
     }
@@ -185,6 +186,8 @@ p, li { color: #374151 !important; }
     border-radius: 12px;
     padding: 20px 22px;
     margin-bottom: 4px;
+    min-height: 120px;
+    box-sizing: border-box;
 }
 .kpi-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#9ca3af; margin-bottom:8px; }
 .kpi-value { font-family:"Space Grotesk",sans-serif; font-size:24px; font-weight:700; margin-bottom:4px; }
@@ -260,6 +263,14 @@ SUBS = [
     {"name": "Bank & SMS Fees",    "m": [7,37,7,7,7,37,7,7,37,7,7,37]},
     {"name": "WARC (ann./12)",     "m": [909]*12},
     {"name": "Canva (ann.)",       "m": [33]*12},
+]
+
+MARKETING = [
+    {"name": "Content Creation (Designer & Blogger & Motion)", "m": [0]*12},
+    {"name": "B2B Marketing",                                  "m": [0]*12},
+    {"name": "Marketing Report",                               "m": [0]*12},
+    {"name": "Brand Marketing Ads",                            "m": [0]*12},
+    {"name": "Advertising Audit",                              "m": [0]*12},
 ]
 
 COURSES = [
@@ -377,6 +388,7 @@ if "fc_sal" not in st.session_state:
     _saved = _load_saved()
     st.session_state.fc_sal     = _saved["fc_sal"]     if _saved and _saved.get("fc_sal")     else [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
     st.session_state.fc_sub     = _saved["fc_sub"]     if _saved and _saved.get("fc_sub")     else [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
+    st.session_state.fc_mkt     = _saved["fc_mkt"]     if _saved and _saved.get("fc_mkt")     else [{"name": s["name"], "m": s["m"][:]} for s in MARKETING]
     st.session_state.fc_corp26  = _saved["fc_corp26"]  if _saved and _saved.get("fc_corp26")  else [dict(p) for p in CORP26]
     st.session_state.fc_courses = _saved["fc_courses"] if _saved and _saved.get("fc_courses") else [dict(c) for c in COURSES]
 
@@ -389,10 +401,9 @@ nav_items = [
 
 with st.sidebar:
     # ── Logo + brand header ────────────────────────────────────────────────────
-    st.markdown(f"""
+    st.markdown("""
     <div style="padding:0 16px 12px;margin-top:-8px">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iIzNDRTAwQSIvPgogIDx0ZXh0IHg9IjMwIiB5PSI1NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzExMTExMSIKICAgICAgICBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssSGVsdmV0aWNhIE5ldWUsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjQ2IiBmb250LXdlaWdodD0iOTAwIj5DPC90ZXh0PgogIDx0ZXh0IHg9IjkwIiB5PSI1NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzExMTExMSIKICAgICAgICBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssSGVsdmV0aWNhIE5ldWUsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjQ2IiBmb250LXdlaWdodD0iOTAwIj5PPC90ZXh0PgogIDx0ZXh0IHg9IjMwIiB5PSIxMDYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxMTExMTEiCiAgICAgICAgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLEhlbHZldGljYSBOZXVlLHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI0NiIgZm9udC13ZWlnaHQ9IjkwMCI+TTwvdGV4dD4KICA8dGV4dCB4PSI5MCIgeT0iMTA2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTExMTExIgogICAgICAgIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxIZWx2ZXRpY2EgTmV1ZSxzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iNDYiIGZvbnQtd2VpZ2h0PSI5MDAiPk08L3RleHQ+Cjwvc3ZnPg=="
-             width="72" style="border-radius:8px;display:block;margin-bottom:10px"/>
+        <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9ca3af;margin:0 0 2px">Commschool</p>
         <h2 style="font-size:19px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif;line-height:1.15">Digital <span style="color:#30B143">CFO</span></h2>
         <p style="font-size:10px;color:#9ca3af;margin:1px 0 0;letter-spacing:0.5px">Internal finance</p>
     </div>
@@ -653,6 +664,19 @@ elif page == "📌 Fixed Costs":
     mi = st.session_state.fx_month
     mn = MONTHS[mi]
 
+    # Annual summary — computed from session state, shown at top
+    _sal_a  = sum(sum(s["m"]) for s in st.session_state.fc_sal)
+    _sub_a  = sum(sum(s["m"]) for s in st.session_state.fc_sub)
+    _mkt_a  = sum(sum(s["m"]) for s in st.session_state.fc_mkt)
+    _tot_a  = _sal_a + _sub_a + _mkt_a
+    st.markdown('<p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#9ca3af;margin-bottom:8px">Annual Summary (all months)</p>', unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns(4)
+    with col1: kpi("💼 Salaries · Annual",         fmt(_sal_a), f"avg {fmt(_sal_a//12)}/mo", "kpi-warn")
+    with col2: kpi("🏢 Subscriptions · Annual",    fmt(_sub_a), f"avg {fmt(_sub_a//12)}/mo", "kpi-warn")
+    with col3: kpi("📣 Marketing · Annual",         fmt(_mkt_a), f"avg {fmt(_mkt_a//12)}/mo", "kpi-warn")
+    with col4: kpi("🔒 Total Fixed Costs · Annual", fmt(_tot_a), f"avg {fmt(_tot_a//12)}/mo", "kpi-neg")
+    st.markdown("<br>", unsafe_allow_html=True)
+
     st.markdown("### 👥 Salaries")
     sal_rows = []
     for s in st.session_state.fc_sal:
@@ -669,16 +693,20 @@ elif page == "📌 Fixed Costs":
             f"{mn} ₾": st.column_config.NumberColumn(f"{mn} ₾", min_value=0, step=1, format="₾ %d"),
             "Annual ₾": st.column_config.NumberColumn("Annual ₾", disabled=True, format="₾ %d"),
             "Active Months": st.column_config.NumberColumn("Active Months", disabled=True),
-        })
-    # Explicit reassignment (not in-place mutation) so Streamlit detects the change
+        }, num_rows="dynamic")
     new_fc_sal = []
-    _sal_changed = False
-    for i, s in enumerate(st.session_state.fc_sal):
-        new_name = str(edited_sal.iloc[i]["Name / Role"] or s["name"])
-        new_val = int(edited_sal.iloc[i][f"{mn} ₾"] or 0)
-        if new_val != s["m"][mi] or new_name != s["name"]:
+    _sal_changed = len(edited_sal) != len(st.session_state.fc_sal)
+    for pos in range(len(edited_sal)):
+        new_name = str(edited_sal.iloc[pos]["Name / Role"] or "")
+        new_val  = int(edited_sal.iloc[pos][f"{mn} ₾"] or 0)
+        if pos < len(st.session_state.fc_sal):
+            old = st.session_state.fc_sal[pos]
+            new_m = old["m"][:]
+            if new_val != old["m"][mi] or new_name != old["name"]:
+                _sal_changed = True
+        else:
+            new_m = [0] * 12
             _sal_changed = True
-        new_m = s["m"][:]
         new_m[mi] = new_val
         new_fc_sal.append({"name": new_name, "m": new_m})
     st.session_state.fc_sal = new_fc_sal
@@ -703,15 +731,20 @@ elif page == "📌 Fixed Costs":
             "Item": st.column_config.TextColumn("Item", width="large"),
             f"{mn} ₾": st.column_config.NumberColumn(f"{mn} ₾", min_value=0, step=1, format="₾ %d"),
             "Annual ₾": st.column_config.NumberColumn("Annual ₾", disabled=True, format="₾ %d"),
-        })
+        }, num_rows="dynamic")
     new_fc_sub = []
-    _sub_changed = False
-    for i, s in enumerate(st.session_state.fc_sub):
-        new_name = str(edited_sub.iloc[i]["Item"] or s["name"])
-        new_val = int(edited_sub.iloc[i][f"{mn} ₾"] or 0)
-        if new_val != s["m"][mi] or new_name != s["name"]:
+    _sub_changed = len(edited_sub) != len(st.session_state.fc_sub)
+    for pos in range(len(edited_sub)):
+        new_name = str(edited_sub.iloc[pos]["Item"] or "")
+        new_val  = int(edited_sub.iloc[pos][f"{mn} ₾"] or 0)
+        if pos < len(st.session_state.fc_sub):
+            old = st.session_state.fc_sub[pos]
+            new_m = old["m"][:]
+            if new_val != old["m"][mi] or new_name != old["name"]:
+                _sub_changed = True
+        else:
+            new_m = [0] * 12
             _sub_changed = True
-        new_m = s["m"][:]
         new_m[mi] = new_val
         new_fc_sub.append({"name": new_name, "m": new_m})
     st.session_state.fc_sub = new_fc_sub
@@ -722,25 +755,65 @@ elif page == "📌 Fixed Costs":
     sub_a = sum(sum(s["m"]) for s in st.session_state.fc_sub)
     st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#16a34a">{fmt(sub_m)} <span style="color:#9ca3af;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    total = sal_m + sub_m
-    total_a = sal_a + sub_a
-    st.markdown(f'<div style="background:#f0fdf4;border:2px solid #bbf7d0;padding:16px 20px;border-radius:12px;font-family:Space Grotesk,sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between"><span>🔒 Total Fixed Costs · {mn}</span><span style="color:#16a34a">{fmt(total)}</span></div>', unsafe_allow_html=True)
+    st.markdown("### 📣 Marketing Costs")
+    mkt_rows = []
+    for s in st.session_state.fc_mkt:
+        mkt_rows.append({
+            "Item": s["name"],
+            f"{mn} ₾": s["m"][mi],
+            "Annual ₾": sum(s["m"]),
+        })
+    mkt_df = pd.DataFrame(mkt_rows)
+    edited_mkt = st.data_editor(mkt_df, use_container_width=True, hide_index=True, key=f"mkt_editor_{mi}",
+        column_config={
+            "Item": st.column_config.TextColumn("Item", width="large"),
+            f"{mn} ₾": st.column_config.NumberColumn(f"{mn} ₾", min_value=0, step=1, format="₾ %d"),
+            "Annual ₾": st.column_config.NumberColumn("Annual ₾", disabled=True, format="₾ %d"),
+        }, num_rows="dynamic")
+    new_fc_mkt = []
+    _mkt_changed = len(edited_mkt) != len(st.session_state.fc_mkt)
+    for pos in range(len(edited_mkt)):
+        new_name = str(edited_mkt.iloc[pos]["Item"] or "")
+        new_val  = int(edited_mkt.iloc[pos][f"{mn} ₾"] or 0)
+        if pos < len(st.session_state.fc_mkt):
+            old = st.session_state.fc_mkt[pos]
+            new_m = old["m"][:]
+            if new_val != old["m"][mi] or new_name != old["name"]:
+                _mkt_changed = True
+        else:
+            new_m = [0] * 12
+            _mkt_changed = True
+        new_m[mi] = new_val
+        new_fc_mkt.append({"name": new_name, "m": new_m})
+    st.session_state.fc_mkt = new_fc_mkt
+    if _mkt_changed:
+        _save_state()
+        st.rerun()
+    mkt_m = int(edited_mkt[f"{mn} ₾"].sum())
+    mkt_a = sum(sum(s["m"]) for s in st.session_state.fc_mkt)
+    st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Marketing · {mn}</span><span style="color:#16a34a">{fmt(mkt_m)} <span style="color:#9ca3af;font-weight:400;font-size:12px">/ {fmt(mkt_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#9ca3af;margin-bottom:8px">Annual Summary (all months)</p>', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        kpi("💼 Salaries · Annual", fmt(sal_a), f"avg {fmt(sal_a//12)}/mo", "kpi-warn")
-    with col2:
-        kpi("🏢 Subscriptions · Annual", fmt(sub_a), f"avg {fmt(sub_a//12)}/mo", "kpi-warn")
-    with col3:
-        kpi("🔒 Total Fixed Costs · Annual", fmt(total_a), f"avg {fmt(total_a//12)}/mo", "kpi-neg")
+    total = sal_m + sub_m + mkt_m
+    st.markdown(f'<div style="background:#f0fdf4;border:2px solid #bbf7d0;padding:16px 20px;border-radius:12px;font-family:Space Grotesk,sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between"><span>🔒 Total Fixed Costs · {mn}</span><span style="color:#16a34a">{fmt(total)}</span></div>', unsafe_allow_html=True)
 
 # ── COURSES P&L ───────────────────────────────────────────────────────────────
 elif page == "🎓 Courses P&L":
     st.markdown("## 🎓 Courses P&L")
     st.markdown('<p style="color:#30B143;margin-top:-12px">2026 actuals · Net Profit = Revenue excl. VAT − Costs</p>', unsafe_allow_html=True)
+
+    # Summary KPIs — computed from all courses (not filtered), shown at top
+    _all_rv  = sum(cpnl(c)["rv"]  for c in st.session_state.fc_courses)
+    _all_cs  = sum(cpnl(c)["cs"]  for c in st.session_state.fc_courses)
+    _all_net = sum(cpnl(c)["net"] for c in st.session_state.fc_courses)
+    _all_rx  = sum(cpnl(c)["rx"]  for c in st.session_state.fc_courses)
+    _all_mg  = round(_all_net / _all_rx * 100, 1) if _all_rx else 0
+    col1,col2,col3,col4 = st.columns(4)
+    with col1: kpi("Total Revenue",    fmt(_all_rv),  "all courses", "kpi-pos")
+    with col2: kpi("Total Costs",      fmt(_all_cs),  "all courses", "kpi-warn")
+    with col3: kpi("Total Net Profit", fmt(_all_net), "all courses", "kpi-pos" if _all_net>=0 else "kpi-neg")
+    with col4: kpi("Avg Net Margin",   pct(_all_mg),  "excl. VAT basis", "kpi-pos" if _all_mg>=25 else "kpi-warn")
+    st.markdown("<br>", unsafe_allow_html=True)
 
     if "co_month" not in st.session_state:
         st.session_state.co_month = "All"
@@ -842,19 +915,6 @@ elif page == "🎓 Courses P&L":
         _save_state()
         st.rerun()
 
-    tot_rv  = edited_courses["Revenue ₾"].sum()
-    tot_cs  = edited_courses["Total Cost ₾"].sum()
-    tot_gp  = edited_courses["Gross Profit ₾"].sum()
-    tot_net = edited_courses["Net Profit ₾"].sum()
-    tot_rx  = edited_courses["Revenue ₾"].div(1.18).sum()
-    tot_mg  = round(tot_net / tot_rx * 100, 1) if tot_rx else 0
-
-    col1,col2,col3,col4 = st.columns(4)
-    with col1: kpi("Total Revenue", fmt(tot_rv), "", "kpi-pos")
-    with col2: kpi("Total Costs", fmt(tot_cs), "", "kpi-warn")
-    with col3: kpi("Total Net Profit", fmt(tot_net), "", "kpi-pos" if tot_net>=0 else "kpi-neg")
-    with col4: kpi("Avg Net Margin", pct(tot_mg), "excl. VAT basis", "kpi-pos" if tot_mg>=25 else "kpi-warn")
-
     st.markdown("### 🔍 Course Detail")
     selected = st.selectbox("Select a course", [c["name"] + f" ({c['month']})" for c in filtered])
     idx = [c["name"] + f" ({c['month']})" for c in filtered].index(selected)
@@ -916,7 +976,7 @@ elif page == "🏢 Corporate Projects":
     with col2: kpi("2026 Net Profit", fmt(tP26), f"Margin {pct(tP26/tR26*100 if tR26 else 0)}", "kpi-pos")
     with col3: kpi("Q3–Q4 Pipeline", fmt(pp_r), f"{len(PIPELINE)} projects incl. GITA H2", "kpi-warn")
 
-
+    st.markdown("<br>", unsafe_allow_html=True)
     rows = []
     for p in st.session_state.fc_corp26:
         _pf = float(p["revenue"]) - float(p["cog"])
