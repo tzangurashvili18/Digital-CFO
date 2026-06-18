@@ -83,6 +83,9 @@ html, body, [class*='css'] { font-family: 'Inter', sans-serif !important; }
 [data-testid="stHeader"] { background: #f9fafb !important; border-bottom: 1px solid #e5e7eb !important; }
 [data-testid="stSidebar"] { background: #ffffff; border-right: 1px solid #e5e7eb; }
 [data-testid="stSidebar"] * { color: #111827 !important; }
+/* Sidebar flex layout so footer sticks to bottom */
+[data-testid="stSidebar"] > div:first-child { display: flex !important; flex-direction: column !important; min-height: 100vh !important; }
+.sidebar-spacer { flex: 1 !important; min-height: 24px !important; }
 h1,h2,h3,h4 { font-family: "Space Grotesk", sans-serif !important; color: #111827 !important; }
 p, li { color: #374151 !important; }
 .stMarkdown p { color: #6b7280 !important; }
@@ -345,9 +348,13 @@ def bar_chart(items, title=""):
 if "page" not in st.session_state:
     st.session_state.page = "📊 Dashboard"
 if "fc_sal" not in st.session_state:
-    st.session_state.fc_sal = [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
+    st.session_state.fc_sal = [{"name": s["name"], "m": s["m"][:]} for s in st.session_state.fc_sal]
 if "fc_sub" not in st.session_state:
-    st.session_state.fc_sub = [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
+    st.session_state.fc_sub = [{"name": s["name"], "m": s["m"][:]} for s in st.session_state.fc_sub]
+if "fc_corp26" not in st.session_state:
+    st.session_state.fc_corp26 = [dict(p) for p in st.session_state.fc_corp26]
+if "fc_courses" not in st.session_state:
+    st.session_state.fc_courses = [dict(c) for c in st.session_state.fc_courses]
 
 nav_items = [
     ("📊", "Dashboard"),
@@ -357,14 +364,24 @@ nav_items = [
 ]
 
 with st.sidebar:
+    # ── Logo + brand header ────────────────────────────────────────────────────
     st.markdown("""
-    <div style="padding:20px 16px 16px">
-        <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#9ca3af;text-transform:uppercase;margin:0 0 6px">COMMSCHOOL</p>
-        <h2 style="font-size:24px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif">Digital <span style="color:#30B143">CFO</span></h2>
+    <div style="padding:18px 16px 12px;display:flex;align-items:center;gap:12px">
+        <svg width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;border-radius:10px">
+            <rect width="100" height="100" fill="#39D128" rx="0"/>
+            <text x="50" y="38" text-anchor="middle" fill="#1a1a1a" font-family="Arial Black,Impact,sans-serif" font-size="40" font-weight="900" letter-spacing="-1">CO</text>
+            <text x="50" y="70" text-anchor="middle" fill="#1a1a1a" font-family="Arial Black,Impact,sans-serif" font-size="40" font-weight="900" letter-spacing="-1">MM</text>
+            <text x="50" y="88" text-anchor="middle" fill="#1a1a1a" font-family="Arial Black,Impact,sans-serif" font-size="13" font-weight="700" letter-spacing="4">SCHOOL</text>
+        </svg>
+        <div>
+            <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif;line-height:1.2">Digital <span style="color:#30B143">CFO</span></h2>
+            <p style="font-size:10px;color:#9ca3af;margin:3px 0 0;letter-spacing:0.5px">Internal finance</p>
+        </div>
     </div>
     <hr style="border-color:#e5e7eb;margin:0 0 8px">
     """, unsafe_allow_html=True)
 
+    # ── Nav buttons ───────────────────────────────────────────────────────────
     for icon, label in nav_items:
         full = f"{icon} {label}"
         active = st.session_state.page == full
@@ -373,8 +390,12 @@ with st.sidebar:
             st.session_state.page = full
             st.rerun()
 
-    st.markdown('<hr style="border-color:#e5e7eb;margin:8px 0">', unsafe_allow_html=True)
-    st.markdown('<p style="font-size:10px;color:#9ca3af;padding:0 16px;margin-bottom:10px">₾ GEL · 2026 · H1 actuals</p>', unsafe_allow_html=True)
+    # ── Spacer pushes footer to bottom ────────────────────────────────────────
+    st.markdown('<div class="sidebar-spacer"></div>', unsafe_allow_html=True)
+
+    # ── Footer ────────────────────────────────────────────────────────────────
+    st.markdown('<hr style="border-color:#e5e7eb;margin:0 0 6px">', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:10px;color:#9ca3af;padding:0 4px;margin-bottom:8px">₾ GEL · 2026 · H1 actuals</p>', unsafe_allow_html=True)
     if st.button("🔒 Lock", key="lock_btn", use_container_width=True):
         st.session_state.authenticated = False
         st.rerun()
@@ -387,19 +408,19 @@ if page == "📊 Dashboard":
     st.markdown('<p style="color:#30B143;margin-top:-12px">2026 H1 · Courses + Corporate actuals</p>', unsafe_allow_html=True)
 
     mi = MONTHS.index("Jun")  # default to Jun for H1 snapshot
-    sal_m = sum(s["m"][mi] for s in SALARIES)
-    sub_m = sum(s["m"][mi] for s in SUBS)
-    sal_a = sum(sum(s["m"]) for s in SALARIES)
-    sub_a = sum(sum(s["m"]) for s in SUBS)
+    sal_m = sum(s["m"][mi] for s in st.session_state.fc_sal)
+    sub_m = sum(s["m"][mi] for s in st.session_state.fc_sub)
+    sal_a = sum(sum(s["m"]) for s in st.session_state.fc_sal)
+    sub_a = sum(sum(s["m"]) for s in st.session_state.fc_sub)
 
-    c_data = [cpnl(c) for c in COURSES]
+    c_data = [cpnl(c) for c in st.session_state.fc_courses]
     c_rev = sum(d["rv"] for d in c_data)
     c_net = sum(d["net"] for d in c_data)
     c_rx  = sum(d["rx"] for d in c_data)
     c_cs  = sum(d["cs"] for d in c_data)
 
-    crp_r = sum(p["revenue"] for p in CORP26)
-    crp_c = sum(p["cog"] for p in CORP26)
+    crp_r = sum(p["revenue"] for p in st.session_state.fc_corp26)
+    crp_c = sum(p["cog"] for p in st.session_state.fc_corp26)
     crp_p = crp_r - crp_c
 
     tot_r = c_rev + crp_r
@@ -413,12 +434,12 @@ if page == "📊 Dashboard":
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
 
-    gita_r = sum(cpnl(c)["rv"] for c in COURSES if c["name"].startswith("GITA"))
+    gita_r = sum(cpnl(c)["rv"] for c in st.session_state.fc_courses if c["name"].startswith("GITA"))
     own_r  = c_rev - gita_r
-    b2b_r  = sum(p["revenue"] for p in CORP26 if p["type"] == "B2B")
-    b2g_r  = sum(p["revenue"] for p in CORP26 if p["type"] == "B2G")
-    lec_t  = sum(c["lecturer"] for c in COURSES)
-    mkt_t  = sum(c["mkt"] for c in COURSES)
+    b2b_r  = sum(p["revenue"] for p in st.session_state.fc_corp26 if p["type"] == "B2B")
+    b2g_r  = sum(p["revenue"] for p in st.session_state.fc_corp26 if p["type"] == "B2G")
+    lec_t  = sum(c["lecturer"] for c in st.session_state.fc_courses)
+    mkt_t  = sum(c["mkt"] for c in st.session_state.fc_courses)
 
     with col1:
         st.markdown('<div class="kpi-card"><div class="kpi-label">📈 Revenue Mix</div></div>', unsafe_allow_html=True)
@@ -440,8 +461,8 @@ if page == "📊 Dashboard":
         ])
 
     st.markdown("### 💡 CFO Insights")
-    top_c  = max([c for c in COURSES if cpnl(c)["rx"] > 0], key=lambda c: cpnl(c)["mg"])
-    wrst_c = min([c for c in COURSES if cpnl(c)["rx"] > 0], key=lambda c: cpnl(c)["mg"])
+    top_c  = max([c for c in st.session_state.fc_courses if cpnl(c)["rx"] > 0], key=lambda c: cpnl(c)["mg"])
+    wrst_c = min([c for c in st.session_state.fc_courses if cpnl(c)["rx"] > 0], key=lambda c: cpnl(c)["mg"])
     gita_dep = (gita_r + b2g_r) / tot_r * 100 if tot_r else 0
 
     for icon, text in [
@@ -459,34 +480,34 @@ if page == "📊 Dashboard":
     st.markdown('<p style="color:#30B143;margin-top:-12px">Income vs Expenses vs Net Profit by quarter</p>', unsafe_allow_html=True)
 
     # Q1: Jan+Feb+Mar
-    q1_sal = sum(sum(s["m"][i] for i in range(3)) for s in SALARIES)
-    q1_sub = sum(sum(s["m"][i] for i in range(3)) for s in SUBS)
+    q1_sal = sum(sum(s["m"][i] for i in range(3)) for s in st.session_state.fc_sal)
+    q1_sub = sum(sum(s["m"][i] for i in range(3)) for s in st.session_state.fc_sub)
     q1_fixed = q1_sal + q1_sub
-    q1_courses = [c for c in COURSES if c["month"] in ["Jan","Feb","Mar"]]
+    q1_courses = [c for c in st.session_state.fc_courses if c["month"] in ["Jan","Feb","Mar"]]
     q1_course_rev = sum(cpnl(c)["rx"] for c in q1_courses)
     q1_course_costs = sum(cpnl(c)["cs"] for c in q1_courses)
-    q1_corp_rev = sum(p["revenue"] for p in CORP26 if any(m in p["period"] for m in ["Jan","Feb","Mar"]))
-    q1_corp_cog = sum(p["cog"] for p in CORP26 if any(m in p["period"] for m in ["Jan","Feb","Mar"]))
+    q1_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp26 if any(m in p["period"] for m in ["Jan","Feb","Mar"]))
+    q1_corp_cog = sum(p["cog"] for p in st.session_state.fc_corp26 if any(m in p["period"] for m in ["Jan","Feb","Mar"]))
     q1_income = q1_course_rev + q1_corp_rev
     q1_expenses = q1_fixed + q1_course_costs + q1_corp_cog
     q1_net = q1_income - q1_expenses
 
     # Q2: Apr+May+Jun
-    q2_sal = sum(sum(s["m"][i] for i in range(3,6)) for s in SALARIES)
-    q2_sub = sum(sum(s["m"][i] for i in range(3,6)) for s in SUBS)
+    q2_sal = sum(sum(s["m"][i] for i in range(3,6)) for s in st.session_state.fc_sal)
+    q2_sub = sum(sum(s["m"][i] for i in range(3,6)) for s in st.session_state.fc_sub)
     q2_fixed = q2_sal + q2_sub
-    q2_courses = [c for c in COURSES if c["month"] in ["Apr","May","Jun"]]
+    q2_courses = [c for c in st.session_state.fc_courses if c["month"] in ["Apr","May","Jun"]]
     q2_course_rev = sum(cpnl(c)["rx"] for c in q2_courses)
     q2_course_costs = sum(cpnl(c)["cs"] for c in q2_courses)
-    q2_corp_rev = sum(p["revenue"] for p in CORP26 if any(m in p["period"] for m in ["Apr","May","Jun"]))
-    q2_corp_cog = sum(p["cog"] for p in CORP26 if any(m in p["period"] for m in ["Apr","May","Jun"]))
+    q2_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp26 if any(m in p["period"] for m in ["Apr","May","Jun"]))
+    q2_corp_cog = sum(p["cog"] for p in st.session_state.fc_corp26 if any(m in p["period"] for m in ["Apr","May","Jun"]))
     q2_income = q2_course_rev + q2_corp_rev
     q2_expenses = q2_fixed + q2_course_costs + q2_corp_cog
     q2_net = q2_income - q2_expenses
 
     # Q3: pipeline + estimated fixed (Jul+Aug+Sep)
-    q3_sal = sum(sum(s["m"][i] for i in range(6,9)) for s in SALARIES)
-    q3_sub = sum(sum(s["m"][i] for i in range(6,9)) for s in SUBS)
+    q3_sal = sum(sum(s["m"][i] for i in range(6,9)) for s in st.session_state.fc_sal)
+    q3_sub = sum(sum(s["m"][i] for i in range(6,9)) for s in st.session_state.fc_sub)
     q3_fixed = q3_sal + q3_sub
     q3_pipe_rev = sum(p["rev"] for p in PIPELINE if p["q"] == "Q3")
     q3_pipe_cog = sum(p["cog"] for p in PIPELINE if p["q"] == "Q3")
@@ -495,8 +516,8 @@ if page == "📊 Dashboard":
     q3_net = q3_income - q3_expenses
 
     # Q4: estimated fixed (Oct+Nov+Dec)
-    q4_sal = sum(sum(s["m"][i] for i in range(9,12)) for s in SALARIES)
-    q4_sub = sum(sum(s["m"][i] for i in range(9,12)) for s in SUBS)
+    q4_sal = sum(sum(s["m"][i] for i in range(9,12)) for s in st.session_state.fc_sal)
+    q4_sub = sum(sum(s["m"][i] for i in range(9,12)) for s in st.session_state.fc_sub)
     q4_fixed = q4_sal + q4_sub
     q4_pipe_rev = sum(p["rev"] for p in PIPELINE if p["q"] == "Q4")
     q4_pipe_cog = sum(p["cog"] for p in PIPELINE if p["q"] == "Q4")
@@ -705,7 +726,7 @@ elif page == "🎓 Courses P&L":
                 st.rerun()
 
     month_filter = st.session_state.co_month
-    filtered = COURSES if month_filter == "All" else [c for c in COURSES if c["month"] == month_filter]
+    filtered = st.session_state.fc_courses if month_filter == "All" else [c for c in st.session_state.fc_courses if c["month"] == month_filter]
 
     rows = []
     for c in filtered:
@@ -749,6 +770,21 @@ elif page == "🎓 Courses P&L":
         },
         num_rows="dynamic")
 
+    # Persist courses edits
+    _new_cr = []
+    _cr_chg = False
+    for _, _r in edited_courses.iterrows():
+        _e = {"name": str(_r.get("Program") or ""), "month": str(_r.get("Month") or "Jan"),
+              "students": int(_r.get("Students") or 0), "price": float(_r.get("Price w/VAT ₾") or 0),
+              "lecturer": float(_r.get("Lecturer Fee ₾") or 0), "inst": float(_r.get("Installment ₾") or 0),
+              "zoom": float(_r.get("Zoom ₾") or 0), "mkt": float(_r.get("Advertising ₾") or 0),
+              "mat": float(_r.get("Merch ₾") or 0), "rev": float(_r.get("Revenue ₾") or 0)}
+        _new_cr.append(_e)
+    if len(_new_cr) != len(st.session_state.fc_courses) or any(a != b for a, b in zip(_new_cr, st.session_state.fc_courses)):
+        _cr_chg = True
+    st.session_state.fc_courses = _new_cr
+    if _cr_chg:
+        st.rerun()
     tot_rv  = edited_courses["Revenue ₾"].sum()
     tot_cs  = edited_courses["Total Cost ₾"].sum()
     tot_gp  = edited_courses["Gross Profit ₾"].sum()
@@ -811,11 +847,11 @@ elif page == "🏢 Corporate Projects":
     st.markdown("## 🏢 Corporate Projects")
     st.markdown('<p style="color:#30B143;margin-top:-12px">B2B + B2G · 2026 actuals + 2025 history</p>', unsafe_allow_html=True)
 
-    tR26 = sum(p["revenue"] for p in CORP26)
-    tC26 = sum(p["cog"] for p in CORP26)
+    tR26 = sum(p["revenue"] for p in st.session_state.fc_corp26)
+    tC26 = sum(p["cog"] for p in st.session_state.fc_corp26)
     tP26 = tR26 - tC26
-    b2b = sum(p["revenue"] for p in CORP26 if p["type"]=="B2B")
-    b2g = sum(p["revenue"] for p in CORP26 if p["type"]=="B2G")
+    b2b = sum(p["revenue"] for p in st.session_state.fc_corp26 if p["type"]=="B2B")
+    b2g = sum(p["revenue"] for p in st.session_state.fc_corp26 if p["type"]=="B2G")
     pp_r = sum(p["rev"] for p in PIPELINE)
 
     col1,col2,col3 = st.columns(3)
@@ -825,7 +861,7 @@ elif page == "🏢 Corporate Projects":
 
 
     rows = []
-    for p in CORP26:
+    for p in st.session_state.fc_corp26:
         pf = p["revenue"] - p["cog"]
         mg = pf / p["revenue"] * 100 if p["revenue"] else 0
         rows.append({
@@ -845,6 +881,20 @@ elif page == "🏢 Corporate Projects":
             "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
             "Status": st.column_config.SelectboxColumn("Status", options=["Paid","Active","Pending","Upcoming"]),
         })
+    # Persist corp26 edits
+    _new26 = []
+    _c26_chg = False
+    for _, _r in edited_corp26.iterrows():
+        _e = {"name": str(_r.get("Project") or ""), "type": str(_r.get("Type") or "B2B"),
+              "period": str(_r.get("Period") or ""),
+              "revenue": float(_r.get("Revenue ₾") or 0), "cog": float(_r.get("COG ₾") or 0),
+              "status": str(_r.get("Status") or "Paid")}
+        _new26.append(_e)
+    if len(_new26) != len(st.session_state.fc_corp26) or any(a != b for a, b in zip(_new26, st.session_state.fc_corp26)):
+        _c26_chg = True
+    st.session_state.fc_corp26 = _new26
+    if _c26_chg:
+        st.rerun()
     tR26e = edited_corp26["Revenue ₾"].sum()
     tP26e = edited_corp26["Net Profit ₾"].sum()
     st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#16a34a">{fmt(tR26e)} revenue · {fmt(tP26e)} profit · {pct(tP26e/tR26e*100 if tR26e else 0)} margin</span></div>', unsafe_allow_html=True)
