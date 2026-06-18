@@ -2,6 +2,32 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+import json, os, pathlib
+
+# ── PERSISTENT FILE STORAGE ───────────────────────────────────────────────────
+_DATA_FILE = pathlib.Path(__file__).parent / "cfo_data.json"
+
+def _save_state():
+    """Write all editable tables to disk so edits survive session restarts."""
+    payload = {
+        "fc_sal":     st.session_state.get("fc_sal", []),
+        "fc_sub":     st.session_state.get("fc_sub", []),
+        "fc_corp26":  st.session_state.get("fc_corp26", []),
+        "fc_courses": st.session_state.get("fc_courses", []),
+    }
+    try:
+        _DATA_FILE.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    except Exception:
+        pass  # silently ignore write errors (e.g. read-only container)
+
+def _load_saved():
+    """Return the saved payload dict, or None if no file exists."""
+    if _DATA_FILE.exists():
+        try:
+            return json.loads(_DATA_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return None
 
 # ── PAGE CONFIG ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -348,13 +374,11 @@ def bar_chart(items, title=""):
 if "page" not in st.session_state:
     st.session_state.page = "📊 Dashboard"
 if "fc_sal" not in st.session_state:
-    st.session_state.fc_sal = [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
-if "fc_sub" not in st.session_state:
-    st.session_state.fc_sub = [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
-if "fc_corp26" not in st.session_state:
-    st.session_state.fc_corp26 = [dict(p) for p in CORP26]
-if "fc_courses" not in st.session_state:
-    st.session_state.fc_courses = [dict(c) for c in COURSES]
+    _saved = _load_saved()
+    st.session_state.fc_sal     = _saved["fc_sal"]     if _saved and _saved.get("fc_sal")     else [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
+    st.session_state.fc_sub     = _saved["fc_sub"]     if _saved and _saved.get("fc_sub")     else [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
+    st.session_state.fc_corp26  = _saved["fc_corp26"]  if _saved and _saved.get("fc_corp26")  else [dict(p) for p in CORP26]
+    st.session_state.fc_courses = _saved["fc_courses"] if _saved and _saved.get("fc_courses") else [dict(c) for c in COURSES]
 
 nav_items = [
     ("📊", "Dashboard"),
@@ -365,18 +389,12 @@ nav_items = [
 
 with st.sidebar:
     # ── Logo + brand header ────────────────────────────────────────────────────
-    st.markdown("""
-    <div style="padding:18px 16px 12px;display:flex;align-items:center;gap:12px">
-        <svg width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;border-radius:10px">
-            <rect width="100" height="100" fill="#39D128" rx="0"/>
-            <text x="50" y="38" text-anchor="middle" fill="#1a1a1a" font-family="Arial Black,Impact,sans-serif" font-size="40" font-weight="900" letter-spacing="-1">CO</text>
-            <text x="50" y="70" text-anchor="middle" fill="#1a1a1a" font-family="Arial Black,Impact,sans-serif" font-size="40" font-weight="900" letter-spacing="-1">MM</text>
-            <text x="50" y="88" text-anchor="middle" fill="#1a1a1a" font-family="Arial Black,Impact,sans-serif" font-size="13" font-weight="700" letter-spacing="4">SCHOOL</text>
-        </svg>
-        <div>
-            <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif;line-height:1.2">Digital <span style="color:#30B143">CFO</span></h2>
-            <p style="font-size:10px;color:#9ca3af;margin:3px 0 0;letter-spacing:0.5px">Internal finance</p>
-        </div>
+    st.markdown(f"""
+    <div style="padding:0 16px 12px;margin-top:-8px">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHN0eWxlPSJmbGV4LXNocmluazowO2JvcmRlci1yYWRpdXM6MTJweDtkaXNwbGF5OmJsb2NrIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzM5REIxMyIvPgogIDwhLS0gQ08gcm93IC0tPgogIDx0ZXh0IHg9IjEwMCIgeT0iODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxYTFhMGEiCiAgICAgICAgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLEhlbHZldGljYSBOZXVlLHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI4NiIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9Ii0zIj5DTzwvdGV4dD4KICA8IS0tIE1NIHJvdyAtLT4KICA8dGV4dCB4PSIxMDAiIHk9IjE0OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzFhMWEwYSIKICAgICAgICBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssSGVsdmV0aWNhIE5ldWUsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9Ijg2IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTMiPk1NPC90ZXh0PgogIDwhLS0gU0NIT09MIHJvdyAtLT4KICA8dGV4dCB4PSIxMDAiIHk9IjE3OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzFhMWEwYSIKICAgICAgICBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssSGVsdmV0aWNhIE5ldWUsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iNzAwIiBsZXR0ZXItc3BhY2luZz0iNyI+U0NIT09MPC90ZXh0Pgo8L3N2Zz4="
+             width="80" style="border-radius:14px;display:block;margin-bottom:10px"/>
+        <h2 style="font-size:19px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif;line-height:1.15">Digital <span style="color:#30B143">CFO</span></h2>
+        <p style="font-size:10px;color:#9ca3af;margin:1px 0 0;letter-spacing:0.5px">Internal finance</p>
     </div>
     <hr style="border-color:#e5e7eb;margin:0 0 8px">
     """, unsafe_allow_html=True)
@@ -665,6 +683,7 @@ elif page == "📌 Fixed Costs":
         new_fc_sal.append({"name": new_name, "m": new_m})
     st.session_state.fc_sal = new_fc_sal
     if _sal_changed:
+        _save_state()
         st.rerun()
     sal_m = int(edited_sal[f"{mn} ₾"].sum())
     sal_a = sum(sum(s["m"]) for s in st.session_state.fc_sal)
@@ -697,6 +716,7 @@ elif page == "📌 Fixed Costs":
         new_fc_sub.append({"name": new_name, "m": new_m})
     st.session_state.fc_sub = new_fc_sub
     if _sub_changed:
+        _save_state()
         st.rerun()
     sub_m = int(edited_sub[f"{mn} ₾"].sum())
     sub_a = sum(sum(s["m"]) for s in st.session_state.fc_sub)
@@ -784,6 +804,7 @@ elif page == "🎓 Courses P&L":
         _cr_chg = True
     st.session_state.fc_courses = _new_cr
     if _cr_chg:
+        _save_state()
         st.rerun()
     tot_rv  = edited_courses["Revenue ₾"].sum()
     tot_cs  = edited_courses["Total Cost ₾"].sum()
@@ -862,12 +883,10 @@ elif page == "🏢 Corporate Projects":
 
     rows = []
     for p in st.session_state.fc_corp26:
-        pf = p["revenue"] - p["cog"]
-        mg = pf / p["revenue"] * 100 if p["revenue"] else 0
         rows.append({
             "Project": p["name"], "Type": p["type"], "Period": p["period"],
-            "Revenue ₾": p["revenue"], "COG ₾": p["cog"],
-            "Net Profit ₾": int(pf), "Margin %": round(mg,1), "Status": p["status"]
+            "Revenue ₾": float(p["revenue"]), "COG ₾": float(p["cog"]),
+            "Status": p["status"]
         })
     df26 = pd.DataFrame(rows)
     edited_corp26 = st.data_editor(df26, use_container_width=True, hide_index=True, key="corp26_editor",
@@ -877,26 +896,36 @@ elif page == "🏢 Corporate Projects":
             "Period": st.column_config.TextColumn("Period"),
             "Revenue ₾": st.column_config.NumberColumn("Revenue ₾", min_value=0, format="₾ %d"),
             "COG ₾": st.column_config.NumberColumn("COG ₾", min_value=0, format="₾ %d"),
-            "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %d"),
-            "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
             "Status": st.column_config.SelectboxColumn("Status", options=["Paid","Active","Pending","Upcoming"]),
         })
-    # Persist corp26 edits
+    # Compute Net Profit and Margin live from edited Revenue - COG
+    _rev26 = edited_corp26["Revenue ₾"].fillna(0)
+    _cog26 = edited_corp26["COG ₾"].fillna(0)
+    _net26 = (_rev26 - _cog26).round(0).astype(int)
+    _mg26  = (_net26 / _rev26 * 100).fillna(0).round(1)
+    edited_corp26 = edited_corp26.copy()
+    edited_corp26["Net Profit ₾"] = _net26
+    edited_corp26["Margin %"]     = _mg26
+    # Persist edits — compare as (revenue, cog) tuples to avoid int/float mismatch
     _new26 = []
-    _c26_chg = False
-    for _, _r in edited_corp26.iterrows():
-        _e = {"name": str(_r.get("Project") or ""), "type": str(_r.get("Type") or "B2B"),
-              "period": str(_r.get("Period") or ""),
-              "revenue": float(_r.get("Revenue ₾") or 0), "cog": float(_r.get("COG ₾") or 0),
-              "status": str(_r.get("Status") or "Paid")}
-        _new26.append(_e)
-    if len(_new26) != len(st.session_state.fc_corp26) or any(a != b for a, b in zip(_new26, st.session_state.fc_corp26)):
-        _c26_chg = True
+    for i in range(len(edited_corp26)):
+        r = edited_corp26.iloc[i]
+        _new26.append({
+            "name":    str(r["Project"])  if pd.notna(r["Project"])  else "",
+            "type":    str(r["Type"])     if pd.notna(r["Type"])     else "B2B",
+            "period":  str(r["Period"])   if pd.notna(r["Period"])   else "",
+            "revenue": float(r["Revenue ₾"]) if pd.notna(r["Revenue ₾"]) else 0.0,
+            "cog":     float(r["COG ₾"])     if pd.notna(r["COG ₾"])     else 0.0,
+            "status":  str(r["Status"])  if pd.notna(r["Status"])   else "Paid",
+        })
+    _old_rv_cg = [(float(p["revenue"]), float(p["cog"])) for p in st.session_state.fc_corp26]
+    _new_rv_cg = [(_e["revenue"], _e["cog"]) for _e in _new26]
     st.session_state.fc_corp26 = _new26
-    if _c26_chg:
+    if _old_rv_cg != _new_rv_cg or len(_new26) != len(_old_rv_cg):
+        _save_state()
         st.rerun()
-    tR26e = edited_corp26["Revenue ₾"].sum()
-    tP26e = edited_corp26["Net Profit ₾"].sum()
+    tR26e = _rev26.sum()
+    tP26e = _net26.sum()
     st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#16a34a">{fmt(tR26e)} revenue · {fmt(tP26e)} profit · {pct(tP26e/tR26e*100 if tR26e else 0)} margin</span></div>', unsafe_allow_html=True)
 
     # ── PIPELINE ──────────────────────────────────────────────────────────────
