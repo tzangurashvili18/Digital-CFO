@@ -277,28 +277,28 @@ MARKETING = [
 ]
 
 COURSES = [
-    {"name":"Graphic Design",       "month":"Jan","students":3, "price":1250,"lecturer":2800,"inst":0,  "zoom":40,"mkt":1111,"mat":135, "rev":3750.00},
-    {"name":"Marketing Management", "month":"Feb","students":4, "price":1500,"lecturer":3500,"inst":56, "zoom":40,"mkt":1021,"mat":180, "rev":5900.00},
-    {"name":"Content Management",   "month":"Feb","students":0, "price":1400,"lecturer":0,   "inst":0,  "zoom":0, "mkt":1638,"mat":0,   "rev":0.00},
-    {"name":"Data Analytics",       "month":"Feb","students":8, "price":1700,"lecturer":5357,"inst":60, "zoom":40,"mkt":1225,"mat":360, "rev":13600.00},
-    {"name":"AI in Content",        "month":"Feb","students":8, "price":1400,"lecturer":3000,"inst":0,  "zoom":40,"mkt":1439,"mat":360, "rev":6720.00},
-    {"name":"AI Agents",            "month":"Mar","students":9, "price":1400,"lecturer":2551,"inst":0,  "zoom":40,"mkt":1542,"mat":405, "rev":12040.00},
-    {"name":"Data Science",         "month":"Mar","students":9, "price":2700,"lecturer":12117,"inst":0, "zoom":40,"mkt":1369,"mat":405, "rev":23760.00},
-    {"name":"Growth Marketing",     "month":"Mar","students":17,"price":1500,"lecturer":4000,"inst":0,  "zoom":40,"mkt":569, "mat":765, "rev":18776.17},
-    {"name":"IT BA",                "month":"Apr","students":8, "price":1500,"lecturer":3571,"inst":0,  "zoom":40,"mkt":1334,"mat":400, "rev":12000.00},
-    {"name":"ADS",                  "month":"Apr","students":14,"price":1400,"lecturer":5357,"inst":0,  "zoom":40,"mkt":1385,"mat":630, "rev":19600.00},
-    {"name":"AI SEO",               "month":"May","students":5, "price":1400,"lecturer":3061,"inst":0,  "zoom":40,"mkt":1651,"mat":265, "rev":7000.00},
-    {"name":"AI Essentials",        "month":"May","students":5, "price":1050,"lecturer":2551,"inst":0,  "zoom":40,"mkt":1557,"mat":265, "rev":5250.00},
-    {"name":"Data Analytics",       "month":"May","students":6, "price":1700,"lecturer":5357,"inst":0,  "zoom":40,"mkt":1210,"mat":310, "rev":10200.00},
-    {"name":"GITA: IT PM",          "month":"May","students":7, "price":1000,"lecturer":3571,"inst":0,  "zoom":40,"mkt":262, "mat":355, "rev":7000.00},
-    {"name":"GITA: Motion Design",  "month":"May","students":7, "price":1000,"lecturer":3000,"inst":0,  "zoom":40,"mkt":262, "mat":355, "rev":7000.00},
-    {"name":"GITA: IT BA",          "month":"May","students":7, "price":1000,"lecturer":3571,"inst":0,  "zoom":40,"mkt":262, "mat":355, "rev":7000.00},
-    {"name":"GITA: Python",         "month":"May","students":29,"price":2000,"lecturer":13500,"inst":0, "zoom":40,"mkt":262, "mat":1305,"rev":58000.00},
-    {"name":"GITA: C#",             "month":"May","students":26,"price":2000,"lecturer":14000,"inst":0, "zoom":40,"mkt":262, "mat":1210,"rev":52000.00},
-    {"name":"GITA: QA",             "month":"May","students":6, "price":1000,"lecturer":6300,"inst":0,  "zoom":40,"mkt":262, "mat":310, "rev":6000.00},
-    {"name":"GITA: Graphic Design", "month":"May","students":13,"price":1000,"lecturer":3150,"inst":0,  "zoom":40,"mkt":262, "mat":635, "rev":13000.00},
-    {"name":"GITA: UI/UX Design",   "month":"May","students":15,"price":1000,"lecturer":3571,"inst":0,  "zoom":40,"mkt":262, "mat":715, "rev":15000.00},
-    {"name":"AI in Content",        "month":"Jun","students":12,"price":1400,"lecturer":2600,"inst":0,  "zoom":40,"mkt":1077,"mat":580, "rev":16800.00},
+    {"name":"Graphic Design",       "month":"Jan","students":3, "price":1250,"lecturer":2800,"inst":0,  "zoom":40,"mkt":1111,"mat":135, "rev":3750.00,  "net_adj":None},
+    {"name":"Marketing Management", "month":"Feb","students":4, "price":1500,"lecturer":3500,"inst":56, "zoom":40,"mkt":1021,"mat":180, "rev":5900.00,  "net_adj":None},
+    {"name":"Content Management",   "month":"Feb","students":0, "price":1400,"lecturer":0,   "inst":0,  "zoom":0, "mkt":1638,"mat":0,   "rev":0.00,    "net_adj":None},
+    {"name":"Data Analytics",       "month":"Feb","students":8, "price":1700,"lecturer":5357,"inst":60, "zoom":40,"mkt":1225,"mat":360, "rev":13600.00, "net_adj":None},
+    {"name":"AI in Content",        "month":"Feb","students":8, "price":1400,"lecturer":3000,"inst":0,  "zoom":40,"mkt":1439,"mat":360, "rev":6720.00,  "net_adj":None},
+    {"name":"AI Agents",            "month":"Mar","students":9, "price":1400,"lecturer":2551,"inst":0,  "zoom":40,"mkt":1542,"mat":405, "rev":12040.00, "net_adj":None},
+    {"name":"Data Science",         "month":"Mar","students":9, "price":2700,"lecturer":12117,"inst":0, "zoom":40,"mkt":1369,"mat":405, "rev":23760.00, "net_adj":None},
+    {"name":"Growth Marketing",     "month":"Mar","students":17,"price":1500,"lecturer":4000,"inst":0,  "zoom":40,"mkt":569, "mat":765, "rev":18776.17, "net_adj":None},
+    {"name":"IT BA",                "month":"Apr","students":8, "price":1500,"lecturer":3571,"inst":0,  "zoom":40,"mkt":1334,"mat":400, "rev":12000.00, "net_adj":None},
+    {"name":"ADS",                  "month":"Apr","students":14,"price":1400,"lecturer":5357,"inst":0,  "zoom":40,"mkt":1385,"mat":630, "rev":19600.00, "net_adj":None},
+    {"name":"AI SEO",               "month":"May","students":5, "price":1400,"lecturer":3061,"inst":0,  "zoom":40,"mkt":1651,"mat":265, "rev":7000.00,  "net_adj":None},
+    {"name":"AI Essentials",        "month":"May","students":5, "price":1050,"lecturer":2551,"inst":0,  "zoom":40,"mkt":1557,"mat":265, "rev":5250.00,  "net_adj":None},
+    {"name":"Data Analytics",       "month":"May","students":6, "price":1700,"lecturer":5357,"inst":0,  "zoom":40,"mkt":1210,"mat":310, "rev":10200.00, "net_adj":None},
+    {"name":"GITA: IT PM",          "month":"May","students":7, "price":1000,"lecturer":3571,"inst":0,  "zoom":40,"mkt":262, "mat":355, "rev":7000.00,  "net_adj":None},
+    {"name":"GITA: Motion Design",  "month":"May","students":7, "price":1000,"lecturer":3000,"inst":0,  "zoom":40,"mkt":262, "mat":355, "rev":7000.00,  "net_adj":None},
+    {"name":"GITA: IT BA",          "month":"May","students":7, "price":1000,"lecturer":3571,"inst":0,  "zoom":40,"mkt":262, "mat":355, "rev":7000.00,  "net_adj":None},
+    {"name":"GITA: Python",         "month":"May","students":29,"price":2000,"lecturer":13500,"inst":0, "zoom":40,"mkt":262, "mat":1305,"rev":58000.00, "net_adj":None},
+    {"name":"GITA: C#",             "month":"May","students":26,"price":2000,"lecturer":14000,"inst":0, "zoom":40,"mkt":262, "mat":1210,"rev":52000.00, "net_adj":None},
+    {"name":"GITA: QA",             "month":"May","students":6, "price":1000,"lecturer":6300,"inst":0,  "zoom":40,"mkt":262, "mat":310, "rev":6000.00,  "net_adj":None},
+    {"name":"GITA: Graphic Design", "month":"May","students":13,"price":1000,"lecturer":3150,"inst":0,  "zoom":40,"mkt":262, "mat":635, "rev":13000.00, "net_adj":None},
+    {"name":"GITA: UI/UX Design",   "month":"May","students":15,"price":1000,"lecturer":3571,"inst":0,  "zoom":40,"mkt":262, "mat":715, "rev":15000.00, "net_adj":None},
+    {"name":"AI in Content",        "month":"Jun","students":12,"price":1400,"lecturer":2600,"inst":0,  "zoom":40,"mkt":1077,"mat":580, "rev":16800.00, "net_adj":None},
 ]
 
 CORP26 = [
@@ -922,6 +922,8 @@ elif page == "🎓 Courses P&L":
     rows = []
     for c in filtered:
         p = cpnl(c)
+        # Use manually-overridden net profit if set, otherwise use computed
+        _net_show = c["net_adj"] if c.get("net_adj") is not None else round(p["net"], 2)
         rows.append({
             "Program": c["name"],
             "Month": c["month"],
@@ -936,7 +938,7 @@ elif page == "🎓 Courses P&L":
             "Total Cost ₾": round(p["cs"], 2),
             "Revenue ₾": round(p["rv"], 2),
             "Gross Profit ₾": round(p["gp"], 2),
-            "Net Profit ₾": round(p["net"], 2),
+            "Net Profit ₾": _net_show,
             "Profit Margin %": round(p["mg"], 2),
         })
 
@@ -956,7 +958,8 @@ elif page == "🎓 Courses P&L":
             "Total Cost ₾":     st.column_config.NumberColumn("Total Cost ₾", disabled=True, format="₾ %.2f"),
             "Revenue ₾":        st.column_config.NumberColumn("Revenue ₾", min_value=0, format="₾ %.2f"),
             "Gross Profit ₾":   st.column_config.NumberColumn("Gross Profit ₾", disabled=True, format="₾ %.2f"),
-            "Net Profit ₾":     st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %.2f"),
+            "Net Profit ₾":     st.column_config.NumberColumn("Net Profit ₾", format="₾ %.2f",
+                                    help="Editable — type any value to override (e.g. divide by 2 for 50/50 splits)"),
             "Profit Margin %":  st.column_config.NumberColumn("Profit Margin %", disabled=True, format="%.2f%%"),
         },
         num_rows="dynamic")
@@ -967,7 +970,8 @@ elif page == "🎓 Courses P&L":
                 "students": int(r.get("Students") or 0), "price": float(r.get("Price w/VAT ₾") or 0),
                 "lecturer": float(r.get("Lecturer Fee ₾") or 0), "inst": float(r.get("Installment ₾") or 0),
                 "zoom": float(r.get("Zoom ₾") or 0), "mkt": float(r.get("Advertising ₾") or 0),
-                "mat": float(r.get("Merch ₾") or 0), "rev": float(r.get("Revenue ₾") or 0)}
+                "mat": float(r.get("Merch ₾") or 0), "rev": float(r.get("Revenue ₾") or 0),
+                "net_adj": float(r.get("Net Profit ₾") or 0) if r.get("Net Profit ₾") is not None else None}
     _edited_list = [_row_to_course(r) for _, r in edited_courses.iterrows()]
     if _is_full_view:
         _new_full = _edited_list
