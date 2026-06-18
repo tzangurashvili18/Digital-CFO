@@ -20,39 +20,46 @@ def check_auth():
     if not st.session_state.authenticated:
         st.markdown("""
         <style>
-        [data-testid="stAppViewContainer"] { background: #13111e !important; }
-        [data-testid="stHeader"] { background: #13111e !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        html, body, [class*='css'] { font-family: 'Inter', sans-serif !important; }
+        [data-testid="stAppViewContainer"] { background: #ffffff !important; }
+        [data-testid="stHeader"] { background: #ffffff !important; border-bottom: none !important; }
         .stTextInput > div > div {
-            background: #1e1545 !important;
-            border: 1px solid #4c3d8f !important;
+            background: #f9fafb !important;
+            border: 1.5px solid #e5e7eb !important;
             border-radius: 10px !important;
-            color: #e0deff !important;
         }
-        .stTextInput input {
-            color: #e0deff !important;
-            background: transparent !important;
+        .stTextInput > div > div:focus-within {
+            border-color: #30B143 !important;
+            box-shadow: 0 0 0 3px rgba(48,177,67,0.12) !important;
         }
-        .stTextInput input::placeholder { color: #6d5bab !important; }
-        .stTextInput label { color: #9d8fff !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
+        .stTextInput input { color: #111827 !important; background: transparent !important; }
+        .stTextInput input::placeholder { color: #9ca3af !important; }
+        .stTextInput label { color: #6b7280 !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
         .stButton > button {
-            background: rgba(157,111,255,0.2) !important;
-            color: #0a0a0a !important; border: none !important;
-            border-radius: 10px !important; font-weight:700 !important; font-size:14px !important;
+            background: #30B143 !important;
+            color: #ffffff !important;
+            border: none !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            padding: 0.65rem 1rem !important;
+            width: 100% !important;
         }
-        .stButton > button:hover { background: rgba(157,111,255,0.3) !important; }
-        .stAlert { background: rgba(248,113,113,0.1) !important; border: 1px solid rgba(248,113,113,0.3) !important; border-radius: 8px !important; color: #ff6b8a !important; }
+        .stButton > button:hover { background: #1e8a30 !important; }
+        .stAlert { background: #fef2f2 !important; border: 1px solid #fecaca !important; border-radius: 8px !important; color: #b91c1c !important; }
         </style>
         """, unsafe_allow_html=True)
 
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             st.markdown('<div style="margin-top:10vh">', unsafe_allow_html=True)
-            st.markdown('''<div style="text-align:center;margin-bottom:2rem">
-                <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#444455;text-transform:uppercase;margin-bottom:8px">COMMSCHOOL</p>
-                <h1 style="font-size:32px;font-weight:700;color:#ffffff;margin:0;font-family:Space Grotesk,sans-serif">
-                    Digital <span style="color:#9d6fff">CFO</span>
+            st.markdown('''<div style="text-align:center;margin-bottom:2.5rem">
+                <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#9ca3af;text-transform:uppercase;margin-bottom:12px">COMMSCHOOL</p>
+                <h1 style="font-size:34px;font-weight:700;color:#111827;margin:0;font-family:Inter,sans-serif">
+                    Digital <span style="color:#30B143">CFO</span>
                 </h1>
-                <p style="font-size:13px;color:#9d6fff;margin-top:8px">Internal financial dashboard</p>
+                <p style="font-size:13px;color:#6b7280;margin-top:10px">Internal financial dashboard</p>
             </div>''', unsafe_allow_html=True)
             pwd = st.text_input("Access Code", type="password", placeholder="Enter passcode")
             st.markdown("<div style='margin-top:8px'>", unsafe_allow_html=True)
@@ -191,6 +198,11 @@ p, li { color: #d0d0d0 !important; }
 /* Divider */
 hr { border-color: #1a1a2e !important; margin: 1.5rem 0 !important; }
 .block-container { padding-top: 2rem !important; max-width: 1200px; }
+
+/* Margin badges */
+.badge-pos  { background: rgba(0,229,160,0.15); color: #00e5a0; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; }
+.badge-warn { background: rgba(255,209,102,0.15); color: #ffd166; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; }
+.badge-neg  { background: rgba(255,107,138,0.15); color: #ff6b8a; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; }
 """, unsafe_allow_html=True)
 
 # ── DATA ──────────────────────────────────────────────────────────────────────
@@ -739,6 +751,27 @@ elif page == "🎓 Courses P&L":
             {"Category": "★ Net Profit", "₾": net, "% of Rev excl. VAT": f"{net/rx*100:.1f}%" if rx else "—"},
         ]
         st.dataframe(pd.DataFrame(det_rows), use_container_width=True, hide_index=True)
+    with col2:
+        fig_det = go.Figure(go.Pie(
+            labels=["Lecturer Fee", "Advertising", "Merch", "Zoom"],
+            values=[c["lecturer"], c["mkt"], c["mat"], c["zoom"]],
+            hole=0.55,
+            marker_colors=["#9d6fff", "#ffd166", "#2dffb8", "#ff6b8a"],
+            textinfo="label+percent",
+            textfont=dict(size=11, color="#ffffff"),
+        ))
+        fig_det.update_layout(
+            paper_bgcolor="#0e0e1c",
+            font=dict(color="#c4b5fd", size=11),
+            margin=dict(t=10, b=10, l=10, r=10),
+            height=260,
+            showlegend=False,
+            annotations=[dict(
+                text=f"<b>{fmt(tot_cost)}</b><br><span style='font-size:10px'>total cost</span>",
+                x=0.5, y=0.5, font_size=13, font_color="#c4b5fd", showarrow=False
+            )],
+        )
+        st.plotly_chart(fig_det, use_container_width=True, config={"displayModeBar": False})
 
 # ── CORPORATE ─────────────────────────────────────────────────────────────────
 elif page == "🏢 Corporate Projects":
@@ -780,3 +813,72 @@ elif page == "🏢 Corporate Projects":
             "Status": st.column_config.SelectboxColumn("Status", options=["Paid","Active","Pending","Upcoming"]),
         })
     st.markdown(f'<div style="background:#0e0e1c;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#2dffb8">{fmt(tR26)} revenue · {fmt(tP26)} profit · {pct(tP26/tR26*100 if tR26 else 0)} margin</span></div>', unsafe_allow_html=True)
+
+    # ── PIPELINE ──────────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 🔮 Q3–Q4 Pipeline")
+    st.markdown('<p style="color:#9d6fff;margin-top:-12px">Confirmed + planning stage projects</p>', unsafe_allow_html=True)
+
+    pipe_rows = []
+    for p in PIPELINE:
+        pf = p["rev"] - p["cog"]
+        mg = pf / p["rev"] * 100 if p["rev"] else 0
+        pipe_rows.append({
+            "Project": p["name"], "Type": p["type"], "Quarter": p["q"],
+            "Revenue ₾": p["rev"], "COG ₾": p["cog"],
+            "Net Profit ₾": int(pf), "Margin %": round(mg, 1), "Stage": p["stage"]
+        })
+    df_pipe = pd.DataFrame(pipe_rows)
+    st.data_editor(df_pipe, use_container_width=True, hide_index=True, key="pipe_editor",
+        column_config={
+            "Project": st.column_config.TextColumn("Project", width="large"),
+            "Type": st.column_config.SelectboxColumn("Type", options=["B2B", "B2G"]),
+            "Quarter": st.column_config.TextColumn("Quarter"),
+            "Revenue ₾": st.column_config.NumberColumn("Revenue ₾", min_value=0, format="₾ %d"),
+            "COG ₾": st.column_config.NumberColumn("COG ₾", min_value=0, format="₾ %d"),
+            "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %d"),
+            "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
+            "Stage": st.column_config.SelectboxColumn("Stage", options=["Confirmed", "Planning", "Upcoming"]),
+        })
+    pipe_r = sum(p["rev"] for p in PIPELINE)
+    pipe_c = sum(p["cog"] for p in PIPELINE)
+    pipe_p = pipe_r - pipe_c
+    st.markdown(f'<div style="background:#0e0e1c;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Pipeline Q3–Q4</span><span style="color:#ffd166">{fmt(pipe_r)} revenue · {fmt(pipe_p)} profit · {pct(pipe_p/pipe_r*100 if pipe_r else 0)} margin</span></div>', unsafe_allow_html=True)
+
+    # ── 2025 HISTORY ──────────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 📜 2025 Corporate History")
+    st.markdown('<p style="color:#9d6fff;margin-top:-12px">Full-year actuals</p>', unsafe_allow_html=True)
+
+    tR25 = sum(p["rev"] for p in CORP25)
+    tC25 = sum(p["cost"] for p in CORP25)
+    tP25 = sum(p["profit"] for p in CORP25)
+    b2b25 = sum(p["rev"] for p in CORP25 if p["type"] == "B2B")
+    b2g25 = sum(p["rev"] for p in CORP25 if p["type"] == "B2G")
+
+    col1, col2, col3 = st.columns(3)
+    with col1: kpi("2025 Revenue", fmt(tR25), f"B2B {fmt(b2b25)} · B2G {fmt(b2g25)}", "kpi-pos")
+    with col2: kpi("2025 Net Profit", fmt(tP25), f"Margin {pct(tP25/tR25*100 if tR25 else 0)}", "kpi-pos")
+    with col3: kpi("YoY Revenue Growth", pct((tR26-tR25)/tR25*100 if tR25 else 0), f"2025: {fmt(tR25)} → 2026: {fmt(tR26)}", "kpi-pos" if tR26 >= tR25 else "kpi-neg")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    rows25 = []
+    for p in CORP25:
+        rows25.append({
+            "Client": p["co"], "Program": p["pr"], "Type": p["type"], "Period": p["period"],
+            "Revenue ₾": p["rev"], "Cost ₾": p["cost"],
+            "Net Profit ₾": p["profit"], "Margin %": p["margin"]
+        })
+    df25 = pd.DataFrame(rows25)
+    st.dataframe(df25, use_container_width=True, hide_index=True,
+        column_config={
+            "Client": st.column_config.TextColumn("Client", width="medium"),
+            "Program": st.column_config.TextColumn("Program", width="large"),
+            "Type": st.column_config.TextColumn("Type"),
+            "Period": st.column_config.TextColumn("Period"),
+            "Revenue ₾": st.column_config.NumberColumn("Revenue ₾", format="₾ %d"),
+            "Cost ₾": st.column_config.NumberColumn("Cost ₾", format="₾ %d"),
+            "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", format="₾ %d"),
+            "Margin %": st.column_config.NumberColumn("Margin %", format="%.1f%%"),
+        })
+    st.markdown(f'<div style="background:#0e0e1c;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2025</span><span style="color:#2dffb8">{fmt(tR25)} revenue · {fmt(tP25)} profit · {pct(tP25/tR25*100 if tR25 else 0)} margin</span></div>', unsafe_allow_html=True)
