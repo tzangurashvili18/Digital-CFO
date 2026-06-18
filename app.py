@@ -514,11 +514,20 @@ if page == "📊 Dashboard":
 
     tot_r = c_rev + crp_r
 
-    col1, col2, col3, col4 = st.columns(4)
+    ann_fixed_full = sal_a + sub_a + sum(sum(s["m"]) for s in st.session_state.fc_mkt)
+    tot_net = c_net + crp_p
+
+    col1, col2, col3 = st.columns(3)
     with col1: kpi("Total Revenue", fmt(tot_r), f"Courses {fmt(c_rev)} · Corp {fmt(crp_r)}", "kpi-pos")
     with col2: kpi("Course Net Profit", fmt(c_net), f"Margin {pct(c_net/c_rx*100 if c_rx else 0)} · excl. VAT", "kpi-pos" if c_net >= 0 else "kpi-neg")
     with col3: kpi("Corporate Net Profit", fmt(crp_p), f"Margin {pct(crp_p/crp_r*100 if crp_r else 0)}", "kpi-pos")
-    with col4: kpi("Fixed Costs · Jun", fmt(sal_m + sub_m), f"{fmt(sal_a + sub_a)} full-year budget", "kpi-warn")
+
+    st.markdown("<div style='margin-top:12px'>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1: kpi("Total Net Profit", fmt(tot_net), f"Courses {fmt(c_net)} · Corp {fmt(crp_p)}", "kpi-pos" if tot_net >= 0 else "kpi-neg")
+    with col2: kpi("Annual Fixed Costs", fmt(ann_fixed_full), "salaries + subs + marketing", "kpi-warn")
+    with col3: kpi("Fixed Costs · Jun", fmt(sal_m + sub_m), f"{fmt(sal_a + sub_a)} sal+sub budget", "kpi-warn")
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
