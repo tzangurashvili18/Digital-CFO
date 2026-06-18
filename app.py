@@ -574,19 +574,19 @@ if page == "📊 Dashboard":
     q4_expenses = q4_fixed + q4_pipe_cog
     q4_net = q4_income - q4_expenses
 
-    # H1 Actuals — direct formula: Course Net Profit + Corp Net Profit − H1 Fixed Costs
+    # H1 Actuals — Course Net Profit + Corp Net Profit − Full-Year Fixed Costs
     _h1_course_net  = sum(cpnl(c)["net"] for c in st.session_state.fc_courses)
     _h1_corp_net    = sum(float(p["revenue"]) - float(p["cog"]) for p in st.session_state.fc_corp26)
-    _h1_fixed       = (sum(sum(s["m"][i] for i in range(6)) for s in st.session_state.fc_sal)
-                     + sum(sum(s["m"][i] for i in range(6)) for s in st.session_state.fc_sub)
-                     + sum(sum(s["m"][i] for i in range(6)) for s in st.session_state.fc_mkt))
+    _ann_fixed      = (sum(sum(s["m"]) for s in st.session_state.fc_sal)
+                     + sum(sum(s["m"]) for s in st.session_state.fc_sub)
+                     + sum(sum(s["m"]) for s in st.session_state.fc_mkt))
     _h1_course_rev  = sum(cpnl(c)["rv"] for c in st.session_state.fc_courses)
     _h1_corp_rev    = sum(float(p["revenue"]) for p in st.session_state.fc_corp26)
     _h1_course_cost = sum(cpnl(c)["cs"] for c in st.session_state.fc_courses)
     _h1_corp_cog    = sum(float(p["cog"]) for p in st.session_state.fc_corp26)
     act_income   = _h1_course_rev + _h1_corp_rev
-    act_expenses = _h1_course_cost + _h1_corp_cog + _h1_fixed
-    act_net      = _h1_course_net + _h1_corp_net - _h1_fixed
+    act_expenses = _h1_course_cost + _h1_corp_cog + _ann_fixed
+    act_net      = _h1_course_net + _h1_corp_net - _ann_fixed
 
     # Actuals summary card (compact)
     _act_color = "#16a34a" if act_net >= 0 else "#ef4444"
@@ -597,7 +597,7 @@ if page == "📊 Dashboard":
          display:flex;justify-content:space-between;align-items:center">
         <div>
             <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">
-                📊 H1 Actuals · Jan–Jun
+                📊 Net Position · Actuals vs Annual Fixed Costs
             </div>
             <div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:{_act_color}">
                 {fmt(act_net)}
