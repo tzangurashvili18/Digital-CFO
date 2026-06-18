@@ -36,6 +36,7 @@ def _save_state():
         "fc_courses":    st.session_state.get("fc_courses", []),
         "fc_corp_h2":    st.session_state.get("fc_corp_h2", []),
         "fc_courses_h2": st.session_state.get("fc_courses_h2", []),
+        "cash_balance":  st.session_state.get("cash_balance", 0),
     }
     try:
         _DATA_FILE.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
@@ -448,6 +449,7 @@ if "fc_sal" not in st.session_state:
     st.session_state.fc_courses    = [_sanitize_course(dict(c)) for c in _saved["fc_courses"]]    if _saved and _saved.get("fc_courses")    else [dict(c) for c in COURSES]
     st.session_state.fc_corp_h2    = _saved["fc_corp_h2"]    if _saved and _saved.get("fc_corp_h2")    else [dict(p) for p in CORP_H2_DEFAULT]
     st.session_state.fc_courses_h2 = _saved["fc_courses_h2"] if _saved and _saved.get("fc_courses_h2") else [dict(c) for c in COURSES_H2_DEFAULT]
+    st.session_state.cash_balance  = _safe_num(_saved.get("cash_balance", 0)) if _saved else 0
 
 nav_items = [
     ("📊", "Dashboard"),
@@ -455,6 +457,7 @@ nav_items = [
     ("🎓", "Courses P&L"),
     ("🏢", "Corporate Projects"),
     ("📈", "Analytics"),
+    ("💵", "Cash Flow"),
     ("🕐", "History"),
 ]
 
@@ -558,6 +561,54 @@ if page == "📊 Dashboard":
             {"l":"Corp COG","v":crp_c,"c":"#34d399"},
         ])
 
+    # ── CASH & RUNWAY ─────────────────────────────────────────────────────────
+    st.markdown("---")
+    _burn = (sum(sum(s["m"][MONTHS.index("Jun")] for s in st.session_state.fc_sal) for _ in [1]) +
+             sum(s["m"][MONTHS.index("Jun")] for s in st.session_state.fc_sub))
+    _burn_avg = (sal_a + sub_a) / 12  # avg monthly burn (sal + sub)
+
+    col_cash, col_info = st.columns([1, 2])
+    with col_cash:
+        new_cash = st.number_input(
+            "💵 Cash on Hand (₾)",
+            min_value=0, step=1000,
+            value=int(st.session_state.cash_balance),
+            help="Enter your current bank balance — saved automatically"
+        )
+        if new_cash != st.session_state.cash_balance:
+            st.session_state.cash_balance = new_cash
+            _save_state()
+
+    _cash    = st.session_state.cash_balance
+    _runway  = _cash / _burn_avg if _burn_avg > 0 else 0
+    _pending = sum(p["revenue"] for p in st.session_state.fc_corp26 if p.get("status") == "Pending")
+    _runway_color = "#16a34a" if _runway >= 6 else ("#d97706" if _runway >= 3 else "#ef4444")
+    _runway_label = "Strong 💪" if _runway >= 12 else ("Safe ✓" if _runway >= 6 else ("Watch ⚠️" if _runway >= 3 else "Critical 🔴"))
+    _runway_pct   = min(_runway / 24 * 100, 100)  # bar scales to 24 months
+
+    with col_info:
+        st.markdown(f"""
+        <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:16px 20px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+                <div>
+                    <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">Runway</div>
+                    <div style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:{_runway_color}">{_runway:.1f} months</div>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:2px">avg burn {fmt(_burn_avg)}/mo · {_runway_label}</div>
+                </div>
+                <div style="text-align:right;font-size:12px;color:#6b7280;line-height:1.8">
+                    <div>Cash: <b>{fmt(_cash)}</b></div>
+                    {'<div style="color:#d97706">Pending: <b>' + fmt(_pending) + '</b></div>' if _pending else ''}
+                </div>
+            </div>
+            <div style="background:#f3f4f6;border-radius:6px;height:8px;overflow:hidden">
+                <div style="background:{_runway_color};height:100%;width:{_runway_pct:.0f}%;border-radius:6px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:#9ca3af">
+                <span>0</span><span>6 mo</span><span>12 mo</span><span>24 mo</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
     st.markdown("### 💡 CFO Insights")
     top_c  = max([c for c in st.session_state.fc_courses if cpnl(c)["rx"] > 0 and c.get("students",0) > 0], key=lambda c: cpnl(c)["mg"])
     wrst_c = min([c for c in st.session_state.fc_courses if cpnl(c)["rx"] > 0 and c.get("students",0) > 0], key=lambda c: cpnl(c)["mg"])
@@ -628,8 +679,13 @@ if page == "📊 Dashboard":
             "kpi-warn" if _top_client_pct > 20 else "kpi-pos")
 
     # GITA scenario: what if GITA drops 50%?
-    _gita_impact_50 = _gita_total * 0.5
-    _scenario_net   = ann_course_net + ann_corp_net - ann_fixed - _gita_impact_50
+    _gita_impact_50  = _gita_total * 0.5
+    _risk_course_net = sum(_eff_net(c) for c in st.session_state.fc_courses + st.session_state.fc_courses_h2)
+    _risk_corp_net   = sum(p["revenue"] - p["cog"] for p in st.session_state.fc_corp26 + st.session_state.fc_corp_h2)
+    _risk_fixed      = (sum(sum(s["m"]) for s in st.session_state.fc_sal) +
+                        sum(sum(s["m"]) for s in st.session_state.fc_sub) +
+                        sum(sum(s["m"]) for s in st.session_state.fc_mkt))
+    _scenario_net    = _risk_course_net + _risk_corp_net - _risk_fixed - _gita_impact_50
     _warn_color = "#ef4444" if _gita_pct > 40 else "#d97706"
     st.markdown(f"""
     <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:14px 20px;margin-top:12px;
@@ -1910,6 +1966,154 @@ elif page == "📈 Analytics":
                 unsafe_allow_html=True
             )
 
+
+# ── CASH FLOW ─────────────────────────────────────────────────────────────────
+elif page == "💵 Cash Flow":
+    st.markdown("## 💵 Cash Flow")
+    st.markdown('<p style="color:#30B143;margin-top:-12px">Monthly cash in · cash out · running balance · 2026</p>', unsafe_allow_html=True)
+
+    # Opening balance input
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        new_cash = st.number_input(
+            "Opening Balance (₾)",
+            min_value=0, step=1000,
+            value=int(st.session_state.cash_balance),
+            help="Your cash balance at the start of 2026"
+        )
+        if new_cash != st.session_state.cash_balance:
+            st.session_state.cash_balance = new_cash
+            _save_state()
+
+    opening = st.session_state.cash_balance
+
+    # Build month-by-month cash flow
+    # All 12 months (H1 actuals, H2 from forecast)
+    _all_cf_courses = st.session_state.fc_courses + st.session_state.fc_courses_h2
+
+    def _corp_month(period):
+        """Return the 3-letter start month of a corp project period."""
+        return period.replace("–", "-").split("-")[0].strip()[:3]
+
+    cf_rows = []
+    balance = opening
+    for i, month in enumerate(MONTHS):
+        # Cash IN: course revenue this month
+        _courses_m = [c for c in _all_cf_courses if c.get("month") == month]
+        course_rev = sum(cpnl(c)["rv"] for c in _courses_m)
+
+        # Cash IN: corporate revenue starting this month
+        corp_rev_h1 = sum(p["revenue"] for p in st.session_state.fc_corp26
+                          if _corp_month(p.get("period", "")) == month)
+        corp_rev_h2 = sum(p["revenue"] for p in st.session_state.fc_corp_h2
+                          if _corp_month(p.get("period", "")) == month)
+        corp_rev = corp_rev_h1 + corp_rev_h2
+
+        total_in = course_rev + corp_rev
+
+        # Cash OUT: fixed costs this month (salaries + subs + marketing)
+        fixed_out = (sum(s["m"][i] for s in st.session_state.fc_sal) +
+                     sum(s["m"][i] for s in st.session_state.fc_sub) +
+                     sum(s["m"][i] for s in st.session_state.fc_mkt))
+
+        # Cash OUT: lecturer fees paid end of course month
+        lec_out = sum(c["lecturer"] for c in _courses_m)
+
+        # Cash OUT: other variable course costs (mkt, mat, zoom) — paid during month
+        var_out = sum(c["mkt"] + c["mat"] + c["zoom"] for c in _courses_m)
+
+        # Cash OUT: corporate COG
+        corp_cog = (sum(p["cog"] for p in st.session_state.fc_corp26
+                        if _corp_month(p.get("period", "")) == month) +
+                    sum(p["cog"] for p in st.session_state.fc_corp_h2
+                        if _corp_month(p.get("period", "")) == month))
+
+        total_out = fixed_out + lec_out + var_out + corp_cog
+        net = total_in - total_out
+        balance += net
+
+        cf_rows.append({
+            "Month": month,
+            "Revenue In ₾": int(course_rev + corp_rev),
+            "Fixed Costs ₾": int(fixed_out),
+            "Lecturer Fees ₾": int(lec_out),
+            "Other Costs ₾": int(var_out + corp_cog),
+            "Total Out ₾": int(total_out),
+            "Net Cash ₾": int(net),
+            "Balance ₾": int(balance),
+        })
+
+    df_cf = pd.DataFrame(cf_rows)
+
+    # Summary KPIs
+    _total_in  = df_cf["Revenue In ₾"].sum()
+    _total_out = df_cf["Total Out ₾"].sum()
+    _end_bal   = df_cf["Balance ₾"].iloc[-1]
+    _best_month = df_cf.loc[df_cf["Net Cash ₾"].idxmax(), "Month"]
+    _worst_month = df_cf.loc[df_cf["Net Cash ₾"].idxmin(), "Month"]
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1: kpi("Opening Balance", fmt(opening), "Jan 2026", "kpi-pos")
+    with col2: kpi("Projected Closing", fmt(_end_bal), "Dec 2026", "kpi-pos" if _end_bal >= opening else "kpi-neg")
+    with col3: kpi("Best Month", _best_month, fmt(df_cf.loc[df_cf["Net Cash ₾"].idxmax(), "Net Cash ₾"]) + " net", "kpi-pos")
+    with col4: kpi("Weakest Month", _worst_month, fmt(df_cf.loc[df_cf["Net Cash ₾"].idxmin(), "Net Cash ₾"]) + " net", "kpi-warn")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Cash flow table
+    st.dataframe(df_cf, use_container_width=True, hide_index=True,
+        column_config={
+            "Month":           st.column_config.TextColumn("Month", width="small"),
+            "Revenue In ₾":    st.column_config.NumberColumn("Revenue In ₾",    format="₾ %d"),
+            "Fixed Costs ₾":   st.column_config.NumberColumn("Fixed Costs ₾",   format="₾ %d"),
+            "Lecturer Fees ₾": st.column_config.NumberColumn("Lecturer Fees ₾", format="₾ %d"),
+            "Other Costs ₾":   st.column_config.NumberColumn("Other Costs ₾",   format="₾ %d"),
+            "Total Out ₾":     st.column_config.NumberColumn("Total Out ₾",     format="₾ %d"),
+            "Net Cash ₾":      st.column_config.NumberColumn("Net Cash ₾",      format="₾ %d"),
+            "Balance ₾":       st.column_config.NumberColumn("Balance ₾",       format="₾ %d"),
+        })
+
+    # Running balance chart
+    st.markdown("<br>", unsafe_allow_html=True)
+    fig_cf = go.Figure()
+    _bal_colors = ["#16a34a" if v >= opening else "#ef4444" for v in df_cf["Balance ₾"]]
+    fig_cf.add_trace(go.Bar(
+        name="Net Cash", x=df_cf["Month"], y=df_cf["Net Cash ₾"],
+        marker_color=["#16a34a" if v >= 0 else "#ef4444" for v in df_cf["Net Cash ₾"]],
+        opacity=0.5, yaxis="y2",
+        text=[fmt(v) for v in df_cf["Net Cash ₾"]],
+        textposition="outside", textfont=dict(size=9, color="#6b7280"),
+    ))
+    fig_cf.add_trace(go.Scatter(
+        name="Running Balance", x=df_cf["Month"], y=df_cf["Balance ₾"],
+        mode="lines+markers",
+        line=dict(color="#30B143", width=2.5),
+        marker=dict(size=7, color="#30B143"),
+        text=[fmt(v) for v in df_cf["Balance ₾"]],
+        textposition="top center", textfont=dict(size=9, color="#30B143"),
+    ))
+    fig_cf.add_hline(y=opening, line_dash="dot", line_color="#9ca3af", line_width=1,
+                     annotation_text="Opening", annotation_font_size=10)
+    fig_cf.update_layout(
+        paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
+        font=dict(color="#374151", size=11),
+        margin=dict(t=30, b=20, l=10, r=10), height=320,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+                    font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
+        xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#374151")),
+        yaxis=dict(title="Balance ₾", showgrid=True, gridcolor="#e5e7eb",
+                   tickfont=dict(size=10, color="#6b7280")),
+        yaxis2=dict(title="Net Cash ₾", overlaying="y", side="right",
+                    showgrid=False, tickfont=dict(size=10, color="#6b7280")),
+        barmode="relative",
+    )
+    st.plotly_chart(fig_cf, use_container_width=True, config={"displayModeBar": False})
+
+    st.markdown(
+        '<p style="font-size:11px;color:#9ca3af;margin-top:-8px">💡 Corporate revenue assigned to start month of project period. '
+        'Lecturer fees paid at end of course month.</p>',
+        unsafe_allow_html=True
+    )
 
 # ── HISTORY ───────────────────────────────────────────────────────────────────
 elif page == "🕐 History":
