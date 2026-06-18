@@ -391,8 +391,8 @@ with st.sidebar:
     # ── Logo + brand header ────────────────────────────────────────────────────
     st.markdown(f"""
     <div style="padding:0 16px 12px;margin-top:-8px">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHN0eWxlPSJmbGV4LXNocmluazowO2JvcmRlci1yYWRpdXM6MTJweDtkaXNwbGF5OmJsb2NrIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzM5REIxMyIvPgogIDwhLS0gQ08gcm93IC0tPgogIDx0ZXh0IHg9IjEwMCIgeT0iODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxYTFhMGEiCiAgICAgICAgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLEhlbHZldGljYSBOZXVlLHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI4NiIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9Ii0zIj5DTzwvdGV4dD4KICA8IS0tIE1NIHJvdyAtLT4KICA8dGV4dCB4PSIxMDAiIHk9IjE0OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzFhMWEwYSIKICAgICAgICBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssSGVsdmV0aWNhIE5ldWUsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9Ijg2IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTMiPk1NPC90ZXh0PgogIDwhLS0gU0NIT09MIHJvdyAtLT4KICA8dGV4dCB4PSIxMDAiIHk9IjE3OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzFhMWEwYSIKICAgICAgICBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssSGVsdmV0aWNhIE5ldWUsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iNzAwIiBsZXR0ZXItc3BhY2luZz0iNyI+U0NIT09MPC90ZXh0Pgo8L3N2Zz4="
-             width="80" style="border-radius:14px;display:block;margin-bottom:10px"/>
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgMTIwIj4KICA8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iIzNDRTAwQSIvPgogIDx0ZXh0IHg9IjMwIiB5PSI1NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzExMTExMSIKICAgICAgICBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssSGVsdmV0aWNhIE5ldWUsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjQ2IiBmb250LXdlaWdodD0iOTAwIj5DPC90ZXh0PgogIDx0ZXh0IHg9IjkwIiB5PSI1NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzExMTExMSIKICAgICAgICBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssSGVsdmV0aWNhIE5ldWUsc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjQ2IiBmb250LXdlaWdodD0iOTAwIj5PPC90ZXh0PgogIDx0ZXh0IHg9IjMwIiB5PSIxMDYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxMTExMTEiCiAgICAgICAgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLEhlbHZldGljYSBOZXVlLHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI0NiIgZm9udC13ZWlnaHQ9IjkwMCI+TTwvdGV4dD4KICA8dGV4dCB4PSI5MCIgeT0iMTA2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTExMTExIgogICAgICAgIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayxIZWx2ZXRpY2EgTmV1ZSxzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iNDYiIGZvbnQtd2VpZ2h0PSI5MDAiPk08L3RleHQ+Cjwvc3ZnPg=="
+             width="72" style="border-radius:8px;display:block;margin-bottom:10px"/>
         <h2 style="font-size:19px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif;line-height:1.15">Digital <span style="color:#30B143">CFO</span></h2>
         <p style="font-size:10px;color:#9ca3af;margin:1px 0 0;letter-spacing:0.5px">Internal finance</p>
     </div>
@@ -724,7 +724,18 @@ elif page == "📌 Fixed Costs":
 
     st.markdown("<br>", unsafe_allow_html=True)
     total = sal_m + sub_m
+    total_a = sal_a + sub_a
     st.markdown(f'<div style="background:#f0fdf4;border:2px solid #bbf7d0;padding:16px 20px;border-radius:12px;font-family:Space Grotesk,sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between"><span>🔒 Total Fixed Costs · {mn}</span><span style="color:#16a34a">{fmt(total)}</span></div>', unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown('<p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#9ca3af;margin-bottom:8px">Annual Summary (all months)</p>', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        kpi("💼 Salaries · Annual", fmt(sal_a), f"avg {fmt(sal_a//12)}/mo", "kpi-warn")
+    with col2:
+        kpi("🏢 Subscriptions · Annual", fmt(sub_a), f"avg {fmt(sub_a//12)}/mo", "kpi-warn")
+    with col3:
+        kpi("🔒 Total Fixed Costs · Annual", fmt(total_a), f"avg {fmt(total_a//12)}/mo", "kpi-neg")
 
 # ── COURSES P&L ───────────────────────────────────────────────────────────────
 elif page == "🎓 Courses P&L":
@@ -758,6 +769,14 @@ elif page == "🎓 Courses P&L":
     month_filter = st.session_state.co_month
     _base = st.session_state.fc_courses if month_filter == "All" else [c for c in st.session_state.fc_courses if c["month"] == month_filter]
     filtered = [c for c in _base if c["name"].startswith("GITA")] if st.session_state.co_gita else _base
+
+    if not filtered:
+        st.info("No courses match the selected filters.")
+        st.stop()
+
+    # track which original courses are shown (for merge-back)
+    _orig_filtered_keys = [(c["name"], c["month"]) for c in filtered]
+    _is_full_view = (month_filter == "All" and not st.session_state.co_gita)
 
     rows = []
     for c in filtered:
@@ -801,22 +820,28 @@ elif page == "🎓 Courses P&L":
         },
         num_rows="dynamic")
 
-    # Persist courses edits
-    _new_cr = []
-    _cr_chg = False
-    for _, _r in edited_courses.iterrows():
-        _e = {"name": str(_r.get("Program") or ""), "month": str(_r.get("Month") or "Jan"),
-              "students": int(_r.get("Students") or 0), "price": float(_r.get("Price w/VAT ₾") or 0),
-              "lecturer": float(_r.get("Lecturer Fee ₾") or 0), "inst": float(_r.get("Installment ₾") or 0),
-              "zoom": float(_r.get("Zoom ₾") or 0), "mkt": float(_r.get("Advertising ₾") or 0),
-              "mat": float(_r.get("Merch ₾") or 0), "rev": float(_r.get("Revenue ₾") or 0)}
-        _new_cr.append(_e)
-    if len(_new_cr) != len(st.session_state.fc_courses) or any(a != b for a, b in zip(_new_cr, st.session_state.fc_courses)):
-        _cr_chg = True
-    st.session_state.fc_courses = _new_cr
-    if _cr_chg:
+    # Persist edits — merge back into full fc_courses (don't wipe other months)
+    def _row_to_course(r):
+        return {"name": str(r.get("Program") or ""), "month": str(r.get("Month") or "Jan"),
+                "students": int(r.get("Students") or 0), "price": float(r.get("Price w/VAT ₾") or 0),
+                "lecturer": float(r.get("Lecturer Fee ₾") or 0), "inst": float(r.get("Installment ₾") or 0),
+                "zoom": float(r.get("Zoom ₾") or 0), "mkt": float(r.get("Advertising ₾") or 0),
+                "mat": float(r.get("Merch ₾") or 0), "rev": float(r.get("Revenue ₾") or 0)}
+    _edited_list = [_row_to_course(r) for _, r in edited_courses.iterrows()]
+    if _is_full_view:
+        _new_full = _edited_list
+    else:
+        # Keep courses outside this filter unchanged; swap in edited ones
+        _new_full = [c for c in st.session_state.fc_courses
+                     if (c["name"], c["month"]) not in _orig_filtered_keys]
+        _new_full.extend(_edited_list)
+    _old_json = json.dumps(st.session_state.fc_courses, sort_keys=True)
+    _new_json = json.dumps(_new_full, sort_keys=True)
+    if _old_json != _new_json:
+        st.session_state.fc_courses = _new_full
         _save_state()
         st.rerun()
+
     tot_rv  = edited_courses["Revenue ₾"].sum()
     tot_cs  = edited_courses["Total Cost ₾"].sum()
     tot_gp  = edited_courses["Gross Profit ₾"].sum()
