@@ -462,9 +462,19 @@ if page == "📊 Dashboard":
     sal_a = sum(sum(s["m"]) for s in st.session_state.fc_sal)
     sub_a = sum(sum(s["m"]) for s in st.session_state.fc_sub)
 
+    def _eff_net(c):
+        """Return net_adj if it's a valid number, else fall back to computed net."""
+        adj = c.get("net_adj")
+        if adj is None: return cpnl(c)["net"]
+        try:
+            f = float(adj)
+            return cpnl(c)["net"] if f != f else f   # f != f catches NaN
+        except (TypeError, ValueError):
+            return cpnl(c)["net"]
+
     c_data = [cpnl(c) for c in st.session_state.fc_courses]
     c_rev = sum(d["rv"] for d in c_data)
-    c_net = sum(d["net"] for d in c_data)
+    c_net = sum(_eff_net(c) for c in st.session_state.fc_courses)
     c_rx  = sum(d["rx"] for d in c_data)
     c_cs  = sum(d["cs"] for d in c_data)
 
@@ -585,11 +595,8 @@ if page == "📊 Dashboard":
     # Annual total — direct formula: all courses + all corp − all fixed costs (incl. marketing)
     _all_courses  = st.session_state.fc_courses + st.session_state.fc_courses_h2
     _all_corp     = st.session_state.fc_corp26  + st.session_state.fc_corp_h2
-    # Use net_adj (manual override) when set, otherwise use computed net
-    ann_course_net = sum(
-        (c["net_adj"] if c.get("net_adj") is not None else cpnl(c)["net"])
-        for c in _all_courses
-    )
+    # Use net_adj (manual override) when set and valid, otherwise use computed net
+    ann_course_net = sum(_eff_net(c) for c in _all_courses)
     ann_course_rev   = sum(cpnl(c)["rx"] for c in _all_courses)
     ann_corp_rev  = sum(p["revenue"] for p in _all_corp)
     ann_corp_cog  = sum(p["cog"]     for p in _all_corp)
@@ -976,7 +983,7 @@ elif page == "🎓 Courses P&L":
                 "lecturer": float(r.get("Lecturer Fee ₾") or 0), "inst": float(r.get("Installment ₾") or 0),
                 "zoom": float(r.get("Zoom ₾") or 0), "mkt": float(r.get("Advertising ₾") or 0),
                 "mat": float(r.get("Merch ₾") or 0), "rev": float(r.get("Revenue ₾") or 0),
-                "net_adj": float(r.get("Net Profit ₾") or 0) if r.get("Net Profit ₾") is not None else None}
+                "net_adj": (lambda v: float(v) if (v is not None and v == v) else None)(r.get("Net Profit ₾"))}
     _edited_list = [_row_to_course(r) for _, r in edited_courses.iterrows()
                     if str(r.get("Program") or "").strip()]
     if _is_full_view:
