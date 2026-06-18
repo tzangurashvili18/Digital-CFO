@@ -341,9 +341,13 @@ def bar_chart(items, title=""):
     )
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
-# ── SIDEBAR ───────────────────────────────────────────────────────────────────
+# ── PERSISTENT STATE (init once, survives all page switches) ─────────────────
 if "page" not in st.session_state:
     st.session_state.page = "📊 Dashboard"
+if "fc_sal" not in st.session_state:
+    st.session_state.fc_sal = [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
+if "fc_sub" not in st.session_state:
+    st.session_state.fc_sub = [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
 
 nav_items = [
     ("📊", "Dashboard"),
@@ -611,8 +615,6 @@ elif page == "📌 Fixed Costs":
     mn = MONTHS[mi]
 
     st.markdown("### 👥 Salaries")
-    if "fc_sal" not in st.session_state:
-        st.session_state.fc_sal = [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
     sal_rows = []
     for s in st.session_state.fc_sal:
         sal_rows.append({
@@ -622,22 +624,31 @@ elif page == "📌 Fixed Costs":
             "Active Months": sum(1 for v in s["m"] if v > 0),
         })
     sal_df = pd.DataFrame(sal_rows)
-    edited_sal = st.data_editor(sal_df, use_container_width=True, hide_index=True, key="sal_editor",
+    edited_sal = st.data_editor(sal_df, use_container_width=True, hide_index=True, key=f"sal_editor_{mi}",
         column_config={
             "Name / Role": st.column_config.TextColumn("Name / Role", width="large"),
             f"{mn} ₾": st.column_config.NumberColumn(f"{mn} ₾", min_value=0, step=1, format="₾ %d"),
             "Annual ₾": st.column_config.NumberColumn("Annual ₾", disabled=True, format="₾ %d"),
             "Active Months": st.column_config.NumberColumn("Active Months", disabled=True),
         })
+    # Explicit reassignment (not in-place mutation) so Streamlit detects the change
+    new_fc_sal = []
+    _sal_changed = False
     for i, s in enumerate(st.session_state.fc_sal):
-        s["m"][mi] = int(edited_sal.iloc[i][f"{mn} ₾"] or 0)
+        new_val = int(edited_sal.iloc[i][f"{mn} ₾"] or 0)
+        if new_val != s["m"][mi]:
+            _sal_changed = True
+        new_m = s["m"][:]
+        new_m[mi] = new_val
+        new_fc_sal.append({"name": s["name"], "m": new_m})
+    st.session_state.fc_sal = new_fc_sal
+    if _sal_changed:
+        st.rerun()
     sal_m = int(edited_sal[f"{mn} ₾"].sum())
     sal_a = sum(sum(s["m"]) for s in st.session_state.fc_sal)
     st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Salaries · {mn}</span><span style="color:#16a34a">{fmt(sal_m)} <span style="color:#9ca3af;font-weight:400;font-size:12px">/ {fmt(sal_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("### 🏢 Admin & Subscriptions")
-    if "fc_sub" not in st.session_state:
-        st.session_state.fc_sub = [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
     sub_rows = []
     for s in st.session_state.fc_sub:
         sub_rows.append({
@@ -646,14 +657,24 @@ elif page == "📌 Fixed Costs":
             "Annual ₾": sum(s["m"]),
         })
     sub_df = pd.DataFrame(sub_rows)
-    edited_sub = st.data_editor(sub_df, use_container_width=True, hide_index=True, key="sub_editor",
+    edited_sub = st.data_editor(sub_df, use_container_width=True, hide_index=True, key=f"sub_editor_{mi}",
         column_config={
             "Item": st.column_config.TextColumn("Item", width="large"),
             f"{mn} ₾": st.column_config.NumberColumn(f"{mn} ₾", min_value=0, step=1, format="₾ %d"),
             "Annual ₾": st.column_config.NumberColumn("Annual ₾", disabled=True, format="₾ %d"),
         })
+    new_fc_sub = []
+    _sub_changed = False
     for i, s in enumerate(st.session_state.fc_sub):
-        s["m"][mi] = int(edited_sub.iloc[i][f"{mn} ₾"] or 0)
+        new_val = int(edited_sub.iloc[i][f"{mn} ₾"] or 0)
+        if new_val != s["m"][mi]:
+            _sub_changed = True
+        new_m = s["m"][:]
+        new_m[mi] = new_val
+        new_fc_sub.append({"name": s["name"], "m": new_m})
+    st.session_state.fc_sub = new_fc_sub
+    if _sub_changed:
+        st.rerun()
     sub_m = int(edited_sub[f"{mn} ₾"].sum())
     sub_a = sum(sum(s["m"]) for s in st.session_state.fc_sub)
     st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#16a34a">{fmt(sub_m)} <span style="color:#9ca3af;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
