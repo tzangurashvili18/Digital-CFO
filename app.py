@@ -436,7 +436,7 @@ page = st.session_state.page
 # ── DASHBOARD ─────────────────────────────────────────────────────────────────
 if page == "📊 Dashboard":
     st.markdown("## Financial Overview")
-    st.markdown('<p style="color:#30B143;margin-top:-12px">2026 H1 · Courses + Corporate actuals</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#30B143;margin-top:-12px">2026 · Courses + Corporate actuals</p>', unsafe_allow_html=True)
 
     mi = MONTHS.index("Jun")  # default to Jun for H1 snapshot
     sal_m = sum(s["m"][mi] for s in st.session_state.fc_sal)
@@ -457,7 +457,7 @@ if page == "📊 Dashboard":
     tot_r = c_rev + crp_r
 
     col1, col2, col3, col4 = st.columns(4)
-    with col1: kpi("H1 Total Revenue", fmt(tot_r), f"Courses {fmt(c_rev)} · Corp {fmt(crp_r)}", "kpi-pos")
+    with col1: kpi("Total Revenue", fmt(tot_r), f"Courses {fmt(c_rev)} · Corp {fmt(crp_r)}", "kpi-pos")
     with col2: kpi("Course Net Profit", fmt(c_net), f"Margin {pct(c_net/c_rx*100 if c_rx else 0)} · excl. VAT", "kpi-pos" if c_net >= 0 else "kpi-neg")
     with col3: kpi("Corporate Net Profit", fmt(crp_p), f"Margin {pct(crp_p/crp_r*100 if crp_r else 0)}", "kpi-pos")
     with col4: kpi("Fixed Costs · Jun", fmt(sal_m + sub_m), f"{fmt(sal_a + sub_a)} full-year budget", "kpi-warn")
@@ -555,6 +555,37 @@ if page == "📊 Dashboard":
     q4_income = q4_pipe_rev
     q4_expenses = q4_fixed + q4_pipe_cog
     q4_net = q4_income - q4_expenses
+
+    # Annual totals
+    ann_income   = q1_income   + q2_income   + q3_income   + q4_income
+    ann_expenses = q1_expenses + q2_expenses + q3_expenses + q4_expenses
+    ann_net      = q1_net      + q2_net      + q3_net      + q4_net
+
+    # Annual summary card (full width)
+    _ann_color = "#16a34a" if ann_net >= 0 else "#ef4444"
+    _ann_label = "profit" if ann_net >= 0 else "loss"
+    st.markdown(f"""
+    <div style="background:#ffffff;border:1.5px solid {'#bbf7d0' if ann_net >= 0 else '#fecaca'};
+         border-radius:14px;padding:20px 28px;margin-bottom:16px;
+         display:flex;justify-content:space-between;align-items:center">
+        <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:6px">
+                📅 2026 Full-Year Projection
+            </div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;color:{_ann_color}">
+                {fmt(ann_net)}
+            </div>
+            <div style="font-size:12px;color:#6b7280;margin-top:4px">
+                Net {_ann_label} · H1 actuals + H2 pipeline estimate
+            </div>
+        </div>
+        <div style="text-align:right">
+            <div style="font-size:13px;color:#374151;margin-bottom:4px">↑ {fmt(ann_income)} total income</div>
+            <div style="font-size:13px;color:#374151;margin-bottom:4px">↓ {fmt(ann_expenses)} total costs</div>
+            <div style="font-size:12px;color:#9ca3af">Margin {pct(ann_net/ann_income*100 if ann_income else 0)}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # KPI summary row
     col1,col2,col3,col4 = st.columns(4)
@@ -971,12 +1002,10 @@ elif page == "🏢 Corporate Projects":
     tP26 = tR26 - tC26
     b2b = sum(p["revenue"] for p in st.session_state.fc_corp26 if p["type"]=="B2B")
     b2g = sum(p["revenue"] for p in st.session_state.fc_corp26 if p["type"]=="B2G")
-    pp_r = sum(p["rev"] for p in PIPELINE)
 
-    col1,col2,col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     with col1: kpi("2026 Revenue", fmt(tR26), f"B2B {fmt(b2b)} · B2G {fmt(b2g)}", "kpi-pos")
     with col2: kpi("2026 Net Profit", fmt(tP26), f"Margin {pct(tP26/tR26*100 if tR26 else 0)}", "kpi-pos")
-    with col3: kpi("Q3–Q4 Pipeline", fmt(pp_r), f"{len(PIPELINE)} projects incl. GITA H2", "kpi-warn")
 
     st.markdown("<br>", unsafe_allow_html=True)
     rows = []
