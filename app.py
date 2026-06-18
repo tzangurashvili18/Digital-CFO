@@ -574,10 +574,19 @@ if page == "📊 Dashboard":
     q4_expenses = q4_fixed + q4_pipe_cog
     q4_net = q4_income - q4_expenses
 
-    # Actuals only (Q1 + Q2)
-    act_income   = q1_income   + q2_income
-    act_expenses = q1_expenses + q2_expenses
-    act_net      = q1_net      + q2_net
+    # H1 Actuals — direct formula: Course Net Profit + Corp Net Profit − H1 Fixed Costs
+    _h1_course_net  = sum(cpnl(c)["net"] for c in st.session_state.fc_courses)
+    _h1_corp_net    = sum(float(p["revenue"]) - float(p["cog"]) for p in st.session_state.fc_corp26)
+    _h1_fixed       = (sum(sum(s["m"][i] for i in range(6)) for s in st.session_state.fc_sal)
+                     + sum(sum(s["m"][i] for i in range(6)) for s in st.session_state.fc_sub)
+                     + sum(sum(s["m"][i] for i in range(6)) for s in st.session_state.fc_mkt))
+    _h1_course_rev  = sum(cpnl(c)["rv"] for c in st.session_state.fc_courses)
+    _h1_corp_rev    = sum(float(p["revenue"]) for p in st.session_state.fc_corp26)
+    _h1_course_cost = sum(cpnl(c)["cs"] for c in st.session_state.fc_courses)
+    _h1_corp_cog    = sum(float(p["cog"]) for p in st.session_state.fc_corp26)
+    act_income   = _h1_course_rev + _h1_corp_rev
+    act_expenses = _h1_course_cost + _h1_corp_cog + _h1_fixed
+    act_net      = _h1_course_net + _h1_corp_net - _h1_fixed
 
     # Actuals summary card (compact)
     _act_color = "#16a34a" if act_net >= 0 else "#ef4444"
