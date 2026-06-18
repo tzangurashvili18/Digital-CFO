@@ -41,7 +41,7 @@ st.set_page_config(
 )
 
 # ── AUTH ──────────────────────────────────────────────────────────────────────
-PASSCODE = "commschool782@cfo"
+PASSCODE = "C0mm&D!g!t@l26#"
 
 def check_auth():
     if "authenticated" not in st.session_state:
@@ -528,6 +528,14 @@ if page == "📊 Dashboard":
     st.markdown("## 📅 Quarterly P&L — Company Profitability")
     st.markdown('<p style="color:#30B143;margin-top:-12px">Income vs Expenses vs Net Profit by quarter</p>', unsafe_allow_html=True)
 
+    # Helper: assign each corp project to ONE quarter based on its START month
+    def _corp_q(period):
+        first = period.replace("–","-").split("-")[0].strip()[:3]
+        if first in ["Jan","Feb","Mar"]: return 1
+        if first in ["Apr","May","Jun"]: return 2
+        if first in ["Jul","Aug","Sep"]: return 3
+        return 4
+
     # Q1: Jan+Feb+Mar
     q1_sal = sum(sum(s["m"][i] for i in range(3)) for s in st.session_state.fc_sal)
     q1_sub = sum(sum(s["m"][i] for i in range(3)) for s in st.session_state.fc_sub)
@@ -535,8 +543,8 @@ if page == "📊 Dashboard":
     q1_courses = [c for c in st.session_state.fc_courses if c["month"] in ["Jan","Feb","Mar"]]
     q1_course_rev = sum(cpnl(c)["rx"] for c in q1_courses)
     q1_course_costs = sum(cpnl(c)["cs"] for c in q1_courses)
-    q1_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp26 if any(m in p["period"] for m in ["Jan","Feb","Mar"]))
-    q1_corp_cog = sum(p["cog"] for p in st.session_state.fc_corp26 if any(m in p["period"] for m in ["Jan","Feb","Mar"]))
+    q1_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp26 if _corp_q(p["period"]) == 1)
+    q1_corp_cog = sum(p["cog"] for p in st.session_state.fc_corp26 if _corp_q(p["period"]) == 1)
     q1_income = q1_course_rev + q1_corp_rev
     q1_expenses = q1_fixed + q1_course_costs + q1_corp_cog
     q1_net = q1_income - q1_expenses
@@ -548,8 +556,8 @@ if page == "📊 Dashboard":
     q2_courses = [c for c in st.session_state.fc_courses if c["month"] in ["Apr","May","Jun"]]
     q2_course_rev = sum(cpnl(c)["rx"] for c in q2_courses)
     q2_course_costs = sum(cpnl(c)["cs"] for c in q2_courses)
-    q2_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp26 if any(m in p["period"] for m in ["Apr","May","Jun"]))
-    q2_corp_cog = sum(p["cog"] for p in st.session_state.fc_corp26 if any(m in p["period"] for m in ["Apr","May","Jun"]))
+    q2_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp26 if _corp_q(p["period"]) == 2)
+    q2_corp_cog = sum(p["cog"] for p in st.session_state.fc_corp26 if _corp_q(p["period"]) == 2)
     q2_income = q2_course_rev + q2_corp_rev
     q2_expenses = q2_fixed + q2_course_costs + q2_corp_cog
     q2_net = q2_income - q2_expenses
@@ -574,39 +582,30 @@ if page == "📊 Dashboard":
     q4_expenses = q4_fixed + q4_pipe_cog
     q4_net = q4_income - q4_expenses
 
-    # H1 Actuals — Course Net Profit + Corp Net Profit − Full-Year Fixed Costs
-    _h1_course_net  = sum(cpnl(c)["net"] for c in st.session_state.fc_courses)
-    _h1_corp_net    = sum(float(p["revenue"]) - float(p["cog"]) for p in st.session_state.fc_corp26)
-    _ann_fixed      = (sum(sum(s["m"]) for s in st.session_state.fc_sal)
-                     + sum(sum(s["m"]) for s in st.session_state.fc_sub)
-                     + sum(sum(s["m"]) for s in st.session_state.fc_mkt))
-    _h1_course_rev  = sum(cpnl(c)["rv"] for c in st.session_state.fc_courses)
-    _h1_corp_rev    = sum(float(p["revenue"]) for p in st.session_state.fc_corp26)
-    _h1_course_cost = sum(cpnl(c)["cs"] for c in st.session_state.fc_courses)
-    _h1_corp_cog    = sum(float(p["cog"]) for p in st.session_state.fc_corp26)
-    act_income   = _h1_course_rev + _h1_corp_rev
-    act_expenses = _h1_course_cost + _h1_corp_cog + _ann_fixed
-    act_net      = _h1_course_net + _h1_corp_net - _ann_fixed
+    # Annual total = sum of all 4 quarters
+    ann_net      = q1_net      + q2_net      + q3_net      + q4_net
+    ann_income   = q1_income   + q2_income   + q3_income   + q4_income
+    ann_expenses = q1_expenses + q2_expenses + q3_expenses + q4_expenses
 
-    # Actuals summary card (compact)
-    _act_color = "#16a34a" if act_net >= 0 else "#ef4444"
-    _act_label = "profit" if act_net >= 0 else "loss"
+    # Annual summary card (compact)
+    _act_color = "#16a34a" if ann_net >= 0 else "#ef4444"
+    _act_label = "profit" if ann_net >= 0 else "loss"
     st.markdown(f"""
-    <div style="background:#ffffff;border:1.5px solid {'#bbf7d0' if act_net >= 0 else '#fecaca'};
+    <div style="background:#ffffff;border:1.5px solid {'#bbf7d0' if ann_net >= 0 else '#fecaca'};
          border-radius:12px;padding:14px 22px;margin-bottom:16px;
          display:flex;justify-content:space-between;align-items:center">
         <div>
             <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">
-                📊 Net Position · Actuals vs Annual Fixed Costs
+                📊 Full-Year Net · Q1 + Q2 + Q3 + Q4
             </div>
             <div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:{_act_color}">
-                {fmt(act_net)}
+                {fmt(ann_net)}
             </div>
         </div>
         <div style="text-align:right;font-size:12px;color:#6b7280;line-height:1.8">
-            <div>↑ {fmt(act_income)} income</div>
-            <div>↓ {fmt(act_expenses)} costs</div>
-            <div style="color:#9ca3af">Margin {pct(act_net/act_income*100 if act_income else 0)}</div>
+            <div>↑ {fmt(ann_income)} income</div>
+            <div>↓ {fmt(ann_expenses)} costs</div>
+            <div style="color:#9ca3af">Margin {pct(ann_net/ann_income*100 if ann_income else 0)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
