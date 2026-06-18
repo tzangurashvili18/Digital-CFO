@@ -585,17 +585,22 @@ if page == "📊 Dashboard":
     # Annual total — direct formula: all courses + all corp − all fixed costs (incl. marketing)
     _all_courses  = st.session_state.fc_courses + st.session_state.fc_courses_h2
     _all_corp     = st.session_state.fc_corp26  + st.session_state.fc_corp_h2
+    # Use net_adj (manual override) when set, otherwise use computed net
+    ann_course_net = sum(
+        (c["net_adj"] if c.get("net_adj") is not None else cpnl(c)["net"])
+        for c in _all_courses
+    )
     ann_course_rev   = sum(cpnl(c)["rx"] for c in _all_courses)
-    ann_course_costs = sum(cpnl(c)["cs"] for c in _all_courses)
     ann_corp_rev  = sum(p["revenue"] for p in _all_corp)
     ann_corp_cog  = sum(p["cog"]     for p in _all_corp)
+    ann_corp_net  = ann_corp_rev - ann_corp_cog
     ann_sal       = sum(sum(s["m"])  for s in st.session_state.fc_sal)
     ann_sub       = sum(sum(s["m"])  for s in st.session_state.fc_sub)
     ann_mkt       = sum(sum(s["m"])  for s in st.session_state.fc_mkt)
     ann_fixed     = ann_sal + ann_sub + ann_mkt
+    ann_net       = ann_course_net + ann_corp_net - ann_fixed
     ann_income    = ann_course_rev + ann_corp_rev
-    ann_expenses  = ann_fixed + ann_course_costs + ann_corp_cog
-    ann_net       = ann_income - ann_expenses
+    ann_expenses  = ann_income - ann_net
 
     # Annual summary card (compact)
     _act_color = "#16a34a" if ann_net >= 0 else "#ef4444"
@@ -972,7 +977,8 @@ elif page == "🎓 Courses P&L":
                 "zoom": float(r.get("Zoom ₾") or 0), "mkt": float(r.get("Advertising ₾") or 0),
                 "mat": float(r.get("Merch ₾") or 0), "rev": float(r.get("Revenue ₾") or 0),
                 "net_adj": float(r.get("Net Profit ₾") or 0) if r.get("Net Profit ₾") is not None else None}
-    _edited_list = [_row_to_course(r) for _, r in edited_courses.iterrows()]
+    _edited_list = [_row_to_course(r) for _, r in edited_courses.iterrows()
+                    if str(r.get("Program") or "").strip()]
     if _is_full_view:
         _new_full = _edited_list
     else:
