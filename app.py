@@ -1321,120 +1321,400 @@ elif page == "🏢 Corporate Projects":
 
 # ── ANALYTICS ─────────────────────────────────────────────────────────────────
 elif page == "📈 Analytics":
-    st.markdown("## Cost Analytics")
-    st.markdown('<p style="color:#30B143;margin-top:-12px">2026 · Where every lari goes</p>', unsafe_allow_html=True)
+    st.markdown("## 📈 Analytics")
+    st.markdown('<p style="color:#30B143;margin-top:-12px">Course ROI · Break-Even · What-If Simulator · Cost Breakdown</p>', unsafe_allow_html=True)
 
-    # Aggregate all cost categories
-    _sal_total  = sum(sum(s["m"]) for s in st.session_state.fc_sal)
-    _sub_total  = sum(sum(s["m"]) for s in st.session_state.fc_sub)
-    _mkt_fixed  = sum(sum(s["m"]) for s in st.session_state.fc_mkt)
-    _lec_total  = sum(c["lecturer"] for c in st.session_state.fc_courses)
-    _zoom_total = sum(c["zoom"] for c in st.session_state.fc_courses)
-    _mkt_course = sum(c["mkt"]  for c in st.session_state.fc_courses)
-    _mat_total  = sum(c["mat"]  for c in st.session_state.fc_courses)
-    _inst_total = sum(c.get("inst", 0) for c in st.session_state.fc_courses)
-    _corp_cog   = sum(float(p["cog"]) for p in st.session_state.fc_corp26)
-    _adv_total  = _mkt_fixed + _mkt_course
-    _grand_total = _sal_total + _sub_total + _mkt_fixed + _lec_total + _zoom_total + _mkt_course + _mat_total + _inst_total + _corp_cog
+    tab1, tab2, tab3, tab4 = st.tabs(["💸 Cost Analytics", "🏆 Course ROI Ranking", "⚖️ Break-Even Analysis", "🎛️ What-If Simulator"])
 
-    # KPI cards — row 1
-    col1, col2, col3, col4 = st.columns(4)
-    with col1: kpi("💼 Salaries", fmt(_sal_total), "full-year budget", "kpi-neg")
-    with col2: kpi("🎤 Lecturer Fees", fmt(_lec_total), "all courses 2026", "kpi-warn")
-    with col3: kpi("🏢 Subscriptions", fmt(_sub_total), "office + tools + services", "kpi-warn")
-    with col4: kpi("📣 Advertising", fmt(_adv_total), f"fixed {fmt(_mkt_fixed)} + course {fmt(_mkt_course)}", "kpi-warn")
+    # ── TAB 1: COST ANALYTICS ─────────────────────────────────────────────────
+    with tab1:
+        st.markdown("### 💸 Cost Analytics")
+        st.markdown('<p style="color:#6b7280;font-size:13px;margin-top:-8px">2026 · Where every lari goes</p>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+        _sal_total  = sum(sum(s["m"]) for s in st.session_state.fc_sal)
+        _sub_total  = sum(sum(s["m"]) for s in st.session_state.fc_sub)
+        _mkt_fixed  = sum(sum(s["m"]) for s in st.session_state.fc_mkt)
+        _lec_total  = sum(c["lecturer"] for c in st.session_state.fc_courses)
+        _zoom_total = sum(c["zoom"] for c in st.session_state.fc_courses)
+        _mkt_course = sum(c["mkt"]  for c in st.session_state.fc_courses)
+        _mat_total  = sum(c["mat"]  for c in st.session_state.fc_courses)
+        _inst_total = sum(c.get("inst", 0) for c in st.session_state.fc_courses)
+        _corp_cog   = sum(float(p["cog"]) for p in st.session_state.fc_corp26)
+        _adv_total  = _mkt_fixed + _mkt_course
+        _grand_total = _sal_total + _sub_total + _mkt_fixed + _lec_total + _zoom_total + _mkt_course + _mat_total + _inst_total + _corp_cog
 
-    # KPI cards — row 2
-    col1, col2, col3, col4 = st.columns(4)
-    with col1: kpi("📦 Materials", fmt(_mat_total), "course print & supplies", "kpi-warn")
-    with col2: kpi("🎥 Zoom", fmt(_zoom_total), "all course sessions", "kpi-warn")
-    with col3: kpi("🏗️ Corp COG", fmt(_corp_cog), "corporate project costs", "kpi-warn")
-    with col4: kpi("🔒 Grand Total Costs", fmt(_grand_total), "all categories combined", "kpi-neg")
+        col1, col2, col3, col4 = st.columns(4)
+        with col1: kpi("💼 Salaries", fmt(_sal_total), "full-year budget", "kpi-neg")
+        with col2: kpi("🎤 Lecturer Fees", fmt(_lec_total), "all courses 2026", "kpi-warn")
+        with col3: kpi("🏢 Subscriptions", fmt(_sub_total), "office + tools + services", "kpi-warn")
+        with col4: kpi("📣 Advertising", fmt(_adv_total), f"fixed {fmt(_mkt_fixed)} + course {fmt(_mkt_course)}", "kpi-warn")
 
-    st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top:8px'>", unsafe_allow_html=True)
+        col1, col2, col3, col4 = st.columns(4)
+        with col1: kpi("📦 Materials", fmt(_mat_total), "course print & supplies", "kpi-warn")
+        with col2: kpi("🎥 Zoom", fmt(_zoom_total), "all course sessions", "kpi-warn")
+        with col3: kpi("🏗️ Corp COG", fmt(_corp_cog), "corporate project costs", "kpi-warn")
+        with col4: kpi("🔒 Grand Total Costs", fmt(_grand_total), "all categories combined", "kpi-neg")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+        st.markdown("<br>", unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">🍩 Cost Composition</p>', unsafe_allow_html=True)
+            _pie_labels = ["Salaries", "Lecturer Fees", "Subscriptions", "Advertising", "Materials", "Zoom", "Corp COG"]
+            _pie_values = [_sal_total, _lec_total, _sub_total, _adv_total, _mat_total, _zoom_total, _corp_cog]
+            _pie_colors = ["#ef4444", "#a78bfa", "#60a5fa", "#f59e0b", "#34d399", "#22d3ee", "#6b7280"]
+            fig_donut = go.Figure(go.Pie(
+                labels=_pie_labels, values=_pie_values, hole=0.52,
+                marker=dict(colors=_pie_colors, line=dict(color="#ffffff", width=2)),
+                textinfo="percent", textfont=dict(size=11, color="#374151"),
+                hovertemplate="%{label}: ₾ %{value:,}<extra></extra>",
+            ))
+            fig_donut.update_layout(
+                paper_bgcolor="#ffffff", font=dict(color="#374151", size=11),
+                margin=dict(t=20, b=20, l=10, r=10), height=280,
+                showlegend=True,
+                legend=dict(font=dict(size=10), orientation="v", x=1.0, y=0.5, bgcolor="rgba(0,0,0,0)"),
+            )
+            st.plotly_chart(fig_donut, use_container_width=True, config={"displayModeBar": False})
+        with col2:
+            st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">📅 Monthly Fixed Costs (H1)</p>', unsafe_allow_html=True)
+            _sal_m6 = [sum(s["m"][i] for s in st.session_state.fc_sal) for i in range(6)]
+            _sub_m6 = [sum(s["m"][i] for s in st.session_state.fc_sub) for i in range(6)]
+            _mkt_m6 = [sum(s["m"][i] for s in st.session_state.fc_mkt) for i in range(6)]
+            fig_stack = go.Figure()
+            fig_stack.add_trace(go.Bar(name="Salaries",      x=MONTHS[:6], y=_sal_m6, marker_color="#ef4444"))
+            fig_stack.add_trace(go.Bar(name="Subscriptions", x=MONTHS[:6], y=_sub_m6, marker_color="#60a5fa"))
+            fig_stack.add_trace(go.Bar(name="Marketing",     x=MONTHS[:6], y=_mkt_m6, marker_color="#f59e0b"))
+            fig_stack.update_layout(
+                barmode="stack", paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
+                font=dict(color="#374151", size=11),
+                margin=dict(t=30, b=10, l=10, r=10), height=280,
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+                            font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
+                xaxis=dict(showgrid=False, tickfont=dict(size=10, color="#6b7280")),
+                yaxis=dict(showgrid=True, gridcolor="#e5e7eb", tickfont=dict(size=10, color="#6b7280")),
+            )
+            st.plotly_chart(fig_stack, use_container_width=True, config={"displayModeBar": False})
 
-    with col1:
-        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">🍩 Cost Composition</p>', unsafe_allow_html=True)
-        _pie_labels = ["Salaries", "Lecturer Fees", "Subscriptions", "Advertising", "Materials", "Zoom", "Corp COG"]
-        _pie_values = [_sal_total, _lec_total, _sub_total, _adv_total, _mat_total, _zoom_total, _corp_cog]
-        _pie_colors = ["#ef4444", "#a78bfa", "#60a5fa", "#f59e0b", "#34d399", "#22d3ee", "#6b7280"]
-        fig_donut = go.Figure(go.Pie(
-            labels=_pie_labels, values=_pie_values, hole=0.52,
-            marker=dict(colors=_pie_colors, line=dict(color="#ffffff", width=2)),
-            textinfo="percent", textfont=dict(size=11, color="#374151"),
-            hovertemplate="%{label}: ₾ %{value:,}<extra></extra>",
-        ))
-        fig_donut.update_layout(
-            paper_bgcolor="#ffffff",
-            font=dict(color="#374151", size=11),
-            margin=dict(t=20, b=20, l=10, r=10),
-            height=280,
-            showlegend=True,
-            legend=dict(font=dict(size=10), orientation="v", x=1.0, y=0.5,
-                        bgcolor="rgba(0,0,0,0)"),
+        st.markdown("---")
+        st.markdown("### 🎓 Course Cost Breakdown")
+        _crs_rows = []
+        for c in st.session_state.fc_courses:
+            _p = cpnl(c)
+            _crs_rows.append({
+                "Course": c["name"], "Month": c["month"],
+                "Lecturer ₾": c["lecturer"], "Advertising ₾": c["mkt"],
+                "Materials ₾": c["mat"], "Zoom ₾": c["zoom"],
+                "Total Cost ₾": int(_p["cs"]),
+                "Revenue ₾": int(c.get("rev", c["students"] * c["price"])),
+            })
+        df_crs = pd.DataFrame(_crs_rows)
+        st.dataframe(df_crs, use_container_width=True, hide_index=True, column_config={
+            "Course":        st.column_config.TextColumn("Course", width="large"),
+            "Month":         st.column_config.TextColumn("Month"),
+            "Lecturer ₾":   st.column_config.NumberColumn("Lecturer ₾",   format="₾ %d"),
+            "Advertising ₾": st.column_config.NumberColumn("Advertising ₾", format="₾ %d"),
+            "Materials ₾":  st.column_config.NumberColumn("Materials ₾",  format="₾ %d"),
+            "Zoom ₾":       st.column_config.NumberColumn("Zoom ₾",       format="₾ %d"),
+            "Total Cost ₾": st.column_config.NumberColumn("Total Cost ₾", format="₾ %d"),
+            "Revenue ₾":    st.column_config.NumberColumn("Revenue ₾",    format="₾ %d"),
+        })
+        st.markdown(
+            f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;'
+            f'font-weight:700;display:flex;justify-content:space-between">'
+            f'<span>Total Course Costs</span>'
+            f'<span style="color:#d97706">Lecturers {fmt(_lec_total)} · Advertising {fmt(_mkt_course)} · '
+            f'Materials {fmt(_mat_total)} · Zoom {fmt(_zoom_total)}</span></div>',
+            unsafe_allow_html=True
         )
-        st.plotly_chart(fig_donut, use_container_width=True, config={"displayModeBar": False})
 
-    with col2:
-        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">📅 Monthly Fixed Costs (H1)</p>', unsafe_allow_html=True)
-        _sal_m6  = [sum(s["m"][i] for s in st.session_state.fc_sal) for i in range(6)]
-        _sub_m6  = [sum(s["m"][i] for s in st.session_state.fc_sub) for i in range(6)]
-        _mkt_m6  = [sum(s["m"][i] for s in st.session_state.fc_mkt) for i in range(6)]
-        fig_stack = go.Figure()
-        fig_stack.add_trace(go.Bar(name="Salaries",      x=MONTHS[:6], y=_sal_m6, marker_color="#ef4444"))
-        fig_stack.add_trace(go.Bar(name="Subscriptions", x=MONTHS[:6], y=_sub_m6, marker_color="#60a5fa"))
-        fig_stack.add_trace(go.Bar(name="Marketing",     x=MONTHS[:6], y=_mkt_m6, marker_color="#f59e0b"))
-        fig_stack.update_layout(
-            barmode="stack",
+    # ── TAB 2: COURSE ROI RANKING ─────────────────────────────────────────────
+    with tab2:
+        st.markdown("### 🏆 Course ROI Ranking")
+        st.markdown('<p style="color:#6b7280;font-size:13px;margin-top:-8px">All 2026 courses ranked by net margin · excludes payment-only rows</p>', unsafe_allow_html=True)
+
+        _real_courses = [c for c in st.session_state.fc_courses if c.get("students", 0) > 0]
+        roi_rows = []
+        for c in _real_courses:
+            p = cpnl(c)
+            n = _eff_net(c)
+            _rx = p["rx"]
+            roi_rows.append({
+                "Course": c["name"],
+                "Month": c["month"],
+                "Students": c["students"],
+                "Revenue ₾": int(p["rv"]),
+                "Total Cost ₾": int(p["cs"]),
+                "Net Profit ₾": int(n),
+                "Margin %": round(n / _rx * 100, 1) if _rx else 0,
+                "Rev/Student ₾": int(p["rv"] / c["students"]) if c["students"] else 0,
+                "Profit/Student ₾": int(n / c["students"]) if c["students"] else 0,
+            })
+        roi_rows.sort(key=lambda x: x["Margin %"], reverse=True)
+        df_roi = pd.DataFrame(roi_rows)
+        df_roi.insert(0, "Rank", range(1, len(df_roi) + 1))
+
+        st.dataframe(df_roi, use_container_width=True, hide_index=True, column_config={
+            "Rank":              st.column_config.NumberColumn("Rank", format="%d", width="small"),
+            "Course":            st.column_config.TextColumn("Course", width="large"),
+            "Month":             st.column_config.TextColumn("Month", width="small"),
+            "Students":          st.column_config.NumberColumn("Students", format="%d"),
+            "Revenue ₾":         st.column_config.NumberColumn("Revenue ₾", format="₾ %d"),
+            "Total Cost ₾":      st.column_config.NumberColumn("Total Cost ₾", format="₾ %d"),
+            "Net Profit ₾":      st.column_config.NumberColumn("Net Profit ₾", format="₾ %d"),
+            "Margin %":          st.column_config.NumberColumn("Margin %", format="%.1f%%"),
+            "Rev/Student ₾":     st.column_config.NumberColumn("Rev/Student ₾", format="₾ %d"),
+            "Profit/Student ₾":  st.column_config.NumberColumn("Profit/Student ₾", format="₾ %d"),
+        })
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">Revenue vs Net Profit — bubble size = students</p>', unsafe_allow_html=True)
+
+        fig_scatter = go.Figure()
+        for row in roi_rows:
+            mg = row["Margin %"]
+            color = "#16a34a" if mg >= 50 else ("#d97706" if mg >= 25 else "#ef4444")
+            fig_scatter.add_trace(go.Scatter(
+                x=[row["Revenue ₾"]], y=[row["Net Profit ₾"]],
+                mode="markers+text",
+                marker=dict(size=max(10, row["Students"] * 2.2), color=color, opacity=0.72,
+                            line=dict(color="#ffffff", width=1)),
+                text=[row["Course"][:14]],
+                textposition="top center",
+                textfont=dict(size=9, color="#374151"),
+                name=row["Course"],
+                showlegend=False,
+                hovertemplate=(
+                    f"<b>{row['Course']}</b><br>"
+                    f"Revenue: ₾ {row['Revenue ₾']:,}<br>"
+                    f"Net Profit: ₾ {row['Net Profit ₾']:,}<br>"
+                    f"Margin: {row['Margin %']:.1f}%<br>"
+                    f"Students: {row['Students']}<extra></extra>"
+                ),
+            ))
+        _max_rev_sc = max((r["Revenue ₾"] for r in roi_rows), default=1)
+        fig_scatter.add_shape(type="line", x0=0, y0=0, x1=_max_rev_sc * 1.1, y1=0,
+                              line=dict(color="#ef4444", width=1, dash="dot"))
+        fig_scatter.update_layout(
             paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
             font=dict(color="#374151", size=11),
-            margin=dict(t=30, b=10, l=10, r=10),
-            height=280,
+            margin=dict(t=20, b=20, l=10, r=10), height=340,
+            xaxis=dict(title="Revenue ₾", showgrid=True, gridcolor="#e5e7eb",
+                       tickfont=dict(size=10, color="#6b7280")),
+            yaxis=dict(title="Net Profit ₾", showgrid=True, gridcolor="#e5e7eb",
+                       tickfont=dict(size=10, color="#6b7280")),
+        )
+        st.plotly_chart(fig_scatter, use_container_width=True, config={"displayModeBar": False})
+
+    # ── TAB 3: BREAK-EVEN ANALYSIS ────────────────────────────────────────────
+    with tab3:
+        st.markdown("### ⚖️ Break-Even Analysis")
+        st.markdown('<p style="color:#6b7280;font-size:13px;margin-top:-8px">How many courses / students / revenue needed to cover fixed costs</p>', unsafe_allow_html=True)
+
+        _be_real = [c for c in st.session_state.fc_courses if c.get("students", 0) > 0]
+        _avg_net_per_course = (sum(_eff_net(c) for c in _be_real) / len(_be_real)) if _be_real else 0
+        _avg_rev_per_course = (sum(cpnl(c)["rv"] for c in _be_real) / len(_be_real)) if _be_real else 0
+        _avg_rx_per_course  = (_avg_rev_per_course / 1.18)
+        _avg_students_be    = (sum(c["students"] for c in _be_real) / len(_be_real)) if _be_real else 0
+        _avg_price_be       = (sum(c["price"] for c in _be_real) / len(_be_real)) if _be_real else 0
+        _avg_margin_be      = (_avg_net_per_course / _avg_rx_per_course * 100) if _avg_rx_per_course else 0
+
+        _fc_ann_be  = (sum(sum(s["m"]) for s in st.session_state.fc_sal) +
+                       sum(sum(s["m"]) for s in st.session_state.fc_sub) +
+                       sum(sum(s["m"]) for s in st.session_state.fc_mkt))
+        _fc_mon_be  = _fc_ann_be / 12
+
+        _be_courses  = math.ceil(_fc_ann_be / _avg_net_per_course) if _avg_net_per_course > 0 else 0
+        _be_revenue  = (_fc_ann_be / (_avg_margin_be / 100)) if _avg_margin_be > 0 else 0
+        _be_students = math.ceil(_be_courses * _avg_students_be) if _be_courses else 0
+
+        _cur_courses_be = len(_be_real)
+        _cur_net_be     = sum(_eff_net(c) for c in _be_real)
+
+        col1, col2, col3 = st.columns(3)
+        with col1: kpi("Annual Fixed Costs", fmt(_fc_ann_be), f"avg {fmt(_fc_mon_be)}/month", "kpi-neg")
+        with col2: kpi("Break-Even Courses", str(_be_courses), f"at avg {fmt(_avg_net_per_course)} net/course", "kpi-warn")
+        with col3: kpi("Break-Even Students", str(_be_students), f"at avg {_avg_students_be:.0f} students/course", "kpi-warn")
+
+        st.markdown("<div style='margin-top:8px'>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
+        with col1: kpi("Break-Even Revenue", fmt(_be_revenue), f"at avg {pct(_avg_margin_be)} margin", "kpi-warn")
+        with col2: kpi("Current H1 Courses", str(_cur_courses_be), f"net {fmt(_cur_net_be)}", "kpi-pos" if _cur_net_be >= _fc_ann_be / 2 else "kpi-warn")
+        with col3:
+            _surplus_be = _cur_net_be - _fc_ann_be / 2
+            _cov_pct    = min(_cur_net_be / (_fc_ann_be / 2) * 100, 200) if _fc_ann_be else 0
+            kpi("H1 Fixed Cost Coverage", pct(_cov_pct),
+                f"{'surplus' if _surplus_be >= 0 else 'gap'} {fmt(abs(_surplus_be))}",
+                "kpi-pos" if _surplus_be >= 0 else "kpi-neg")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        _pct_done_be = min(_cur_courses_be / _be_courses * 100, 100) if _be_courses else 100
+        st.markdown(f"""
+        <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:20px 24px;margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                <span style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:1px;text-transform:uppercase">Course Break-Even Progress (H1 actuals vs annual target)</span>
+                <span style="font-size:13px;font-weight:700;color:#374151">{_cur_courses_be} / {_be_courses} courses</span>
+            </div>
+            <div style="background:#f3f4f6;border-radius:8px;height:16px;overflow:hidden">
+                <div style="background:{'#16a34a' if _pct_done_be>=100 else '#d97706'};height:100%;width:{_pct_done_be:.0f}%;border-radius:8px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:#9ca3af">
+                <span>0 courses</span>
+                <span style="color:{'#16a34a' if _pct_done_be>=100 else '#d97706'};font-weight:700">{_pct_done_be:.0f}% of annual break-even</span>
+                <span>{_be_courses} courses needed</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">Course Net Profit vs Fixed Costs — by Quarter</p>', unsafe_allow_html=True)
+        _q_idx_be = [range(0,3), range(3,6), range(6,9), range(9,12)]
+        _q_courses_be = [
+            [c for c in st.session_state.fc_courses if c.get("month") in ["Jan","Feb","Mar"]],
+            [c for c in st.session_state.fc_courses if c.get("month") in ["Apr","May","Jun"]],
+            [c for c in (st.session_state.fc_courses + st.session_state.fc_courses_h2) if c.get("month") in ["Jul","Aug","Sep"]],
+            [],
+        ]
+        _qfc_be, _qnet_be, _qlabels_be = [], [], []
+        for qi, (ql, qidx, qcrs) in enumerate(zip(["Q1","Q2","Q3","Q4"], _q_idx_be, _q_courses_be)):
+            _qf = (sum(sum(s["m"][i] for i in qidx) for s in st.session_state.fc_sal) +
+                   sum(sum(s["m"][i] for i in qidx) for s in st.session_state.fc_sub) +
+                   sum(sum(s["m"][i] for i in qidx) for s in st.session_state.fc_mkt))
+            _qn = sum(_eff_net(c) for c in qcrs)
+            _qfc_be.append(_qf); _qnet_be.append(_qn); _qlabels_be.append(ql)
+        fig_be = go.Figure()
+        fig_be.add_trace(go.Bar(name="Fixed Costs", x=_qlabels_be, y=_qfc_be, marker_color="#ef4444",
+                                text=[fmt(v) for v in _qfc_be], textposition="outside", textfont=dict(size=10, color="#ef4444")))
+        fig_be.add_trace(go.Bar(name="Course Net Profit", x=_qlabels_be, y=_qnet_be, marker_color="#16a34a",
+                                text=[fmt(v) for v in _qnet_be], textposition="outside", textfont=dict(size=10, color="#16a34a")))
+        fig_be.update_layout(
+            barmode="group", bargap=0.3, bargroupgap=0.08,
+            paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
+            font=dict(color="#374151", size=11),
+            margin=dict(t=30, b=20, l=10, r=10), height=280,
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
                         font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
-            xaxis=dict(showgrid=False, tickfont=dict(size=10, color="#6b7280")),
+            xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#374151")),
             yaxis=dict(showgrid=True, gridcolor="#e5e7eb", tickfont=dict(size=10, color="#6b7280")),
         )
-        st.plotly_chart(fig_stack, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig_be, use_container_width=True, config={"displayModeBar": False})
 
-    # Course cost breakdown table
-    st.markdown("---")
-    st.markdown("### 🎓 Course Cost Breakdown")
-    _crs_rows = []
-    for c in st.session_state.fc_courses:
-        _p = cpnl(c)
-        _crs_rows.append({
-            "Course": c["name"], "Month": c["month"],
-            "Lecturer ₾": c["lecturer"],
-            "Advertising ₾": c["mkt"],
-            "Materials ₾": c["mat"],
-            "Zoom ₾": c["zoom"],
-            "Total Cost ₾": int(_p["cs"]),
-            "Revenue ₾": int(c.get("rev", c["students"] * c["price"])),
-        })
-    df_crs = pd.DataFrame(_crs_rows)
-    st.dataframe(df_crs, use_container_width=True, hide_index=True, column_config={
-        "Course":        st.column_config.TextColumn("Course", width="large"),
-        "Month":         st.column_config.TextColumn("Month"),
-        "Lecturer ₾":   st.column_config.NumberColumn("Lecturer ₾",   format="₾ %d"),
-        "Advertising ₾": st.column_config.NumberColumn("Advertising ₾", format="₾ %d"),
-        "Materials ₾":  st.column_config.NumberColumn("Materials ₾",  format="₾ %d"),
-        "Zoom ₾":       st.column_config.NumberColumn("Zoom ₾",       format="₾ %d"),
-        "Total Cost ₾": st.column_config.NumberColumn("Total Cost ₾", format="₾ %d"),
-        "Revenue ₾":    st.column_config.NumberColumn("Revenue ₾",    format="₾ %d"),
-    })
-    st.markdown(
-        f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;'
-        f'font-weight:700;display:flex;justify-content:space-between">'
-        f'<span>Total Course Costs</span>'
-        f'<span style="color:#d97706">Lecturers {fmt(_lec_total)} · Advertising {fmt(_mkt_course)} · '
-        f'Materials {fmt(_mat_total)} · Zoom {fmt(_zoom_total)}</span></div>',
-        unsafe_allow_html=True
-    )
+        st.markdown(
+            f'<div class="insight-card"><span style="font-size:18px">💡</span>'
+            f'<span style="font-size:13px;color:#374151;line-height:1.6">Based on 2026 H1 actuals: avg <b>{_avg_students_be:.0f} students</b> · '
+            f'<b>{fmt(_avg_price_be)}</b> price · <b>{pct(_avg_margin_be)}</b> margin · <b>{fmt(_avg_net_per_course)}</b> net/course. '
+            f'To fully cover <b>{fmt(_fc_ann_be)}</b> annual fixed costs you need <b>{_be_courses} courses</b> or '
+            f'<b>{_be_students} students</b> at this average profile.</span></div>',
+            unsafe_allow_html=True
+        )
+
+    # ── TAB 4: WHAT-IF SIMULATOR ──────────────────────────────────────────────
+    with tab4:
+        st.markdown("### 🎛️ What-If Simulator")
+        st.markdown('<p style="color:#6b7280;font-size:13px;margin-top:-8px">Adjust the sliders to model different scenarios — profit updates instantly</p>', unsafe_allow_html=True)
+
+        _sim_real = [c for c in st.session_state.fc_courses if c.get("students", 0) > 0]
+        _base_price_s    = int(sum(c["price"]    for c in _sim_real) / len(_sim_real)) if _sim_real else 1400
+        _base_students_s = int(sum(c["students"] for c in _sim_real) / len(_sim_real)) if _sim_real else 8
+        _base_rv_tot     = sum(c["students"] * c["price"] for c in _sim_real)
+        _base_lec_pct_s  = (sum(c["lecturer"] for c in _sim_real) / _base_rv_tot * 100) if _base_rv_tot else 30.0
+        _base_mkt_pct_s  = (sum(c["mkt"]      for c in _sim_real) / _base_rv_tot * 100) if _base_rv_tot else 8.0
+        _fc_ann_s        = (sum(sum(s["m"]) for s in st.session_state.fc_sal) +
+                            sum(sum(s["m"]) for s in st.session_state.fc_sub) +
+                            sum(sum(s["m"]) for s in st.session_state.fc_mkt))
+        _corp_net_cur_s  = sum(p["revenue"] - p["cog"] for p in st.session_state.fc_corp26)
+
+        col_sl, col_res = st.columns([1, 1])
+        with col_sl:
+            sim_courses  = st.slider("📚 Courses per year",           min_value=5,   max_value=80,    value=min(len(_sim_real) * 2, 40), step=1)
+            sim_students = st.slider("👥 Avg students per course",     min_value=3,   max_value=50,    value=_base_students_s, step=1)
+            sim_price    = st.slider("💰 Avg price/student (₾ incl. VAT)", min_value=500, max_value=5000, value=_base_price_s, step=50)
+            sim_lec_pct  = st.slider("🎤 Lecturer fee (% of gross rev)", min_value=5, max_value=65,   value=int(_base_lec_pct_s), step=1)
+            sim_mkt_pct  = st.slider("📣 Advertising (% of gross rev)",  min_value=1, max_value=30,   value=max(1, int(_base_mkt_pct_s)), step=1)
+            sim_corp_net = st.slider("🏢 Corporate net profit (₾)",    min_value=0,   max_value=400000, value=int(_corp_net_cur_s), step=5000)
+
+        # Compute simulation
+        _sim_rv_per   = sim_students * sim_price
+        _sim_rx_per   = _sim_rv_per / 1.18
+        _sim_lec_per  = _sim_rv_per * sim_lec_pct / 100
+        _sim_mkt_per  = _sim_rv_per * sim_mkt_pct / 100
+        _sim_zoom_per = 40
+        _sim_mat_per  = sim_students * 45
+        _sim_cost_per = _sim_lec_per + _sim_mkt_per + _sim_zoom_per + _sim_mat_per
+        _sim_net_per  = _sim_rx_per - _sim_cost_per
+        _sim_margin_s = (_sim_net_per / _sim_rx_per * 100) if _sim_rx_per else 0
+        _sim_total_rv = _sim_rv_per * sim_courses
+        _sim_cnet     = _sim_net_per * sim_courses
+        _sim_total_net = _sim_cnet + sim_corp_net - _fc_ann_s
+
+        with col_res:
+            st.markdown("<br>", unsafe_allow_html=True)
+            _c_res = "#16a34a" if _sim_total_net >= 0 else "#ef4444"
+            _l_res = "NET PROFIT" if _sim_total_net >= 0 else "NET LOSS"
+            st.markdown(f"""
+            <div style="background:#ffffff;border:2px solid {'#bbf7d0' if _sim_total_net>=0 else '#fecaca'};
+                 border-radius:14px;padding:24px 28px;margin-bottom:12px;text-align:center">
+                <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#9ca3af;margin-bottom:8px">{_l_res} (FULL YEAR)</div>
+                <div style="font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;color:{_c_res}">{fmt(_sim_total_net)}</div>
+                <div style="font-size:12px;color:#6b7280;margin-top:8px">
+                    Courses net: {fmt(_sim_cnet)} · Corp: {fmt(sim_corp_net)}<br>
+                    Fixed costs: {fmt(_fc_ann_s)}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            kpi("Gross Revenue", fmt(_sim_total_rv), f"{sim_courses} courses × {fmt(_sim_rv_per)}", "kpi-pos")
+            st.markdown("<div style='margin-top:8px'>", unsafe_allow_html=True)
+            kpi("Per-Course Net Profit", fmt(_sim_net_per), f"Margin {pct(_sim_margin_s)}", "kpi-pos" if _sim_net_per >= 0 else "kpi-neg")
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        # ── GOAL SEEK ──────────────────────────────────────────────────────────
+        st.markdown("---")
+        st.markdown("#### 🎯 Goal Seek — What do I need to hit a profit target?")
+        target_profit = st.number_input("Target annual net profit (₾)", min_value=0, max_value=2000000, value=100000, step=10000)
+
+        _needed_cnet  = target_profit - sim_corp_net + _fc_ann_s  # course net needed
+        _needed_crses = math.ceil(_needed_cnet / _sim_net_per) if _sim_net_per > 0 else None
+        _needed_studs = (math.ceil(_needed_crses * sim_students) if _needed_crses else None)
+        _needed_rev   = (_needed_cnet / (_sim_margin_s / 100)) if _sim_margin_s > 0 else None
+
+        # Price needed if keeping same course count
+        _k = (1 / 1.18 - sim_lec_pct / 100 - sim_mkt_pct / 100)
+        _fixed_per_c  = _sim_zoom_per + _sim_mat_per
+        _needed_net_per = (_needed_cnet / sim_courses) if sim_courses > 0 else 0
+        _needed_price_s = ((_needed_net_per + _fixed_per_c) / _k / sim_students) if (_k > 0 and sim_students > 0) else None
+
+        gcol1, gcol2, gcol3 = st.columns(3)
+        with gcol1:
+            _lc = str(_needed_crses) if (_needed_crses and _needed_crses > 0) else "N/A"
+            kpi("Courses Needed", _lc, f"at avg {fmt(_sim_net_per)}/course", "kpi-warn")
+        with gcol2:
+            _ls = str(_needed_studs) if (_needed_studs and _needed_studs > 0) else "N/A"
+            kpi("Students Needed", _ls, f"at {sim_students} per course", "kpi-warn")
+        with gcol3:
+            _lp = fmt(_needed_price_s) if (_needed_price_s and _needed_price_s > 0) else "N/A"
+            kpi("Price/Student Needed", _lp, f"keeping {sim_courses} courses", "kpi-warn")
+
+        if _needed_crses and _needed_crses > 0:
+            _gap_c = _needed_crses - sim_courses
+            if _gap_c > 0:
+                _price_gap = int(_needed_price_s - sim_price) if _needed_price_s else 0
+                st.markdown(
+                    f'<div class="insight-card"><span style="font-size:18px">🎯</span>'
+                    f'<span style="font-size:13px;color:#374151;line-height:1.6">To hit <b>{fmt(target_profit)}</b>, you need either: '
+                    f'<b>{_gap_c} more courses</b> (total {_needed_crses}) · or raise avg price by '
+                    f'<b>₾ {abs(_price_gap):,}/student</b> keeping {sim_courses} courses · or grow corporate net by '
+                    f'<b>{fmt(target_profit - _sim_total_net - sim_corp_net + int(_corp_net_cur_s))}</b>.</span></div>',
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(
+                    f'<div class="insight-card"><span style="font-size:18px">✅</span>'
+                    f'<span style="font-size:13px;color:#16a34a;line-height:1.6">Your current simulation already exceeds the target of <b>{fmt(target_profit)}</b>. You are on track!</span></div>',
+                    unsafe_allow_html=True
+                )
+
 
 # ── HISTORY ───────────────────────────────────────────────────────────────────
 elif page == "🕐 History":
