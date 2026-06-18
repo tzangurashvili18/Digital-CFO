@@ -397,13 +397,15 @@ nav_items = [
     ("📌", "Fixed Costs"),
     ("🎓", "Courses P&L"),
     ("🏢", "Corporate Projects"),
+    ("📈", "Analytics"),
+    ("🕐", "History"),
 ]
 
 with st.sidebar:
     # ── Logo + brand header ────────────────────────────────────────────────────
     st.markdown("""
     <div style="padding:0 16px 12px;margin-top:-8px">
-        <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9ca3af;margin:0 0 2px">Commschool</p>
+        <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#30B143;margin:0 0 2px">Commschool</p>
         <h2 style="font-size:19px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif;line-height:1.15">Digital <span style="color:#30B143">CFO</span></h2>
         <p style="font-size:10px;color:#9ca3af;margin:1px 0 0;letter-spacing:0.5px">Internal finance</p>
     </div>
@@ -424,7 +426,7 @@ with st.sidebar:
 
     # ── Footer ────────────────────────────────────────────────────────────────
     st.markdown('<hr style="border-color:#e5e7eb;margin:0 0 6px">', unsafe_allow_html=True)
-    st.markdown('<p style="font-size:10px;color:#9ca3af;padding:0 4px;margin-bottom:8px">₾ GEL · 2026 · H1 actuals</p>', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:10px;color:#9ca3af;padding:0 4px;margin-bottom:8px">₾ GEL · 2026 · Actuals + Forecast</p>', unsafe_allow_html=True)
     if st.button("🔒 Lock", key="lock_btn", use_container_width=True):
         st.session_state.authenticated = False
         st.rerun()
@@ -471,7 +473,7 @@ if page == "📊 Dashboard":
     mkt_t  = sum(c["mkt"] for c in st.session_state.fc_courses)
 
     with col1:
-        st.markdown('<div class="kpi-card"><div class="kpi-label">📈 Revenue Mix</div></div>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">📈 Revenue Mix</p>', unsafe_allow_html=True)
         bar_chart([
             {"l":"Own Courses","v":own_r,"c":"#86efac"},
             {"l":"GITA Courses","v":gita_r,"c":"#22c55e"},
@@ -480,7 +482,7 @@ if page == "📊 Dashboard":
         ])
 
     with col2:
-        st.markdown('<div class="kpi-card"><div class="kpi-label">💸 Cost Structure</div></div>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">💸 Cost Structure</p>', unsafe_allow_html=True)
         bar_chart([
             {"l":"Salaries","v":sal_a,"c":"#ef4444"},
             {"l":"Admin+Subs","v":sub_a,"c":"#60a5fa"},
@@ -1025,37 +1027,6 @@ elif page == "🏢 Corporate Projects":
     tP26e = _net26.sum()
     st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#16a34a">{fmt(tR26e)} revenue · {fmt(tP26e)} profit · {pct(tP26e/tR26e*100 if tR26e else 0)} margin</span></div>', unsafe_allow_html=True)
 
-    # ── PIPELINE ──────────────────────────────────────────────────────────────
-    st.markdown("---")
-    st.markdown("### 🔮 Q3–Q4 Pipeline")
-    st.markdown('<p style="color:#30B143;margin-top:-12px">Confirmed + planning stage projects</p>', unsafe_allow_html=True)
-
-    pipe_rows = []
-    for p in PIPELINE:
-        pf = p["rev"] - p["cog"]
-        mg = pf / p["rev"] * 100 if p["rev"] else 0
-        pipe_rows.append({
-            "Project": p["name"], "Type": p["type"], "Quarter": p["q"],
-            "Revenue ₾": p["rev"], "COG ₾": p["cog"],
-            "Net Profit ₾": int(pf), "Margin %": round(mg, 1), "Stage": p["stage"]
-        })
-    df_pipe = pd.DataFrame(pipe_rows)
-    st.data_editor(df_pipe, use_container_width=True, hide_index=True, key="pipe_editor",
-        column_config={
-            "Project": st.column_config.TextColumn("Project", width="large"),
-            "Type": st.column_config.SelectboxColumn("Type", options=["B2B", "B2G"]),
-            "Quarter": st.column_config.TextColumn("Quarter"),
-            "Revenue ₾": st.column_config.NumberColumn("Revenue ₾", min_value=0, format="₾ %d"),
-            "COG ₾": st.column_config.NumberColumn("COG ₾", min_value=0, format="₾ %d"),
-            "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %d"),
-            "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
-            "Stage": st.column_config.SelectboxColumn("Stage", options=["Confirmed", "Planning", "Upcoming"]),
-        })
-    pipe_r = sum(p["rev"] for p in PIPELINE)
-    pipe_c = sum(p["cog"] for p in PIPELINE)
-    pipe_p = pipe_r - pipe_c
-    st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Pipeline Q3–Q4</span><span style="color:#d97706">{fmt(pipe_r)} revenue · {fmt(pipe_p)} profit · {pct(pipe_p/pipe_r*100 if pipe_r else 0)} margin</span></div>', unsafe_allow_html=True)
-
     # ── 2025 HISTORY ──────────────────────────────────────────────────────────
     st.markdown("---")
     st.markdown("### 📜 2025 Corporate History")
@@ -1093,3 +1064,248 @@ elif page == "🏢 Corporate Projects":
             "Margin %": st.column_config.NumberColumn("Margin %", format="%.1f%%"),
         })
     st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2025</span><span style="color:#16a34a">{fmt(tR25)} revenue · {fmt(tP25)} profit · {pct(tP25/tR25*100 if tR25 else 0)} margin</span></div>', unsafe_allow_html=True)
+
+# ── ANALYTICS ─────────────────────────────────────────────────────────────────
+elif page == "📈 Analytics":
+    st.markdown("## Cost Analytics")
+    st.markdown('<p style="color:#30B143;margin-top:-12px">2026 · Where every lari goes</p>', unsafe_allow_html=True)
+
+    # Aggregate all cost categories
+    _sal_total  = sum(sum(s["m"]) for s in st.session_state.fc_sal)
+    _sub_total  = sum(sum(s["m"]) for s in st.session_state.fc_sub)
+    _mkt_fixed  = sum(sum(s["m"]) for s in st.session_state.fc_mkt)
+    _lec_total  = sum(c["lecturer"] for c in st.session_state.fc_courses)
+    _zoom_total = sum(c["zoom"] for c in st.session_state.fc_courses)
+    _mkt_course = sum(c["mkt"]  for c in st.session_state.fc_courses)
+    _mat_total  = sum(c["mat"]  for c in st.session_state.fc_courses)
+    _inst_total = sum(c.get("inst", 0) for c in st.session_state.fc_courses)
+    _corp_cog   = sum(float(p["cog"]) for p in st.session_state.fc_corp26)
+    _adv_total  = _mkt_fixed + _mkt_course
+    _grand_total = _sal_total + _sub_total + _mkt_fixed + _lec_total + _zoom_total + _mkt_course + _mat_total + _inst_total + _corp_cog
+
+    # KPI cards — row 1
+    col1, col2, col3, col4 = st.columns(4)
+    with col1: kpi("💼 Salaries", fmt(_sal_total), "full-year budget", "kpi-neg")
+    with col2: kpi("🎤 Lecturer Fees", fmt(_lec_total), "all courses 2026", "kpi-warn")
+    with col3: kpi("🏢 Subscriptions", fmt(_sub_total), "office + tools + services", "kpi-warn")
+    with col4: kpi("📣 Advertising", fmt(_adv_total), f"fixed {fmt(_mkt_fixed)} + course {fmt(_mkt_course)}", "kpi-warn")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # KPI cards — row 2
+    col1, col2, col3, col4 = st.columns(4)
+    with col1: kpi("📦 Materials", fmt(_mat_total), "course print & supplies", "kpi-warn")
+    with col2: kpi("🎥 Zoom", fmt(_zoom_total), "all course sessions", "kpi-warn")
+    with col3: kpi("🏗️ Corp COG", fmt(_corp_cog), "corporate project costs", "kpi-warn")
+    with col4: kpi("🔒 Grand Total Costs", fmt(_grand_total), "all categories combined", "kpi-neg")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">🍩 Cost Composition</p>', unsafe_allow_html=True)
+        _pie_labels = ["Salaries", "Lecturer Fees", "Subscriptions", "Advertising", "Materials", "Zoom", "Corp COG"]
+        _pie_values = [_sal_total, _lec_total, _sub_total, _adv_total, _mat_total, _zoom_total, _corp_cog]
+        _pie_colors = ["#ef4444", "#a78bfa", "#60a5fa", "#f59e0b", "#34d399", "#22d3ee", "#6b7280"]
+        fig_donut = go.Figure(go.Pie(
+            labels=_pie_labels, values=_pie_values, hole=0.52,
+            marker=dict(colors=_pie_colors, line=dict(color="#ffffff", width=2)),
+            textinfo="percent", textfont=dict(size=11, color="#374151"),
+            hovertemplate="%{label}: ₾ %{value:,}<extra></extra>",
+        ))
+        fig_donut.update_layout(
+            paper_bgcolor="#ffffff",
+            font=dict(color="#374151", size=11),
+            margin=dict(t=20, b=20, l=10, r=10),
+            height=280,
+            showlegend=True,
+            legend=dict(font=dict(size=10), orientation="v", x=1.0, y=0.5,
+                        bgcolor="rgba(0,0,0,0)"),
+        )
+        st.plotly_chart(fig_donut, use_container_width=True, config={"displayModeBar": False})
+
+    with col2:
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">📅 Monthly Fixed Costs (H1)</p>', unsafe_allow_html=True)
+        _sal_m6  = [sum(s["m"][i] for s in st.session_state.fc_sal) for i in range(6)]
+        _sub_m6  = [sum(s["m"][i] for s in st.session_state.fc_sub) for i in range(6)]
+        _mkt_m6  = [sum(s["m"][i] for s in st.session_state.fc_mkt) for i in range(6)]
+        fig_stack = go.Figure()
+        fig_stack.add_trace(go.Bar(name="Salaries",      x=MONTHS[:6], y=_sal_m6, marker_color="#ef4444"))
+        fig_stack.add_trace(go.Bar(name="Subscriptions", x=MONTHS[:6], y=_sub_m6, marker_color="#60a5fa"))
+        fig_stack.add_trace(go.Bar(name="Marketing",     x=MONTHS[:6], y=_mkt_m6, marker_color="#f59e0b"))
+        fig_stack.update_layout(
+            barmode="stack",
+            paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
+            font=dict(color="#374151", size=11),
+            margin=dict(t=30, b=10, l=10, r=10),
+            height=280,
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+                        font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
+            xaxis=dict(showgrid=False, tickfont=dict(size=10, color="#6b7280")),
+            yaxis=dict(showgrid=True, gridcolor="#e5e7eb", tickfont=dict(size=10, color="#6b7280")),
+        )
+        st.plotly_chart(fig_stack, use_container_width=True, config={"displayModeBar": False})
+
+    # Course cost breakdown table
+    st.markdown("---")
+    st.markdown("### 🎓 Course Cost Breakdown")
+    _crs_rows = []
+    for c in st.session_state.fc_courses:
+        _p = cpnl(c)
+        _crs_rows.append({
+            "Course": c["name"], "Month": c["month"],
+            "Lecturer ₾": c["lecturer"],
+            "Advertising ₾": c["mkt"],
+            "Materials ₾": c["mat"],
+            "Zoom ₾": c["zoom"],
+            "Total Cost ₾": int(_p["cs"]),
+            "Revenue ₾": int(c.get("rev", c["students"] * c["price"])),
+        })
+    df_crs = pd.DataFrame(_crs_rows)
+    st.dataframe(df_crs, use_container_width=True, hide_index=True, column_config={
+        "Course":        st.column_config.TextColumn("Course", width="large"),
+        "Month":         st.column_config.TextColumn("Month"),
+        "Lecturer ₾":   st.column_config.NumberColumn("Lecturer ₾",   format="₾ %d"),
+        "Advertising ₾": st.column_config.NumberColumn("Advertising ₾", format="₾ %d"),
+        "Materials ₾":  st.column_config.NumberColumn("Materials ₾",  format="₾ %d"),
+        "Zoom ₾":       st.column_config.NumberColumn("Zoom ₾",       format="₾ %d"),
+        "Total Cost ₾": st.column_config.NumberColumn("Total Cost ₾", format="₾ %d"),
+        "Revenue ₾":    st.column_config.NumberColumn("Revenue ₾",    format="₾ %d"),
+    })
+    st.markdown(
+        f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;'
+        f'font-weight:700;display:flex;justify-content:space-between">'
+        f'<span>Total Course Costs</span>'
+        f'<span style="color:#d97706">Lecturers {fmt(_lec_total)} · Advertising {fmt(_mkt_course)} · '
+        f'Materials {fmt(_mat_total)} · Zoom {fmt(_zoom_total)}</span></div>',
+        unsafe_allow_html=True
+    )
+
+# ── HISTORY ───────────────────────────────────────────────────────────────────
+elif page == "🕐 History":
+    st.markdown("## 2025 vs 2026")
+    st.markdown('<p style="color:#30B143;margin-top:-12px">Year-over-year · Corporate Projects comparison</p>', unsafe_allow_html=True)
+
+    # 2025 totals
+    _tR25  = sum(p["rev"]    for p in CORP25)
+    _tC25  = sum(p["cost"]   for p in CORP25)
+    _tP25  = sum(p["profit"] for p in CORP25)
+    _b2b25 = sum(p["rev"] for p in CORP25 if p["type"] == "B2B")
+    _b2g25 = sum(p["rev"] for p in CORP25 if p["type"] == "B2G")
+    _mg25  = _tP25 / _tR25 * 100 if _tR25 else 0
+
+    # 2026 totals (from session state)
+    _tR26  = sum(float(p["revenue"]) for p in st.session_state.fc_corp26)
+    _tC26  = sum(float(p["cog"])     for p in st.session_state.fc_corp26)
+    _tP26  = _tR26 - _tC26
+    _b2b26 = sum(float(p["revenue"]) for p in st.session_state.fc_corp26 if p["type"] == "B2B")
+    _b2g26 = sum(float(p["revenue"]) for p in st.session_state.fc_corp26 if p["type"] == "B2G")
+    _mg26  = _tP26 / _tR26 * 100 if _tR26 else 0
+
+    _yoy_r = (_tR26 - _tR25) / _tR25 * 100 if _tR25 else 0
+    _yoy_p = (_tP26 - _tP25) / _tP25 * 100 if _tP25 else 0
+
+    # KPI comparison row
+    col1, col2, col3, col4 = st.columns(4)
+    with col1: kpi("Revenue 2025",    fmt(_tR25), f"B2B {fmt(_b2b25)} · B2G {fmt(_b2g25)}", "kpi-pos")
+    with col2: kpi("Revenue 2026 H1", fmt(_tR26), f"B2B {fmt(_b2b26)} · B2G {fmt(_b2g26)}", "kpi-pos")
+    with col3: kpi("YoY Revenue Growth", pct(_yoy_r),
+                   f"{fmt(_tR25)} → {fmt(_tR26)}",
+                   "kpi-pos" if _yoy_r >= 0 else "kpi-neg")
+    with col4: kpi("YoY Net Profit",     pct(_yoy_p),
+                   f"{fmt(_tP25)} → {fmt(_tP26)}",
+                   "kpi-pos" if _yoy_p >= 0 else "kpi-neg")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Charts
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">📊 Revenue & Profit — YoY</p>', unsafe_allow_html=True)
+        fig_yoy = go.Figure()
+        fig_yoy.add_trace(go.Bar(
+            name="2025", x=["Revenue", "Net Profit"],
+            y=[_tR25, _tP25], marker_color="#94a3b8",
+            text=[fmt(_tR25), fmt(_tP25)], textposition="outside", textfont=dict(size=10),
+        ))
+        fig_yoy.add_trace(go.Bar(
+            name="2026 H1", x=["Revenue", "Net Profit"],
+            y=[_tR26, _tP26], marker_color="#30B143",
+            text=[fmt(_tR26), fmt(_tP26)], textposition="outside", textfont=dict(size=10),
+        ))
+        fig_yoy.update_layout(
+            barmode="group",
+            paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
+            font=dict(color="#374151", size=11),
+            margin=dict(t=40, b=10, l=10, r=10),
+            height=280,
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+                        font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
+            xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#6b7280")),
+            yaxis=dict(showgrid=True, gridcolor="#e5e7eb", tickfont=dict(size=10, color="#6b7280")),
+        )
+        st.plotly_chart(fig_yoy, use_container_width=True, config={"displayModeBar": False})
+
+    with col2:
+        st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">🏷️ B2B vs B2G Revenue</p>', unsafe_allow_html=True)
+        fig_split = go.Figure()
+        fig_split.add_trace(go.Bar(
+            name="B2B", x=["2025", "2026 H1"],
+            y=[_b2b25, _b2b26], marker_color="#16a34a",
+            text=[fmt(_b2b25), fmt(_b2b26)], textposition="outside", textfont=dict(size=10),
+        ))
+        fig_split.add_trace(go.Bar(
+            name="B2G", x=["2025", "2026 H1"],
+            y=[_b2g25, _b2g26], marker_color="#4ade80",
+            text=[fmt(_b2g25), fmt(_b2g26)], textposition="outside", textfont=dict(size=10),
+        ))
+        fig_split.update_layout(
+            barmode="group",
+            paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
+            font=dict(color="#374151", size=11),
+            margin=dict(t=40, b=10, l=10, r=10),
+            height=280,
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+                        font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
+            xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#6b7280")),
+            yaxis=dict(showgrid=True, gridcolor="#e5e7eb", tickfont=dict(size=10, color="#6b7280")),
+        )
+        st.plotly_chart(fig_split, use_container_width=True, config={"displayModeBar": False})
+
+    # 2025 full table
+    st.markdown("---")
+    st.markdown("### 📜 2025 Corporate History — Full Year")
+    col1, col2, col3 = st.columns(3)
+    with col1: kpi("2025 Revenue",    fmt(_tR25), f"B2B {fmt(_b2b25)} · B2G {fmt(_b2g25)}", "kpi-pos")
+    with col2: kpi("2025 Net Profit", fmt(_tP25), f"Margin {pct(_mg25)}", "kpi-pos")
+    with col3: kpi("2025 Projects",   str(len(CORP25)), "corporate engagements", "kpi-pos")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    _rows25 = []
+    for p in CORP25:
+        _rows25.append({
+            "Client": p["co"], "Program": p["pr"], "Type": p["type"], "Period": p["period"],
+            "Revenue ₾": p["rev"], "Cost ₾": p["cost"],
+            "Net Profit ₾": p["profit"], "Margin %": p["margin"]
+        })
+    _df25 = pd.DataFrame(_rows25)
+    st.dataframe(_df25, use_container_width=True, hide_index=True, column_config={
+        "Client":       st.column_config.TextColumn("Client",  width="medium"),
+        "Program":      st.column_config.TextColumn("Program", width="large"),
+        "Type":         st.column_config.TextColumn("Type"),
+        "Period":       st.column_config.TextColumn("Period"),
+        "Revenue ₾":   st.column_config.NumberColumn("Revenue ₾",    format="₾ %d"),
+        "Cost ₾":      st.column_config.NumberColumn("Cost ₾",       format="₾ %d"),
+        "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", format="₾ %d"),
+        "Margin %":    st.column_config.NumberColumn("Margin %",      format="%.1f%%"),
+    })
+    st.markdown(
+        f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;'
+        f'font-weight:700;display:flex;justify-content:space-between">'
+        f'<span>Total 2025</span>'
+        f'<span style="color:#16a34a">{fmt(_tR25)} revenue · {fmt(_tP25)} profit · '
+        f'{pct(_tP25/_tR25*100 if _tR25 else 0)} margin</span></div>',
+        unsafe_allow_html=True
+    )
