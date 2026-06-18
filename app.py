@@ -582,10 +582,20 @@ if page == "📊 Dashboard":
     q4_expenses = q4_fixed + q4_pipe_cog
     q4_net = q4_income - q4_expenses
 
-    # Annual total = sum of all 4 quarters
-    ann_net      = q1_net      + q2_net      + q3_net      + q4_net
-    ann_income   = q1_income   + q2_income   + q3_income   + q4_income
-    ann_expenses = q1_expenses + q2_expenses + q3_expenses + q4_expenses
+    # Annual total — direct formula: all courses + all corp − all fixed costs (incl. marketing)
+    _all_courses  = st.session_state.fc_courses + st.session_state.fc_courses_h2
+    _all_corp     = st.session_state.fc_corp26  + st.session_state.fc_corp_h2
+    ann_course_rev   = sum(cpnl(c)["rx"] for c in _all_courses)
+    ann_course_costs = sum(cpnl(c)["cs"] for c in _all_courses)
+    ann_corp_rev  = sum(p["revenue"] for p in _all_corp)
+    ann_corp_cog  = sum(p["cog"]     for p in _all_corp)
+    ann_sal       = sum(sum(s["m"])  for s in st.session_state.fc_sal)
+    ann_sub       = sum(sum(s["m"])  for s in st.session_state.fc_sub)
+    ann_mkt       = sum(sum(s["m"])  for s in st.session_state.fc_mkt)
+    ann_fixed     = ann_sal + ann_sub + ann_mkt
+    ann_income    = ann_course_rev + ann_corp_rev
+    ann_expenses  = ann_fixed + ann_course_costs + ann_corp_cog
+    ann_net       = ann_income - ann_expenses
 
     # Annual summary card (compact)
     _act_color = "#16a34a" if ann_net >= 0 else "#ef4444"
@@ -596,7 +606,7 @@ if page == "📊 Dashboard":
          display:flex;justify-content:space-between;align-items:center">
         <div>
             <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">
-                📊 Full-Year Net · Q1 + Q2 + Q3 + Q4
+                📊 Full-Year Net · Courses + Corp − Fixed Costs
             </div>
             <div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:{_act_color}">
                 {fmt(ann_net)}
