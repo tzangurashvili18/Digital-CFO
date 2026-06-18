@@ -10,11 +10,13 @@ _DATA_FILE = pathlib.Path(__file__).parent / "cfo_data.json"
 def _save_state():
     """Write all editable tables to disk so edits survive session restarts."""
     payload = {
-        "fc_sal":     st.session_state.get("fc_sal", []),
-        "fc_sub":     st.session_state.get("fc_sub", []),
-        "fc_mkt":     st.session_state.get("fc_mkt", []),
-        "fc_corp26":  st.session_state.get("fc_corp26", []),
-        "fc_courses": st.session_state.get("fc_courses", []),
+        "fc_sal":        st.session_state.get("fc_sal", []),
+        "fc_sub":        st.session_state.get("fc_sub", []),
+        "fc_mkt":        st.session_state.get("fc_mkt", []),
+        "fc_corp26":     st.session_state.get("fc_corp26", []),
+        "fc_courses":    st.session_state.get("fc_courses", []),
+        "fc_corp_h2":    st.session_state.get("fc_corp_h2", []),
+        "fc_courses_h2": st.session_state.get("fc_courses_h2", []),
     }
     try:
         _DATA_FILE.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
@@ -82,7 +84,7 @@ def check_auth():
         with col2:
             st.markdown('<div style="margin-top:10vh">', unsafe_allow_html=True)
             st.markdown('''<div style="text-align:center;margin-bottom:2.5rem">
-                <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#9ca3af;text-transform:uppercase;margin-bottom:12px">COMMSCHOOL</p>
+                <p style="font-size:14px;font-weight:700;letter-spacing:2px;color:#9ca3af;text-transform:uppercase;margin-bottom:4px">COMMSCHOOL</p>
                 <h1 style="font-size:34px;font-weight:700;color:#111827;margin:0;font-family:Inter,sans-serif">
                     Digital <span style="color:#30B143">CFO</span>
                 </h1>
@@ -110,6 +112,7 @@ html, body, [class*='css'] { font-family: 'Inter', sans-serif !important; }
 [data-testid="stHeader"] { background: #f9fafb !important; border-bottom: 1px solid #e5e7eb !important; }
 [data-testid="stSidebar"] { background: #ffffff; border-right: 1px solid #e5e7eb; }
 [data-testid="stSidebar"] * { color: #111827 !important; }
+.sidebar-green { color: #30B143 !important; }
 /* Sidebar flex layout so footer sticks to bottom */
 [data-testid="stSidebar"] > div:first-child { display: flex !important; flex-direction: column !important; min-height: 100vh !important; }
 .sidebar-spacer { flex: 1 !important; min-height: 24px !important; }
@@ -333,6 +336,19 @@ PIPELINE = [
     {"name":"Content Marketing Course","type":"B2B","q":"Q3","rev":10000,"cog":3500,"stage":"Planning"},
 ]
 
+CORP_H2_DEFAULT = [
+    {"name":"Startup Creation Course", "type":"B2B","period":"Q3","revenue":15000,"cog":5000, "status":"Confirmed"},
+    {"name":"Vibe Coding",             "type":"B2B","period":"Q3","revenue":8000, "cog":2500, "status":"Planning"},
+    {"name":"GITA H2 Payment",         "type":"B2G","period":"Q3","revenue":47883,"cog":0,    "status":"Confirmed"},
+    {"name":"Content Marketing Course","type":"B2B","period":"Q3","revenue":10000,"cog":3500, "status":"Planning"},
+]
+
+COURSES_H2_DEFAULT = [
+    {"name":"", "month":"Jul","students":0,"price":0,"lecturer":0,"inst":0,"zoom":0,"mkt":0,"mat":0,"rev":0.0},
+    {"name":"", "month":"Aug","students":0,"price":0,"lecturer":0,"inst":0,"zoom":0,"mkt":0,"mat":0,"rev":0.0},
+    {"name":"", "month":"Sep","students":0,"price":0,"lecturer":0,"inst":0,"zoom":0,"mkt":0,"mat":0,"rev":0.0},
+]
+
 # ── HELPERS ───────────────────────────────────────────────────────────────────
 def fmt(n): return f"₾ {int(round(n)):,}"
 def pct(n): return f"{float(n):.1f}%"
@@ -386,11 +402,13 @@ if "page" not in st.session_state:
     st.session_state.page = "📊 Dashboard"
 if "fc_sal" not in st.session_state:
     _saved = _load_saved()
-    st.session_state.fc_sal     = _saved["fc_sal"]     if _saved and _saved.get("fc_sal")     else [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
-    st.session_state.fc_sub     = _saved["fc_sub"]     if _saved and _saved.get("fc_sub")     else [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
-    st.session_state.fc_mkt     = _saved["fc_mkt"]     if _saved and _saved.get("fc_mkt")     else [{"name": s["name"], "m": s["m"][:]} for s in MARKETING]
-    st.session_state.fc_corp26  = _saved["fc_corp26"]  if _saved and _saved.get("fc_corp26")  else [dict(p) for p in CORP26]
-    st.session_state.fc_courses = _saved["fc_courses"] if _saved and _saved.get("fc_courses") else [dict(c) for c in COURSES]
+    st.session_state.fc_sal        = _saved["fc_sal"]        if _saved and _saved.get("fc_sal")        else [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
+    st.session_state.fc_sub        = _saved["fc_sub"]        if _saved and _saved.get("fc_sub")        else [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
+    st.session_state.fc_mkt        = _saved["fc_mkt"]        if _saved and _saved.get("fc_mkt")        else [{"name": s["name"], "m": s["m"][:]} for s in MARKETING]
+    st.session_state.fc_corp26     = _saved["fc_corp26"]     if _saved and _saved.get("fc_corp26")     else [dict(p) for p in CORP26]
+    st.session_state.fc_courses    = _saved["fc_courses"]    if _saved and _saved.get("fc_courses")    else [dict(c) for c in COURSES]
+    st.session_state.fc_corp_h2    = _saved["fc_corp_h2"]    if _saved and _saved.get("fc_corp_h2")    else [dict(p) for p in CORP_H2_DEFAULT]
+    st.session_state.fc_courses_h2 = _saved["fc_courses_h2"] if _saved and _saved.get("fc_courses_h2") else [dict(c) for c in COURSES_H2_DEFAULT]
 
 nav_items = [
     ("📊", "Dashboard"),
@@ -405,8 +423,8 @@ with st.sidebar:
     # ── Logo + brand header ────────────────────────────────────────────────────
     st.markdown("""
     <div style="padding:0 16px 12px;margin-top:-8px">
-        <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#30B143;margin:0 0 2px">Commschool</p>
-        <h2 style="font-size:19px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif;line-height:1.15">Digital <span style="color:#30B143">CFO</span></h2>
+        <p class="sidebar-green" style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 2px">Commschool</p>
+        <h2 style="font-size:19px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif;line-height:1.15">Digital <span class="sidebar-green">CFO</span></h2>
         <p style="font-size:10px;color:#9ca3af;margin:1px 0 0;letter-spacing:0.5px">Internal finance</p>
     </div>
     <hr style="border-color:#e5e7eb;margin:0 0 8px">
@@ -556,33 +574,30 @@ if page == "📊 Dashboard":
     q4_expenses = q4_fixed + q4_pipe_cog
     q4_net = q4_income - q4_expenses
 
-    # Annual totals
-    ann_income   = q1_income   + q2_income   + q3_income   + q4_income
-    ann_expenses = q1_expenses + q2_expenses + q3_expenses + q4_expenses
-    ann_net      = q1_net      + q2_net      + q3_net      + q4_net
+    # Actuals only (Q1 + Q2)
+    act_income   = q1_income   + q2_income
+    act_expenses = q1_expenses + q2_expenses
+    act_net      = q1_net      + q2_net
 
-    # Annual summary card (full width)
-    _ann_color = "#16a34a" if ann_net >= 0 else "#ef4444"
-    _ann_label = "profit" if ann_net >= 0 else "loss"
+    # Actuals summary card (compact)
+    _act_color = "#16a34a" if act_net >= 0 else "#ef4444"
+    _act_label = "profit" if act_net >= 0 else "loss"
     st.markdown(f"""
-    <div style="background:#ffffff;border:1.5px solid {'#bbf7d0' if ann_net >= 0 else '#fecaca'};
-         border-radius:14px;padding:20px 28px;margin-bottom:16px;
+    <div style="background:#ffffff;border:1.5px solid {'#bbf7d0' if act_net >= 0 else '#fecaca'};
+         border-radius:12px;padding:14px 22px;margin-bottom:16px;
          display:flex;justify-content:space-between;align-items:center">
         <div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:6px">
-                📅 2026 Full-Year Projection
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">
+                📊 H1 Actuals · Jan–Jun
             </div>
-            <div style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;color:{_ann_color}">
-                {fmt(ann_net)}
-            </div>
-            <div style="font-size:12px;color:#6b7280;margin-top:4px">
-                Net {_ann_label} · H1 actuals + H2 pipeline estimate
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:{_act_color}">
+                {fmt(act_net)}
             </div>
         </div>
-        <div style="text-align:right">
-            <div style="font-size:13px;color:#374151;margin-bottom:4px">↑ {fmt(ann_income)} total income</div>
-            <div style="font-size:13px;color:#374151;margin-bottom:4px">↓ {fmt(ann_expenses)} total costs</div>
-            <div style="font-size:12px;color:#9ca3af">Margin {pct(ann_net/ann_income*100 if ann_income else 0)}</div>
+        <div style="text-align:right;font-size:12px;color:#6b7280;line-height:1.8">
+            <div>↑ {fmt(act_income)} income</div>
+            <div>↓ {fmt(act_expenses)} costs</div>
+            <div style="color:#9ca3af">Margin {pct(act_net/act_income*100 if act_income else 0)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -625,6 +640,8 @@ if page == "📊 Dashboard":
 
     fig_q.update_layout(
         barmode="group",
+        bargap=0.3,
+        bargroupgap=0.08,
         paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
         font=dict(color="#374151", size=11),
         margin=dict(t=30, b=20, l=10, r=10),
@@ -992,6 +1009,69 @@ elif page == "🎓 Courses P&L":
         )
         st.plotly_chart(fig_det, use_container_width=True, config={"displayModeBar": False})
 
+    # ── H2 COURSE FORECAST ────────────────────────────────────────────────────
+    st.markdown("---")
+    with st.expander("🔮 H2 Forecast — Jul–Dec 2026", expanded=False):
+        st.markdown('<p style="color:#6b7280;font-size:13px;margin-top:-4px">Planned courses for the second half. Add, edit or remove rows freely — these are forecast only.</p>', unsafe_allow_html=True)
+
+        _ch2_rows = []
+        for c in st.session_state.fc_courses_h2:
+            _p = cpnl(c)
+            _ch2_rows.append({
+                "Course": c["name"], "Month": c["month"],
+                "Students": c["students"], "Price ₾": c["price"],
+                "Lecturer ₾": c["lecturer"], "Marketing ₾": c["mkt"],
+                "Materials ₾": c["mat"], "Zoom ₾": c["zoom"],
+                "Revenue ₾": float(c.get("rev", c["students"] * c["price"])),
+                "Net Profit ₾": int(_p["net"]),
+            })
+        _df_ch2 = pd.DataFrame(_ch2_rows) if _ch2_rows else pd.DataFrame(
+            columns=["Course","Month","Students","Price ₾","Lecturer ₾","Marketing ₾","Materials ₾","Zoom ₾","Revenue ₾","Net Profit ₾"])
+        _edited_ch2 = st.data_editor(_df_ch2, use_container_width=True, hide_index=True,
+            key="courses_h2_editor", num_rows="dynamic",
+            column_config={
+                "Course":       st.column_config.TextColumn("Course", width="large"),
+                "Month":        st.column_config.SelectboxColumn("Month", options=["Jul","Aug","Sep","Oct","Nov","Dec"]),
+                "Students":     st.column_config.NumberColumn("Students",   min_value=0, format="%d"),
+                "Price ₾":     st.column_config.NumberColumn("Price ₾",    min_value=0, format="₾ %d"),
+                "Lecturer ₾":  st.column_config.NumberColumn("Lecturer ₾", min_value=0, format="₾ %d"),
+                "Marketing ₾": st.column_config.NumberColumn("Marketing ₾",min_value=0, format="₾ %d"),
+                "Materials ₾": st.column_config.NumberColumn("Materials ₾",min_value=0, format="₾ %d"),
+                "Zoom ₾":      st.column_config.NumberColumn("Zoom ₾",     min_value=0, format="₾ %d"),
+                "Revenue ₾":   st.column_config.NumberColumn("Revenue ₾",  min_value=0, format="₾ %d"),
+                "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %d"),
+            })
+        _new_ch2 = []
+        for i in range(len(_edited_ch2)):
+            r = _edited_ch2.iloc[i]
+            _rv = float(r["Revenue ₾"]) if pd.notna(r["Revenue ₾"]) else 0.0
+            _new_ch2.append({
+                "name":     str(r["Course"])   if pd.notna(r["Course"])   else "",
+                "month":    str(r["Month"])    if pd.notna(r["Month"])    else "Jul",
+                "students": int(r["Students"]) if pd.notna(r["Students"]) else 0,
+                "price":    int(r["Price ₾"])  if pd.notna(r["Price ₾"])  else 0,
+                "lecturer": int(r["Lecturer ₾"]) if pd.notna(r["Lecturer ₾"]) else 0,
+                "inst": 0,
+                "zoom":     int(r["Zoom ₾"])     if pd.notna(r["Zoom ₾"])     else 0,
+                "mkt":      int(r["Marketing ₾"]) if pd.notna(r["Marketing ₾"]) else 0,
+                "mat":      int(r["Materials ₾"]) if pd.notna(r["Materials ₾"]) else 0,
+                "rev":      _rv,
+            })
+        if json.dumps(_new_ch2, sort_keys=True) != json.dumps(st.session_state.fc_courses_h2, sort_keys=True):
+            st.session_state.fc_courses_h2 = _new_ch2
+            _save_state()
+            st.rerun()
+
+        _ch2_total_rev = _edited_ch2["Revenue ₾"].fillna(0).sum()
+        _ch2_total_net = _edited_ch2["Net Profit ₾"].fillna(0).sum()
+        st.markdown(
+            f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;'
+            f'font-weight:700;display:flex;justify-content:space-between">'
+            f'<span>H2 Forecast Total</span>'
+            f'<span style="color:#d97706">{fmt(_ch2_total_rev)} revenue · {fmt(_ch2_total_net)} net profit</span></div>',
+            unsafe_allow_html=True
+        )
+
 # ── CORPORATE ─────────────────────────────────────────────────────────────────
 elif page == "🏢 Corporate Projects":
     st.markdown("## 🏢 Corporate Projects")
@@ -1055,6 +1135,61 @@ elif page == "🏢 Corporate Projects":
     tR26e = _rev26.sum()
     tP26e = _net26.sum()
     st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#16a34a">{fmt(tR26e)} revenue · {fmt(tP26e)} profit · {pct(tP26e/tR26e*100 if tR26e else 0)} margin</span></div>', unsafe_allow_html=True)
+
+    # ── H2 FORECAST ───────────────────────────────────────────────────────────
+    st.markdown("---")
+    with st.expander("🔮 H2 Forecast — Jul–Dec 2026", expanded=False):
+        st.markdown('<p style="color:#6b7280;font-size:13px;margin-top:-4px">Planned projects for the second half. Add, edit or remove rows freely — these are forecast only.</p>', unsafe_allow_html=True)
+
+        _h2_rows = []
+        for p in st.session_state.fc_corp_h2:
+            _pf = float(p["revenue"]) - float(p["cog"])
+            _mg = _pf / float(p["revenue"]) * 100 if p["revenue"] else 0
+            _h2_rows.append({
+                "Project": p["name"], "Type": p["type"], "Period": p["period"],
+                "Revenue ₾": float(p["revenue"]), "COG ₾": float(p["cog"]),
+                "Net Profit ₾": int(_pf), "Margin %": round(_mg, 1),
+                "Status": p["status"],
+            })
+        _df_h2 = pd.DataFrame(_h2_rows) if _h2_rows else pd.DataFrame(columns=["Project","Type","Period","Revenue ₾","COG ₾","Net Profit ₾","Margin %","Status"])
+        _edited_h2 = st.data_editor(_df_h2, use_container_width=True, hide_index=True,
+            key="corp_h2_editor", num_rows="dynamic",
+            column_config={
+                "Project":      st.column_config.TextColumn("Project", width="large"),
+                "Type":         st.column_config.SelectboxColumn("Type", options=["B2B","B2G"]),
+                "Period":       st.column_config.TextColumn("Period"),
+                "Revenue ₾":   st.column_config.NumberColumn("Revenue ₾",   min_value=0, format="₾ %d"),
+                "COG ₾":       st.column_config.NumberColumn("COG ₾",       min_value=0, format="₾ %d"),
+                "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %d"),
+                "Margin %":    st.column_config.NumberColumn("Margin %",     disabled=True, format="%.1f%%"),
+                "Status":      st.column_config.SelectboxColumn("Status", options=["Confirmed","Planning","Upcoming","On Hold"]),
+            })
+        _new_h2 = []
+        for i in range(len(_edited_h2)):
+            r = _edited_h2.iloc[i]
+            _new_h2.append({
+                "name":    str(r["Project"]) if pd.notna(r["Project"]) else "",
+                "type":    str(r["Type"])    if pd.notna(r["Type"])    else "B2B",
+                "period":  str(r["Period"])  if pd.notna(r["Period"])  else "",
+                "revenue": float(r["Revenue ₾"]) if pd.notna(r["Revenue ₾"]) else 0.0,
+                "cog":     float(r["COG ₾"])     if pd.notna(r["COG ₾"])     else 0.0,
+                "status":  str(r["Status"])  if pd.notna(r["Status"])  else "Planning",
+            })
+        if json.dumps(_new_h2, sort_keys=True) != json.dumps(st.session_state.fc_corp_h2, sort_keys=True):
+            st.session_state.fc_corp_h2 = _new_h2
+            _save_state()
+            st.rerun()
+
+        _h2r = _edited_h2["Revenue ₾"].fillna(0).sum()
+        _h2c = _edited_h2["COG ₾"].fillna(0).sum()
+        _h2p = _h2r - _h2c
+        st.markdown(
+            f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;'
+            f'font-weight:700;display:flex;justify-content:space-between">'
+            f'<span>H2 Forecast Total</span>'
+            f'<span style="color:#d97706">{fmt(_h2r)} revenue · {fmt(_h2p)} profit · {pct(_h2p/_h2r*100 if _h2r else 0)} margin</span></div>',
+            unsafe_allow_html=True
+        )
 
     # ── 2025 HISTORY ──────────────────────────────────────────────────────────
     st.markdown("---")
