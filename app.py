@@ -348,13 +348,13 @@ def bar_chart(items, title=""):
 if "page" not in st.session_state:
     st.session_state.page = "📊 Dashboard"
 if "fc_sal" not in st.session_state:
-    st.session_state.fc_sal = [{"name": s["name"], "m": s["m"][:]} for s in st.session_state.fc_sal]
+    st.session_state.fc_sal = [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
 if "fc_sub" not in st.session_state:
-    st.session_state.fc_sub = [{"name": s["name"], "m": s["m"][:]} for s in st.session_state.fc_sub]
+    st.session_state.fc_sub = [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
 if "fc_corp26" not in st.session_state:
-    st.session_state.fc_corp26 = [dict(p) for p in st.session_state.fc_corp26]
+    st.session_state.fc_corp26 = [dict(p) for p in CORP26]
 if "fc_courses" not in st.session_state:
-    st.session_state.fc_courses = [dict(c) for c in st.session_state.fc_courses]
+    st.session_state.fc_courses = [dict(c) for c in COURSES]
 
 nav_items = [
     ("📊", "Dashboard"),
