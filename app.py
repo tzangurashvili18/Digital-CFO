@@ -635,12 +635,13 @@ elif page == "📌 Fixed Costs":
     new_fc_sal = []
     _sal_changed = False
     for i, s in enumerate(st.session_state.fc_sal):
+        new_name = str(edited_sal.iloc[i]["Name / Role"] or s["name"])
         new_val = int(edited_sal.iloc[i][f"{mn} ₾"] or 0)
-        if new_val != s["m"][mi]:
+        if new_val != s["m"][mi] or new_name != s["name"]:
             _sal_changed = True
         new_m = s["m"][:]
         new_m[mi] = new_val
-        new_fc_sal.append({"name": s["name"], "m": new_m})
+        new_fc_sal.append({"name": new_name, "m": new_m})
     st.session_state.fc_sal = new_fc_sal
     if _sal_changed:
         st.rerun()
@@ -666,12 +667,13 @@ elif page == "📌 Fixed Costs":
     new_fc_sub = []
     _sub_changed = False
     for i, s in enumerate(st.session_state.fc_sub):
+        new_name = str(edited_sub.iloc[i]["Item"] or s["name"])
         new_val = int(edited_sub.iloc[i][f"{mn} ₾"] or 0)
-        if new_val != s["m"][mi]:
+        if new_val != s["m"][mi] or new_name != s["name"]:
             _sub_changed = True
         new_m = s["m"][:]
         new_m[mi] = new_val
-        new_fc_sub.append({"name": s["name"], "m": new_m})
+        new_fc_sub.append({"name": new_name, "m": new_m})
     st.session_state.fc_sub = new_fc_sub
     if _sub_changed:
         st.rerun()
