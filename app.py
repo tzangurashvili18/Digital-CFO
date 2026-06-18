@@ -350,8 +350,17 @@ COURSES_H2_DEFAULT = [
 ]
 
 # ── HELPERS ───────────────────────────────────────────────────────────────────
-def fmt(n): return f"₾ {int(round(n)):,}"
-def pct(n): return f"{float(n):.1f}%"
+def fmt(n):
+    try:
+        v = float(n)
+        return f"₾ {int(round(v)):,}" if v == v else "₾ 0"   # v==v is False for NaN
+    except (TypeError, ValueError):
+        return "₾ 0"
+def pct(n):
+    try:
+        return f"{float(n):.1f}%"
+    except (TypeError, ValueError):
+        return "0.0%"
 def cpnl(c):
     rv  = c.get("rev", c["students"] * c["price"])  # actual revenue incl. VAT
     rx  = rv / 1.18                                  # revenue excl. VAT
