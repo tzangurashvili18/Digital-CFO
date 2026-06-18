@@ -390,6 +390,16 @@ def cpnl(c):
     mg  = net / rx * 100 if rx > 0 else 0
     return {"rv": rv, "rx": rx, "cs": cs, "gp": gp, "net": net, "mg": mg}
 
+def _eff_net(c):
+    """Return net_adj override if valid, else fall back to computed net profit."""
+    adj = c.get("net_adj")
+    if adj is None: return cpnl(c)["net"]
+    try:
+        f = float(adj)
+        return cpnl(c)["net"] if (math.isnan(f) or math.isinf(f)) else f
+    except (TypeError, ValueError):
+        return cpnl(c)["net"]
+
 def margin_badge(m):
     m = float(m)
     if m >= 50: return f'<span class="badge-pos">{pct(m)}</span>'
@@ -491,15 +501,6 @@ if page == "📊 Dashboard":
     sal_a = sum(sum(s["m"]) for s in st.session_state.fc_sal)
     sub_a = sum(sum(s["m"]) for s in st.session_state.fc_sub)
 
-    def _eff_net(c):
-        """Return net_adj if it's a valid number, else fall back to computed net."""
-        adj = c.get("net_adj")
-        if adj is None: return cpnl(c)["net"]
-        try:
-            f = float(adj)
-            return cpnl(c)["net"] if f != f else f   # f != f catches NaN
-        except (TypeError, ValueError):
-            return cpnl(c)["net"]
 
     c_data = [cpnl(c) for c in st.session_state.fc_courses]
     c_rev = sum(d["rv"] for d in c_data)
@@ -522,7 +523,7 @@ if page == "📊 Dashboard":
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
 
-    gita_r = sum(cpnl(c)["rv"] for c in st.session_state.fc_courses if c["name"].startswith("GITA"))
+    gita_r = sum(cpnl(c)["rv"] for c in st.session_state.fc_courses if c["name"].startswith("GITA") and c.get("students",0) > 0)
     own_r  = c_rev - gita_r
     b2b_r  = sum(p["revenue"] for p in st.session_state.fc_corp26 if p["type"] == "B2B")
     b2g_r  = sum(p["revenue"] for p in st.session_state.fc_corp26 if p["type"] == "B2G")
@@ -549,8 +550,8 @@ if page == "📊 Dashboard":
         ])
 
     st.markdown("### 💡 CFO Insights")
-    top_c  = max([c for c in st.session_state.fc_courses if cpnl(c)["rx"] > 0], key=lambda c: cpnl(c)["mg"])
-    wrst_c = min([c for c in st.session_state.fc_courses if cpnl(c)["rx"] > 0], key=lambda c: cpnl(c)["mg"])
+    top_c  = max([c for c in st.session_state.fc_courses if cpnl(c)["rx"] > 0 and c.get("students",0) > 0], key=lambda c: cpnl(c)["mg"])
+    wrst_c = min([c for c in st.session_state.fc_courses if cpnl(c)["rx"] > 0 and c.get("students",0) > 0], key=lambda c: cpnl(c)["mg"])
     gita_dep = (gita_r + b2g_r) / tot_r * 100 if tot_r else 0
 
     for icon, text in [
@@ -601,15 +602,20 @@ if page == "📊 Dashboard":
     q2_expenses = q2_fixed + q2_course_costs + q2_corp_cog
     q2_net = q2_income - q2_expenses
 
-    # Q3: pipeline + estimated fixed (Jul+Aug+Sep)
+    # Q3: Jul+Aug+Sep — uses fc_courses + fc_courses_h2 + fc_corp_h2 (same pattern as Q1/Q2)
     q3_sal = sum(sum(s["m"][i] for i in range(6,9)) for s in st.session_state.fc_sal)
     q3_sub = sum(sum(s["m"][i] for i in range(6,9)) for s in st.session_state.fc_sub)
     q3_fixed = q3_sal + q3_sub
-    q3_pipe_rev = sum(p["rev"] for p in PIPELINE if p["q"] == "Q3")
-    q3_pipe_cog = sum(p["cog"] for p in PIPELINE if p["q"] == "Q3")
-    q3_income = q3_pipe_rev
-    q3_expenses = q3_fixed + q3_pipe_cog
-    q3_net = q3_income - q3_expenses
+    _q3_courses = [c for c in (st.session_state.fc_courses + st.session_state.fc_courses_h2)
+                   if c.get("month") in ["Jul","Aug","Sep"]]
+    q3_course_rev   = sum(cpnl(c)["rx"] for c in _q3_courses if c.get("students",0) > 0)
+    q3_course_costs = sum(cpnl(c)["cs"] for c in _q3_courses)
+    q3_course_net   = sum(_eff_net(c)   for c in _q3_courses)
+    q3_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp_h2 if _corp_q(p.get("period","Q3")) == 3)
+    q3_corp_cog = sum(p["cog"]     for p in st.session_state.fc_corp_h2 if _corp_q(p.get("period","Q3")) == 3)
+    q3_income   = q3_course_rev + q3_corp_rev
+    q3_expenses = q3_fixed + q3_course_costs + q3_corp_cog
+    q3_net      = q3_course_net + (q3_corp_rev - q3_corp_cog) - q3_fixed
 
     # Q4: estimated fixed (Oct+Nov+Dec)
     q4_sal = sum(sum(s["m"][i] for i in range(9,12)) for s in st.session_state.fc_sal)
@@ -666,7 +672,7 @@ if page == "📊 Dashboard":
     quarters = [
         ("Q1 · Jan–Mar", q1_income, q1_expenses, q1_net, "Actuals"),
         ("Q2 · Apr–Jun", q2_income, q2_expenses, q2_net, "Actuals"),
-        ("Q3 · Jul–Sep", q3_income, q3_expenses, q3_net, "Pipeline est."),
+        ("Q3 · Jul–Sep", q3_income, q3_expenses, q3_net, "Forecast" if _q3_courses or st.session_state.fc_corp_h2 else "Pipeline est."),
         ("Q4 · Oct–Dec", q4_income, q4_expenses, q4_net, "Pipeline est."),
     ]
     for col, (label, income, expenses, net, tag) in zip([col1,col2,col3,col4], quarters):
@@ -911,12 +917,15 @@ elif page == "🎓 Courses P&L":
     st.markdown("## 🎓 Courses P&L")
     st.markdown('<p style="color:#30B143;margin-top:-12px">2026 actuals · Net Profit = Revenue excl. VAT − Costs</p>', unsafe_allow_html=True)
 
-    # Summary KPIs — computed from all courses (not filtered), shown at top
-    _all_rv  = sum(cpnl(c)["rv"]  for c in st.session_state.fc_courses)
-    _all_cs  = sum(cpnl(c)["cs"]  for c in st.session_state.fc_courses)
-    _all_net = sum(cpnl(c)["net"] for c in st.session_state.fc_courses)
-    _all_rx  = sum(cpnl(c)["rx"]  for c in st.session_state.fc_courses)
-    _all_mg  = round(_all_net / _all_rx * 100, 1) if _all_rx else 0
+    # Summary KPIs
+    # Zero-student rows = payment entries: excluded from revenue/costs, included only in net profit
+    _real    = [c for c in st.session_state.fc_courses if c.get("students", 0) > 0]
+    _all_rv  = sum(cpnl(c)["rv"]  for c in _real)
+    _all_cs  = sum(cpnl(c)["cs"]  for c in _real)
+    _all_rx  = sum(cpnl(c)["rx"]  for c in _real)
+    _all_net = sum(_eff_net(c)    for c in st.session_state.fc_courses)  # includes payment rows
+    _real_net = sum(_eff_net(c)   for c in _real)
+    _all_mg  = round(_real_net / _all_rx * 100, 1) if _all_rx else 0
     col1,col2,col3,col4 = st.columns(4)
     with col1: kpi("Total Revenue",    fmt(_all_rv),  "all courses", "kpi-pos")
     with col2: kpi("Total Costs",      fmt(_all_cs),  "all courses", "kpi-warn")
