@@ -76,20 +76,21 @@ check_auth()
 # ── CUSTOM CSS ────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+html, body, [class*='css'] { font-family: 'Inter', sans-serif !important; }
 
-[data-testid="stAppViewContainer"] { background: #080810; }
-[data-testid="stHeader"] { background: #080810 !important; border-bottom: 1px solid #1a1a2e !important; }
-[data-testid="stSidebar"] { background: #0d0d1a; border-right: 1px solid #1a1a2e; }
-[data-testid="stSidebar"] * { color: #ffffff !important; }
-h1,h2,h3,h4 { font-family: "Space Grotesk", sans-serif !important; color: #ffffff !important; }
-p, li { color: #d0d0d0 !important; }
-.stMarkdown p { color: #bbbbbb !important; }
+[data-testid="stAppViewContainer"] { background: #f9fafb; }
+[data-testid="stHeader"] { background: #f9fafb !important; border-bottom: 1px solid #e5e7eb !important; }
+[data-testid="stSidebar"] { background: #ffffff; border-right: 1px solid #e5e7eb; }
+[data-testid="stSidebar"] * { color: #111827 !important; }
+h1,h2,h3,h4 { font-family: "Space Grotesk", sans-serif !important; color: #111827 !important; }
+p, li { color: #374151 !important; }
+.stMarkdown p { color: #6b7280 !important; }
 
-/* Sidebar nav buttons — single clean button per item */
+/* Sidebar nav buttons */
 [data-testid="stSidebar"] .stButton > button {
     background: transparent !important;
-    color: #999999 !important;
+    color: #6b7280 !important;
     border: none !important;
     border-left: 3px solid transparent !important;
     border-radius: 0 8px 8px 0 !important;
@@ -103,70 +104,70 @@ p, li { color: #d0d0d0 !important; }
     box-shadow: none !important;
 }
 [data-testid="stSidebar"] .stButton > button:hover {
-    background: rgba(157,111,255,0.08) !important;
-    color: #ffffff !important;
-    border-left-color: rgba(157,111,255,0.4) !important;
+    background: rgba(48,177,67,0.08) !important;
+    color: #111827 !important;
+    border-left-color: rgba(48,177,67,0.4) !important;
 }
 [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-    background: rgba(157,111,255,0.12) !important;
-    color: #ffffff !important;
-    border-left: 3px solid #9d6fff !important;
+    background: rgba(48,177,67,0.1) !important;
+    color: #111827 !important;
+    border-left: 3px solid #30B143 !important;
     font-weight: 700 !important;
 }
 /* Lock button */
 [data-testid="stSidebar"] .stButton:last-of-type > button {
-    color: #555555 !important;
+    color: #9ca3af !important;
     font-size: 12px !important;
     margin-top: 8px !important;
-    border: 1px solid #1a1a2e !important;
+    border: 1px solid #e5e7eb !important;
     border-radius: 6px !important;
 }
 [data-testid="stSidebar"] .stButton:last-of-type > button:hover {
-    color: #ff6b8a !important;
-    border-color: rgba(255,107,138,0.4) !important;
-    background: rgba(255,107,138,0.06) !important;
+    color: #ef4444 !important;
+    border-color: rgba(239,68,68,0.4) !important;
+    background: rgba(239,68,68,0.06) !important;
 }
 
 /* Main content buttons (month filters) */
 .main .stButton > button {
-    background: #111122 !important;
-    color: #888888 !important;
-    border: 1px solid #1e1e30 !important;
+    background: #ffffff !important;
+    color: #6b7280 !important;
+    border: 1px solid #e5e7eb !important;
     border-radius: 6px !important;
     font-size: 11px !important;
     font-weight: 500 !important;
     padding: 4px 8px !important;
 }
 .main .stButton > button:hover {
-    border-color: #9d6fff !important;
-    color: #ffffff !important;
+    border-color: #30B143 !important;
+    color: #111827 !important;
 }
 .main .stButton > button[kind="primary"] {
-    background: rgba(157,111,255,0.15) !important;
-    color: #ffffff !important;
-    border-color: #9d6fff !important;
+    background: rgba(48,177,67,0.12) !important;
+    color: #111827 !important;
+    border-color: #30B143 !important;
     font-weight: 700 !important;
 }
 
 /* KPI cards */
 .kpi-card {
-    background: #0e0e1c;
-    border: 1px solid #1a1a2e;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 20px 22px;
     margin-bottom: 4px;
 }
-.kpi-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#444455; margin-bottom:8px; }
+.kpi-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#9ca3af; margin-bottom:8px; }
 .kpi-value { font-family:"Space Grotesk",sans-serif; font-size:24px; font-weight:700; margin-bottom:4px; }
-.kpi-sub { font-size:11px; color:#666677; }
-.kpi-pos { color: #00e5a0; }
-.kpi-neg { color: #ff6b8a; }
-.kpi-warn { color: #ffd166; }
+.kpi-sub { font-size:11px; color:#9ca3af; }
+.kpi-pos { color: #16a34a; }
+.kpi-neg { color: #ef4444; }
+.kpi-warn { color: #d97706; }
 
 /* Insight cards */
 .insight-card {
-    background: #0e0e1c;
-    border: 1px solid #1a1a2e;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
     padding: 14px 18px;
     margin-bottom: 10px;
@@ -176,33 +177,34 @@ p, li { color: #d0d0d0 !important; }
 }
 
 /* Tables */
-.stDataFrame { border: 1px solid #1a1a2e !important; border-radius: 10px !important; }
-[data-testid="stDataFrame"] * { color: #dddddd !important; }
+.stDataFrame { border: 1px solid #e5e7eb !important; border-radius: 10px !important; }
+[data-testid="stDataFrame"] * { color: #374151 !important; }
 
 /* Tabs */
-.stTabs [data-baseweb="tab-list"] { background: transparent !important; border-bottom: 1px solid #1a1a2e !important; }
-.stTabs [data-baseweb="tab"] { background: transparent !important; color: #666677 !important; font-size:13px !important; font-weight:500 !important; }
-.stTabs [data-baseweb="tab"]:hover { color: #ffffff !important; }
-.stTabs [aria-selected="true"] { color: #9d6fff !important; border-bottom: 2px solid #9d6fff !important; }
+.stTabs [data-baseweb="tab-list"] { background: transparent !important; border-bottom: 1px solid #e5e7eb !important; }
+.stTabs [data-baseweb="tab"] { background: transparent !important; color: #6b7280 !important; font-size:13px !important; font-weight:500 !important; }
+.stTabs [data-baseweb="tab"]:hover { color: #111827 !important; }
+.stTabs [aria-selected="true"] { color: #30B143 !important; border-bottom: 2px solid #30B143 !important; }
 
 /* Inputs */
-.stTextInput > div > div { background: #111122 !important; border: 1px solid #1e1e30 !important; border-radius: 8px !important; }
-.stTextInput input { color: #ffffff !important; }
-.stTextInput label { color: #555566 !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
-[data-baseweb="select"] { background: #111122 !important; border-color: #1e1e30 !important; border-radius: 8px !important; }
-[data-baseweb="select"] * { color: #dddddd !important; }
+.stTextInput > div > div { background: #f9fafb !important; border: 1px solid #e5e7eb !important; border-radius: 8px !important; }
+.stTextInput input { color: #111827 !important; }
+.stTextInput label { color: #9ca3af !important; font-size:11px !important; font-weight:600 !important; letter-spacing:1px !important; text-transform:uppercase !important; }
+[data-baseweb="select"] { background: #f9fafb !important; border-color: #e5e7eb !important; border-radius: 8px !important; }
+[data-baseweb="select"] * { color: #374151 !important; }
 
 /* Alert */
-.stAlert { background: rgba(255,107,138,0.06) !important; border: 1px solid rgba(255,107,138,0.2) !important; border-radius: 8px !important; }
+.stAlert { background: rgba(239,68,68,0.05) !important; border: 1px solid rgba(239,68,68,0.2) !important; border-radius: 8px !important; }
 
 /* Divider */
-hr { border-color: #1a1a2e !important; margin: 1.5rem 0 !important; }
+hr { border-color: #e5e7eb !important; margin: 1.5rem 0 !important; }
 .block-container { padding-top: 2rem !important; max-width: 1200px; }
 
 /* Margin badges */
-.badge-pos  { background: rgba(0,229,160,0.15); color: #00e5a0; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; }
-.badge-warn { background: rgba(255,209,102,0.15); color: #ffd166; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; }
-.badge-neg  { background: rgba(255,107,138,0.15); color: #ff6b8a; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; }
+.badge-pos  { background: rgba(22,163,74,0.1); color: #16a34a; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; }
+.badge-warn { background: rgba(217,119,6,0.1); color: #d97706; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; }
+.badge-neg  { background: rgba(239,68,68,0.1); color: #ef4444; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 700; }
+</style>
 """, unsafe_allow_html=True)
 
 # ── DATA ──────────────────────────────────────────────────────────────────────
@@ -326,15 +328,15 @@ def bar_chart(items, title=""):
         marker_color=colors,
         text=[fmt(i["v"]) for i in items],
         textposition="outside",
-        textfont=dict(size=10, color="#9d8fff"),
+        textfont=dict(size=10, color="#374151"),
     ))
     fig.update_layout(
-        paper_bgcolor="#0e0e1c", plot_bgcolor="#0e0e1c",
-        font=dict(color="#c4b5fd", size=11),
+        paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
+        font=dict(color="#374151", size=11),
         margin=dict(t=20, b=10, l=10, r=10),
         height=220,
-        xaxis=dict(showgrid=False, tickfont=dict(size=10, color="#9d8fff")),
-        yaxis=dict(showgrid=True, gridcolor="#1a1a2e", tickfont=dict(size=10, color="#9d8fff")),
+        xaxis=dict(showgrid=False, tickfont=dict(size=10, color="#6b7280")),
+        yaxis=dict(showgrid=True, gridcolor="#e5e7eb", tickfont=dict(size=10, color="#6b7280")),
         showlegend=False,
     )
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
@@ -353,10 +355,10 @@ nav_items = [
 with st.sidebar:
     st.markdown("""
     <div style="padding:20px 16px 16px">
-        <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#444455;text-transform:uppercase;margin:0 0 6px">COMMSCHOOL</p>
-        <h2 style="font-size:24px;font-weight:700;color:#ffffff;margin:0;font-family:Space Grotesk,sans-serif">Digital <span style="color:#9d6fff">CFO</span></h2>
+        <p style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:#9ca3af;text-transform:uppercase;margin:0 0 6px">COMMSCHOOL</p>
+        <h2 style="font-size:24px;font-weight:700;color:#111827;margin:0;font-family:Space Grotesk,sans-serif">Digital <span style="color:#30B143">CFO</span></h2>
     </div>
-    <hr style="border-color:#3d3070;margin:0 0 8px">
+    <hr style="border-color:#e5e7eb;margin:0 0 8px">
     """, unsafe_allow_html=True)
 
     for icon, label in nav_items:
@@ -367,8 +369,8 @@ with st.sidebar:
             st.session_state.page = full
             st.rerun()
 
-    st.markdown('<hr style="border-color:#3d3070;margin:8px 0">', unsafe_allow_html=True)
-    st.markdown('<p style="font-size:10px;color:#444455;padding:0 16px;margin-bottom:10px">₾ GEL · 2026 · H1 actuals</p>', unsafe_allow_html=True)
+    st.markdown('<hr style="border-color:#e5e7eb;margin:8px 0">', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:10px;color:#9ca3af;padding:0 16px;margin-bottom:10px">₾ GEL · 2026 · H1 actuals</p>', unsafe_allow_html=True)
     if st.button("🔒 Lock", key="lock_btn", use_container_width=True):
         st.session_state.authenticated = False
         st.rerun()
@@ -378,7 +380,7 @@ page = st.session_state.page
 # ── DASHBOARD ─────────────────────────────────────────────────────────────────
 if page == "📊 Dashboard":
     st.markdown("## Financial Overview")
-    st.markdown('<p style="color:#9d6fff;margin-top:-12px">2026 H1 · Courses + Corporate actuals</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#30B143;margin-top:-12px">2026 H1 · Courses + Corporate actuals</p>', unsafe_allow_html=True)
 
     mi = MONTHS.index("Jun")  # default to Jun for H1 snapshot
     sal_m = sum(s["m"][mi] for s in SALARIES)
@@ -417,20 +419,20 @@ if page == "📊 Dashboard":
     with col1:
         st.markdown('<div class="kpi-card"><div class="kpi-label">📈 Revenue Mix</div></div>', unsafe_allow_html=True)
         bar_chart([
-            {"l":"Own Courses","v":own_r,"c":"#c4b5fd"},
-            {"l":"GITA Courses","v":gita_r,"c":"#c4b5fd"},
-            {"l":"Corp B2B","v":b2b_r,"c":"#2dffb8"},
-            {"l":"Corp B2G","v":b2g_r,"c":"#6ee7b7"},
+            {"l":"Own Courses","v":own_r,"c":"#86efac"},
+            {"l":"GITA Courses","v":gita_r,"c":"#22c55e"},
+            {"l":"Corp B2B","v":b2b_r,"c":"#16a34a"},
+            {"l":"Corp B2G","v":b2g_r,"c":"#4ade80"},
         ])
 
     with col2:
         st.markdown('<div class="kpi-card"><div class="kpi-label">💸 Cost Structure</div></div>', unsafe_allow_html=True)
         bar_chart([
-            {"l":"Salaries","v":sal_a,"c":"#ff6b8a"},
-            {"l":"Admin+Subs","v":sub_a,"c":"#c4b5fd"},
-            {"l":"Lecturer Fees","v":lec_t,"c":"#c4b5fd"},
-            {"l":"Advertising","v":mkt_t,"c":"#ffd166"},
-            {"l":"Corp COG","v":crp_c,"c":"#2dffb8"},
+            {"l":"Salaries","v":sal_a,"c":"#ef4444"},
+            {"l":"Admin+Subs","v":sub_a,"c":"#60a5fa"},
+            {"l":"Lecturer Fees","v":lec_t,"c":"#a78bfa"},
+            {"l":"Advertising","v":mkt_t,"c":"#f59e0b"},
+            {"l":"Corp COG","v":crp_c,"c":"#34d399"},
         ])
 
     st.markdown("### 💡 CFO Insights")
@@ -444,13 +446,13 @@ if page == "📊 Dashboard":
         ("📉", f"**Lowest margin:** {wrst_c['name']} ({wrst_c['month']}). Set a minimum enrollment threshold before launching."),
         ("💼", f"**2026 salary budget: {fmt(sal_a)}.** CEO = {pct(8929*12/sal_a*100)} of total payroll. H1 fixed budget: {fmt((sal_a+sub_a)//2)}."),
     ]:
-        st.markdown(f"""<div class="insight-card"><span style="font-size:18px">{icon}</span><span style="font-size:13px;color:#9d6fff;line-height:1.6">{text}</span></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="insight-card"><span style="font-size:18px">{icon}</span><span style="font-size:13px;color:#374151;line-height:1.6">{text}</span></div>""", unsafe_allow_html=True)
 
 
     # ── QUARTERLY P&L ─────────────────────────────────────────────────────────
     st.markdown("---")
     st.markdown("## 📅 Quarterly P&L — Company Profitability")
-    st.markdown('<p style="color:#b8a8ff;margin-top:-12px">Income vs Expenses vs Net Profit by quarter</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#30B143;margin-top:-12px">Income vs Expenses vs Net Profit by quarter</p>', unsafe_allow_html=True)
 
     # Q1: Jan+Feb+Mar
     q1_sal = sum(sum(s["m"][i] for i in range(3)) for s in SALARIES)
@@ -514,7 +516,7 @@ if page == "📊 Dashboard":
                 <div class="kpi-label">{label}</div>
                 <div class="kpi-value {color}">{fmt(net)}</div>
                 <div class="kpi-sub">↑ {fmt(income)} income · ↓ {fmt(expenses)} costs<br>
-                <span style="font-size:10px;color:#9d6fff">{tag}</span></div>
+                <span style="font-size:10px;color:#16a34a">{tag}</span></div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -527,23 +529,23 @@ if page == "📊 Dashboard":
     expenses_ = [q1_expenses, q2_expenses, q3_expenses, q4_expenses]
     nets      = [q1_net,      q2_net,      q3_net,      q4_net]
 
-    fig_q.add_trace(go.Bar(name="Income", x=qs, y=incomes, marker_color="#2dffb8",
-        text=[fmt(v) for v in incomes], textposition="outside", textfont=dict(size=10,color="#2dffb8")))
-    fig_q.add_trace(go.Bar(name="Expenses", x=qs, y=expenses_, marker_color="#ff6b8a",
-        text=[fmt(v) for v in expenses_], textposition="outside", textfont=dict(size=10,color="#ff6b8a")))
-    fig_q.add_trace(go.Bar(name="Net Profit", x=qs, y=nets, marker_color="#c4b5fd",
-        text=[fmt(v) for v in nets], textposition="outside", textfont=dict(size=10,color="#c4b5fd")))
+    fig_q.add_trace(go.Bar(name="Income", x=qs, y=incomes, marker_color="#16a34a",
+        text=[fmt(v) for v in incomes], textposition="outside", textfont=dict(size=10,color="#16a34a")))
+    fig_q.add_trace(go.Bar(name="Expenses", x=qs, y=expenses_, marker_color="#ef4444",
+        text=[fmt(v) for v in expenses_], textposition="outside", textfont=dict(size=10,color="#ef4444")))
+    fig_q.add_trace(go.Bar(name="Net Profit", x=qs, y=nets, marker_color="#3b82f6",
+        text=[fmt(v) for v in nets], textposition="outside", textfont=dict(size=10,color="#3b82f6")))
 
     fig_q.update_layout(
         barmode="group",
-        paper_bgcolor="#0e0e1c", plot_bgcolor="#0e0e1c",
-        font=dict(color="#c4b5fd", size=11),
+        paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
+        font=dict(color="#374151", size=11),
         margin=dict(t=30, b=20, l=10, r=10),
         height=320,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-                    font=dict(color="#c4b5fd"), bgcolor="rgba(0,0,0,0)"),
-        xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#c4b5fd")),
-        yaxis=dict(showgrid=True, gridcolor="#1a1a2e", tickfont=dict(size=10, color="#9d8fff")),
+                    font=dict(color="#374151"), bgcolor="rgba(0,0,0,0)"),
+        xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#374151")),
+        yaxis=dict(showgrid=True, gridcolor="#e5e7eb", tickfont=dict(size=10, color="#6b7280")),
     )
     st.plotly_chart(fig_q, use_container_width=True, config={"displayModeBar": False})
 
@@ -591,7 +593,7 @@ if page == "📊 Dashboard":
 # ── FIXED COSTS ───────────────────────────────────────────────────────────────
 elif page == "📌 Fixed Costs":
     st.markdown("## 📌 Fixed Costs")
-    st.markdown('<p style="color:#9d6fff;margin-top:-12px">2026 budget · select month to view</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#30B143;margin-top:-12px">2026 budget · select month to view</p>', unsafe_allow_html=True)
 
     if "fx_month" not in st.session_state:
         st.session_state.fx_month = 0
@@ -609,53 +611,61 @@ elif page == "📌 Fixed Costs":
     mn = MONTHS[mi]
 
     st.markdown("### 👥 Salaries")
+    if "fc_sal" not in st.session_state:
+        st.session_state.fc_sal = [{"name": s["name"], "m": s["m"][:]} for s in SALARIES]
     sal_rows = []
-    for s in SALARIES:
+    for s in st.session_state.fc_sal:
         sal_rows.append({
             "Name / Role": s["name"],
-            f"{mn} (₾)": f"₾ {s['m'][mi]:,}" if s["m"][mi] > 0 else "—",
-            "Annual Budget (₾)": f"₾ {sum(s['m']):,}",
-            "Active Months": f"{sum(1 for v in s['m'] if v > 0)} months"
+            f"{mn} ₾": s["m"][mi] if s["m"][mi] > 0 else 0,
+            "Annual ₾": sum(s["m"]),
+            "Active Months": sum(1 for v in s["m"] if v > 0),
         })
     sal_df = pd.DataFrame(sal_rows)
     edited_sal = st.data_editor(sal_df, use_container_width=True, hide_index=True, key="sal_editor",
         column_config={
             "Name / Role": st.column_config.TextColumn("Name / Role", width="large"),
-            f"{mn} (₾)": st.column_config.TextColumn(f"{mn} (₾)", disabled=True),
-            "Annual Budget (₾)": st.column_config.TextColumn("Annual Budget (₾)", disabled=True),
-            "Active Months": st.column_config.TextColumn("Active Months", disabled=True),
+            f"{mn} ₾": st.column_config.NumberColumn(f"{mn} ₾", min_value=0, step=1, format="₾ %d"),
+            "Annual ₾": st.column_config.NumberColumn("Annual ₾", disabled=True, format="₾ %d"),
+            "Active Months": st.column_config.NumberColumn("Active Months", disabled=True),
         })
-    sal_m = sum(s["m"][mi] for s in SALARIES)
-    sal_a = sum(sum(s["m"]) for s in SALARIES)
-    st.markdown(f'<div style="background:#0e0e1c;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Salaries · {mn}</span><span style="color:#2dffb8">{fmt(sal_m)} <span style="color:#444455;font-weight:400;font-size:12px">/ {fmt(sal_a)} annual</span></span></div>', unsafe_allow_html=True)
+    for i, s in enumerate(st.session_state.fc_sal):
+        s["m"][mi] = int(edited_sal.iloc[i][f"{mn} ₾"] or 0)
+    sal_m = int(edited_sal[f"{mn} ₾"].sum())
+    sal_a = sum(sum(s["m"]) for s in st.session_state.fc_sal)
+    st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Salaries · {mn}</span><span style="color:#16a34a">{fmt(sal_m)} <span style="color:#9ca3af;font-weight:400;font-size:12px">/ {fmt(sal_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("### 🏢 Admin & Subscriptions")
+    if "fc_sub" not in st.session_state:
+        st.session_state.fc_sub = [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
     sub_rows = []
-    for s in SUBS:
+    for s in st.session_state.fc_sub:
         sub_rows.append({
             "Item": s["name"],
-            f"{mn} (₾)": f"₾ {s['m'][mi]:,}",
-            "Annual Budget (₾)": f"₾ {sum(s['m']):,}",
+            f"{mn} ₾": s["m"][mi],
+            "Annual ₾": sum(s["m"]),
         })
     sub_df = pd.DataFrame(sub_rows)
-    st.data_editor(sub_df, use_container_width=True, hide_index=True, key="sub_editor",
+    edited_sub = st.data_editor(sub_df, use_container_width=True, hide_index=True, key="sub_editor",
         column_config={
             "Item": st.column_config.TextColumn("Item", width="large"),
-            f"{mn} (₾)": st.column_config.TextColumn(f"{mn} (₾)", disabled=True),
-            "Annual Budget (₾)": st.column_config.TextColumn("Annual Budget (₾)", disabled=True),
+            f"{mn} ₾": st.column_config.NumberColumn(f"{mn} ₾", min_value=0, step=1, format="₾ %d"),
+            "Annual ₾": st.column_config.NumberColumn("Annual ₾", disabled=True, format="₾ %d"),
         })
-    sub_m = sum(s["m"][mi] for s in SUBS)
-    sub_a = sum(sum(s["m"]) for s in SUBS)
-    st.markdown(f'<div style="background:#0e0e1c;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#2dffb8">{fmt(sub_m)} <span style="color:#444455;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
+    for i, s in enumerate(st.session_state.fc_sub):
+        s["m"][mi] = int(edited_sub.iloc[i][f"{mn} ₾"] or 0)
+    sub_m = int(edited_sub[f"{mn} ₾"].sum())
+    sub_a = sum(sum(s["m"]) for s in st.session_state.fc_sub)
+    st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Admin & Subs · {mn}</span><span style="color:#16a34a">{fmt(sub_m)} <span style="color:#9ca3af;font-weight:400;font-size:12px">/ {fmt(sub_a)} annual</span></span></div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     total = sal_m + sub_m
-    st.markdown(f'<div style="background:#1e1545;border:1px solid #4c3d8f;padding:16px 20px;border-radius:12px;font-family:Space Grotesk,sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between"><span>🔒 Total Fixed Costs · {mn}</span><span style="color:#ffa94d">{fmt(total)}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:#f0fdf4;border:2px solid #bbf7d0;padding:16px 20px;border-radius:12px;font-family:Space Grotesk,sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between"><span>🔒 Total Fixed Costs · {mn}</span><span style="color:#16a34a">{fmt(total)}</span></div>', unsafe_allow_html=True)
 
 # ── COURSES P&L ───────────────────────────────────────────────────────────────
 elif page == "🎓 Courses P&L":
     st.markdown("## 🎓 Courses P&L")
-    st.markdown('<p style="color:#9d6fff;margin-top:-12px">2026 actuals · Net Profit = Revenue excl. VAT − Costs</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#30B143;margin-top:-12px">2026 actuals · Net Profit = Revenue excl. VAT − Costs</p>', unsafe_allow_html=True)
 
     if "co_month" not in st.session_state:
         st.session_state.co_month = "All"
@@ -696,13 +706,6 @@ elif page == "🎓 Courses P&L":
         })
 
     df = pd.DataFrame(rows)
-    tot_rv  = df["Revenue ₾"].sum()
-    tot_cs  = df["Total Cost ₾"].sum()
-    tot_gp  = df["Gross Profit ₾"].sum()
-    tot_net = df["Net Profit ₾"].sum()
-    tot_rx  = sum(cpnl(c)["rx"] for c in filtered)
-    tot_mg  = round(tot_net / tot_rx * 100, 1) if tot_rx else 0
-
     edited_courses = st.data_editor(df, use_container_width=True, hide_index=True, key="courses_editor",
         column_config={
             "Program":          st.column_config.TextColumn("Program", width="large"),
@@ -722,6 +725,13 @@ elif page == "🎓 Courses P&L":
             "Profit Margin %":  st.column_config.NumberColumn("Profit Margin %", disabled=True, format="%.2f%%"),
         },
         num_rows="dynamic")
+
+    tot_rv  = edited_courses["Revenue ₾"].sum()
+    tot_cs  = edited_courses["Total Cost ₾"].sum()
+    tot_gp  = edited_courses["Gross Profit ₾"].sum()
+    tot_net = edited_courses["Net Profit ₾"].sum()
+    tot_rx  = edited_courses["Revenue ₾"].div(1.18).sum()
+    tot_mg  = round(tot_net / tot_rx * 100, 1) if tot_rx else 0
 
     col1,col2,col3,col4 = st.columns(4)
     with col1: kpi("Total Revenue", fmt(tot_rv), "", "kpi-pos")
@@ -761,14 +771,14 @@ elif page == "🎓 Courses P&L":
             textfont=dict(size=11, color="#ffffff"),
         ))
         fig_det.update_layout(
-            paper_bgcolor="#0e0e1c",
-            font=dict(color="#c4b5fd", size=11),
+            paper_bgcolor="#ffffff",
+            font=dict(color="#374151", size=11),
             margin=dict(t=10, b=10, l=10, r=10),
             height=260,
             showlegend=False,
             annotations=[dict(
                 text=f"<b>{fmt(tot_cost)}</b><br><span style='font-size:10px'>total cost</span>",
-                x=0.5, y=0.5, font_size=13, font_color="#c4b5fd", showarrow=False
+                x=0.5, y=0.5, font_size=13, font_color="#374151", showarrow=False
             )],
         )
         st.plotly_chart(fig_det, use_container_width=True, config={"displayModeBar": False})
@@ -776,7 +786,7 @@ elif page == "🎓 Courses P&L":
 # ── CORPORATE ─────────────────────────────────────────────────────────────────
 elif page == "🏢 Corporate Projects":
     st.markdown("## 🏢 Corporate Projects")
-    st.markdown('<p style="color:#9d6fff;margin-top:-12px">B2B + B2G · 2026 actuals + 2025 history</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#30B143;margin-top:-12px">B2B + B2G · 2026 actuals + 2025 history</p>', unsafe_allow_html=True)
 
     tR26 = sum(p["revenue"] for p in CORP26)
     tC26 = sum(p["cog"] for p in CORP26)
@@ -801,7 +811,7 @@ elif page == "🏢 Corporate Projects":
             "Net Profit ₾": int(pf), "Margin %": round(mg,1), "Status": p["status"]
         })
     df26 = pd.DataFrame(rows)
-    st.data_editor(df26, use_container_width=True, hide_index=True, key="corp26_editor",
+    edited_corp26 = st.data_editor(df26, use_container_width=True, hide_index=True, key="corp26_editor",
         column_config={
             "Project": st.column_config.TextColumn("Project", width="large"),
             "Type": st.column_config.SelectboxColumn("Type", options=["B2B","B2G"]),
@@ -812,12 +822,14 @@ elif page == "🏢 Corporate Projects":
             "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
             "Status": st.column_config.SelectboxColumn("Status", options=["Paid","Active","Pending","Upcoming"]),
         })
-    st.markdown(f'<div style="background:#0e0e1c;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#2dffb8">{fmt(tR26)} revenue · {fmt(tP26)} profit · {pct(tP26/tR26*100 if tR26 else 0)} margin</span></div>', unsafe_allow_html=True)
+    tR26e = edited_corp26["Revenue ₾"].sum()
+    tP26e = edited_corp26["Net Profit ₾"].sum()
+    st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2026</span><span style="color:#16a34a">{fmt(tR26e)} revenue · {fmt(tP26e)} profit · {pct(tP26e/tR26e*100 if tR26e else 0)} margin</span></div>', unsafe_allow_html=True)
 
     # ── PIPELINE ──────────────────────────────────────────────────────────────
     st.markdown("---")
     st.markdown("### 🔮 Q3–Q4 Pipeline")
-    st.markdown('<p style="color:#9d6fff;margin-top:-12px">Confirmed + planning stage projects</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#30B143;margin-top:-12px">Confirmed + planning stage projects</p>', unsafe_allow_html=True)
 
     pipe_rows = []
     for p in PIPELINE:
@@ -843,12 +855,12 @@ elif page == "🏢 Corporate Projects":
     pipe_r = sum(p["rev"] for p in PIPELINE)
     pipe_c = sum(p["cog"] for p in PIPELINE)
     pipe_p = pipe_r - pipe_c
-    st.markdown(f'<div style="background:#0e0e1c;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Pipeline Q3–Q4</span><span style="color:#ffd166">{fmt(pipe_r)} revenue · {fmt(pipe_p)} profit · {pct(pipe_p/pipe_r*100 if pipe_r else 0)} margin</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total Pipeline Q3–Q4</span><span style="color:#d97706">{fmt(pipe_r)} revenue · {fmt(pipe_p)} profit · {pct(pipe_p/pipe_r*100 if pipe_r else 0)} margin</span></div>', unsafe_allow_html=True)
 
     # ── 2025 HISTORY ──────────────────────────────────────────────────────────
     st.markdown("---")
     st.markdown("### 📜 2025 Corporate History")
-    st.markdown('<p style="color:#9d6fff;margin-top:-12px">Full-year actuals</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#30B143;margin-top:-12px">Full-year actuals</p>', unsafe_allow_html=True)
 
     tR25 = sum(p["rev"] for p in CORP25)
     tC25 = sum(p["cost"] for p in CORP25)
@@ -881,4 +893,4 @@ elif page == "🏢 Corporate Projects":
             "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", format="₾ %d"),
             "Margin %": st.column_config.NumberColumn("Margin %", format="%.1f%%"),
         })
-    st.markdown(f'<div style="background:#0e0e1c;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2025</span><span style="color:#2dffb8">{fmt(tR25)} revenue · {fmt(tP25)} profit · {pct(tP25/tR25*100 if tR25 else 0)} margin</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:#f9fafb;border:1px solid #e5e7eb;padding:10px 16px;border-radius:8px;font-weight:700;display:flex;justify-content:space-between"><span>Total 2025</span><span style="color:#16a34a">{fmt(tR25)} revenue · {fmt(tP25)} profit · {pct(tP25/tR25*100 if tR25 else 0)} margin</span></div>', unsafe_allow_html=True)
