@@ -37,6 +37,8 @@ def _save_state():
         "fc_corp_h2":    st.session_state.get("fc_corp_h2", []),
         "fc_courses_h2": st.session_state.get("fc_courses_h2", []),
         "cash_balance":  st.session_state.get("cash_balance", 0),
+        "cf_income":     st.session_state.get("cf_income", {}),
+        "cf_lec":        st.session_state.get("cf_lec", {}),
     }
     try:
         _DATA_FILE.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
@@ -450,6 +452,8 @@ if "fc_sal" not in st.session_state:
     st.session_state.fc_corp_h2    = _saved["fc_corp_h2"]    if _saved and _saved.get("fc_corp_h2")    else [dict(p) for p in CORP_H2_DEFAULT]
     st.session_state.fc_courses_h2 = _saved["fc_courses_h2"] if _saved and _saved.get("fc_courses_h2") else [dict(c) for c in COURSES_H2_DEFAULT]
     st.session_state.cash_balance  = _safe_num(_saved.get("cash_balance", 0)) if _saved else 0
+    st.session_state.cf_income     = _saved.get("cf_income", {}) if _saved else {}
+    st.session_state.cf_lec        = _saved.get("cf_lec", {}) if _saved else {}
 
 nav_items = [
     ("📊", "Dashboard"),
@@ -1956,113 +1960,86 @@ elif page == "💵 Cash Flow":
     cf_rows = []
     balance = opening
     for i, month in zip(CF_IDX, CF_MONTHS):
-        # Jun (pending) = costs only, revenue already in current balance
         _is_jun_pending = month == "Jun (pending)"
-        _month_key = "Jun" if _is_jun_pending else month
-
-        # Cash IN: H2 forecast courses + any fc_courses rows in this month (e.g. GITA payment)
-        _courses_h2_m  = [] if _is_jun_pending else [c for c in st.session_state.fc_courses_h2
-                                                      if c.get("month") == _month_key and str(c.get("name","")).strip()]
-        _courses_fc_m  = [] if _is_jun_pending else [c for c in st.session_state.fc_courses
-                                                      if c.get("month") == _month_key]
-        _courses_m = _courses_h2_m + _courses_fc_m
-        course_rev = sum(cpnl(c)["rv"] for c in _courses_m if c.get("students", 0) == 0 and c.get("net_adj") is not None) + \
-                     sum(cpnl(c)["rv"] for c in _courses_m if c.get("students", 0) > 0)
-
-        # Cash IN: H2 corporate projects (zero for Jun pending)
-        corp_rev = 0 if _is_jun_pending else sum(p["revenue"] for p in st.session_state.fc_corp_h2
-                       if _corp_month_cf(p.get("period", "")) == _month_key)
-
-        total_in = course_rev + corp_rev
-
-        # Cash OUT: fixed costs this month
+        # Fixed costs (auto from salary/subs data)
         fixed_out = (sum(s["m"][i] for s in st.session_state.fc_sal) +
                      sum(s["m"][i] for s in st.session_state.fc_sub) +
                      sum(s["m"][i] for s in st.session_state.fc_mkt))
-
-        # Cash OUT: lecturer fees (paid end of course month, only real courses)
-        lec_out = sum(c["lecturer"] for c in _courses_m if c.get("students", 0) > 0)
-
-        # Cash OUT: other variable costs (mkt, mat, zoom) + corp COG
-        var_out  = sum(c["mkt"] + c["mat"] + c["zoom"] for c in _courses_m if c.get("students", 0) > 0)
-        corp_cog = 0 if _is_jun_pending else sum(p["cog"] for p in st.session_state.fc_corp_h2
-                       if _corp_month_cf(p.get("period", "")) == _month_key)
-
-        total_out = fixed_out + lec_out + var_out + corp_cog
-        net = total_in - total_out
+        # Income and lecturer fees: manually overridden by user, default 0
+        income  = int(st.session_state.cf_income.get(month, 0))
+        lec_out = int(st.session_state.cf_lec.get(month, 0))
+        net     = income - fixed_out - lec_out
         balance += net
-
         cf_rows.append({
-            "month": month,
-            "income": int(total_in),
-            "costs": int(total_out),
-            "net": int(net),
-            "balance": int(balance),
+            "Month":            month,
+            "Income (₾)":       income,
+            "Fixed Costs (₾)":  int(fixed_out),
+            "Lecturer Fees (₾)":lec_out,
+            "Net (₾)":          net,
+            "Balance (₾)":      int(balance),
         })
 
     df_cf = pd.DataFrame(cf_rows)
-
-    _end_bal     = df_cf["balance"].iloc[-1]
-    _best_month  = df_cf.loc[df_cf["net"].idxmax(), "month"]
-    _worst_month = df_cf.loc[df_cf["net"].idxmin(), "month"]
+    _end_bal     = df_cf["Balance (₾)"].iloc[-1]
 
     col1, col2 = st.columns(2)
-    with col1: kpi("Current Balance",      fmt(opening),  "Jun 2026 (today)", "kpi-pos")
-    with col2: kpi("Projected Dec Balance", fmt(_end_bal), "after H2 costs + revenue",
+    with col1: kpi("Current Balance",       fmt(opening),  "Jun 2026 (today)", "kpi-pos")
+    with col2: kpi("Projected Dec Balance",  fmt(_end_bal), "after H2 costs + revenue",
                    "kpi-pos" if _end_bal >= opening else "kpi-neg")
 
     st.markdown("<br>", unsafe_allow_html=True)
+    st.caption("✏️ Edit **Income** and **Lecturer Fees** directly in the table below — changes save automatically.")
 
-    # ── Clean cash flow table ─────────────────────────────────────────────────
-    rows_html = ""
-    for _, r in df_cf.iterrows():
-        net_col   = f'<span style="color:#16a34a;font-weight:600">+₾{r["net"]:,}</span>' \
-                    if r["net"] >= 0 else \
-                    f'<span style="color:#ef4444;font-weight:600">-₾{abs(r["net"]):,}</span>'
-        bal_color = "#16a34a" if r["balance"] >= opening else "#b45309"
-        is_pending = r["month"] == "Jun (pending)"
-        row_bg = "background:#f9fafb;" if is_pending else ""
-        income_str = f'₾{r["income"]:,}' if r["income"] > 0 else "—"
-        rows_html += f"""
-        <tr style="{row_bg}border-bottom:1px solid #e5e7eb;">
-            <td style="padding:10px 14px;font-weight:{'600' if is_pending else '400'};color:#374151">{r["month"]}</td>
-            <td style="padding:10px 14px;text-align:right;color:#16a34a">{income_str}</td>
-            <td style="padding:10px 14px;text-align:right;color:#6b7280">₾{r["costs"]:,}</td>
-            <td style="padding:10px 14px;text-align:right">{net_col}</td>
-            <td style="padding:10px 14px;text-align:right;font-weight:600;color:{bal_color}">₾{r["balance"]:,}</td>
-        </tr>"""
+    edited_cf = st.data_editor(
+        df_cf,
+        hide_index=True,
+        use_container_width=True,
+        key="cf_editor",
+        column_config={
+            "Month":             st.column_config.TextColumn("Month",             disabled=True, width="small"),
+            "Income (₾)":        st.column_config.NumberColumn("Income (₾)",       min_value=0, step=1000,
+                                     help="Expected cash in this month (courses + corp payments)"),
+            "Fixed Costs (₾)":   st.column_config.NumberColumn("Fixed Costs (₾)",  disabled=True,
+                                     help="Auto-calculated from salary & subscription data"),
+            "Lecturer Fees (₾)": st.column_config.NumberColumn("Lecturer Fees (₾)",min_value=0, step=500,
+                                     help="Additional lecturer payments this month (outside salary)"),
+            "Net (₾)":           st.column_config.NumberColumn("Net (₾)",           disabled=True),
+            "Balance (₾)":       st.column_config.NumberColumn("Balance (₾)",       disabled=True),
+        },
+    )
 
-    st.markdown(f"""
-    <table style="width:100%;border-collapse:collapse;font-size:14px;font-family:Inter,sans-serif;">
-      <thead>
-        <tr style="background:#f3f4f6;border-bottom:2px solid #e5e7eb;">
-          <th style="padding:10px 14px;text-align:left;color:#6b7280;font-weight:600">Month</th>
-          <th style="padding:10px 14px;text-align:right;color:#6b7280;font-weight:600">Income</th>
-          <th style="padding:10px 14px;text-align:right;color:#6b7280;font-weight:600">Fixed Costs</th>
-          <th style="padding:10px 14px;text-align:right;color:#6b7280;font-weight:600">Net</th>
-          <th style="padding:10px 14px;text-align:right;color:#6b7280;font-weight:600">Balance</th>
-        </tr>
-      </thead>
-      <tbody>{rows_html}</tbody>
-    </table>
-    """, unsafe_allow_html=True)
+    # Persist edits to session state
+    _changed = False
+    for _, row in edited_cf.iterrows():
+        m = row["Month"]
+        new_inc = int(row["Income (₾)"] or 0)
+        new_lec = int(row["Lecturer Fees (₾)"] or 0)
+        if st.session_state.cf_income.get(m, 0) != new_inc:
+            st.session_state.cf_income[m] = new_inc
+            _changed = True
+        if st.session_state.cf_lec.get(m, 0) != new_lec:
+            st.session_state.cf_lec[m] = new_lec
+            _changed = True
+    if _changed:
+        _save_state()
+        st.rerun()
 
     # Running balance chart
     st.markdown("<br>", unsafe_allow_html=True)
     fig_cf = go.Figure()
     fig_cf.add_trace(go.Bar(
-        name="Net Cash", x=df_cf["month"], y=df_cf["net"],
-        marker_color=["#16a34a" if v >= 0 else "#ef4444" for v in df_cf["net"]],
+        name="Net Cash", x=df_cf["Month"], y=df_cf["Net (₾)"],
+        marker_color=["#16a34a" if v >= 0 else "#ef4444" for v in df_cf["Net (₾)"]],
         opacity=0.5, yaxis="y2",
-        text=[fmt(v) for v in df_cf["net"]],
+        text=[fmt(v) for v in df_cf["Net (₾)"]],
         textposition="outside", textfont=dict(size=9, color="#6b7280"),
     ))
     fig_cf.add_trace(go.Scatter(
-        name="Running Balance", x=df_cf["month"], y=df_cf["balance"],
+        name="Running Balance", x=df_cf["Month"], y=df_cf["Balance (₾)"],
         mode="lines+markers",
         line=dict(color="#30B143", width=2.5),
         marker=dict(size=7, color="#30B143"),
-        text=[fmt(v) for v in df_cf["balance"]],
+        text=[fmt(v) for v in df_cf["Balance (₾)"]],
         textposition="top center", textfont=dict(size=9, color="#30B143"),
     ))
     fig_cf.add_hline(y=opening, line_dash="dot", line_color="#9ca3af", line_width=1,
