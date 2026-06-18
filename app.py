@@ -733,20 +733,31 @@ elif page == "🎓 Courses P&L":
 
     if "co_month" not in st.session_state:
         st.session_state.co_month = "All"
+    if "co_gita" not in st.session_state:
+        st.session_state.co_gita = False
 
     st.markdown('<p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#9d6fff;margin-bottom:6px">Filter by month</p>', unsafe_allow_html=True)
     month_opts = ["All"] + MONTHS[:6]
-    cols = st.columns(len(month_opts))
+    # Month buttons + GITA toggle in the same row
+    cols = st.columns(len(month_opts) + 1)
     for i, m in enumerate(month_opts):
         with cols[i]:
-            active = st.session_state.co_month == m
+            active = st.session_state.co_month == m and not st.session_state.co_gita
             if st.button(m, key=f"co_m_{m}", use_container_width=True,
                         type="primary" if active else "secondary"):
                 st.session_state.co_month = m
+                st.session_state.co_gita = False
                 st.rerun()
+    with cols[-1]:
+        gita_active = st.session_state.co_gita
+        if st.button("🏛 GITA", key="co_gita_btn", use_container_width=True,
+                     type="primary" if gita_active else "secondary"):
+            st.session_state.co_gita = not gita_active
+            st.rerun()
 
     month_filter = st.session_state.co_month
-    filtered = st.session_state.fc_courses if month_filter == "All" else [c for c in st.session_state.fc_courses if c["month"] == month_filter]
+    _base = st.session_state.fc_courses if month_filter == "All" else [c for c in st.session_state.fc_courses if c["month"] == month_filter]
+    filtered = [c for c in _base if c["name"].startswith("GITA")] if st.session_state.co_gita else _base
 
     rows = []
     for c in filtered:
@@ -883,9 +894,12 @@ elif page == "🏢 Corporate Projects":
 
     rows = []
     for p in st.session_state.fc_corp26:
+        _pf = float(p["revenue"]) - float(p["cog"])
+        _mg = _pf / float(p["revenue"]) * 100 if p["revenue"] else 0
         rows.append({
             "Project": p["name"], "Type": p["type"], "Period": p["period"],
             "Revenue ₾": float(p["revenue"]), "COG ₾": float(p["cog"]),
+            "Net Profit ₾": int(_pf), "Margin %": round(_mg, 1),
             "Status": p["status"]
         })
     df26 = pd.DataFrame(rows)
@@ -896,16 +910,14 @@ elif page == "🏢 Corporate Projects":
             "Period": st.column_config.TextColumn("Period"),
             "Revenue ₾": st.column_config.NumberColumn("Revenue ₾", min_value=0, format="₾ %d"),
             "COG ₾": st.column_config.NumberColumn("COG ₾", min_value=0, format="₾ %d"),
+            "Net Profit ₾": st.column_config.NumberColumn("Net Profit ₾", disabled=True, format="₾ %d"),
+            "Margin %": st.column_config.NumberColumn("Margin %", disabled=True, format="%.1f%%"),
             "Status": st.column_config.SelectboxColumn("Status", options=["Paid","Active","Pending","Upcoming"]),
         })
-    # Compute Net Profit and Margin live from edited Revenue - COG
+    # Compute Net Profit live from edited Revenue - COG (for totals row)
     _rev26 = edited_corp26["Revenue ₾"].fillna(0)
     _cog26 = edited_corp26["COG ₾"].fillna(0)
     _net26 = (_rev26 - _cog26).round(0).astype(int)
-    _mg26  = (_net26 / _rev26 * 100).fillna(0).round(1)
-    edited_corp26 = edited_corp26.copy()
-    edited_corp26["Net Profit ₾"] = _net26
-    edited_corp26["Margin %"]     = _mg26
     # Persist edits — compare as (revenue, cog) tuples to avoid int/float mismatch
     _new26 = []
     for i in range(len(edited_corp26)):
