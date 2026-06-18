@@ -2,7 +2,26 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
-import json, os, pathlib
+import json, os, pathlib, math
+
+def _safe_num(v, default=0.0):
+    """Convert v to float, returning default on NaN/None/error."""
+    try:
+        f = float(v)
+        return default if math.isnan(f) else f
+    except (TypeError, ValueError):
+        return default
+
+def _sanitize_course(c):
+    """Ensure all numeric fields in a course dict are valid floats."""
+    for k in ["price","lecturer","inst","zoom","mkt","mat","rev"]:
+        c[k] = _safe_num(c.get(k, 0))
+    c["students"] = int(_safe_num(c.get("students", 0)))
+    adj = c.get("net_adj")
+    if adj is not None:
+        f = _safe_num(adj, None)
+        c["net_adj"] = None if (f is None or math.isnan(f)) else f
+    return c
 
 # ── PERSISTENT FILE STORAGE ───────────────────────────────────────────────────
 _DATA_FILE = pathlib.Path(__file__).parent / "cfo_data.json"
@@ -358,7 +377,8 @@ def fmt(n):
         return "₾ 0"
 def pct(n):
     try:
-        return f"{float(n):.1f}%"
+        v = float(n)
+        return "0.0%" if (math.isnan(v) or math.isinf(v)) else f"{v:.1f}%"
     except (TypeError, ValueError):
         return "0.0%"
 def cpnl(c):
@@ -415,7 +435,7 @@ if "fc_sal" not in st.session_state:
     st.session_state.fc_sub        = _saved["fc_sub"]        if _saved and _saved.get("fc_sub")        else [{"name": s["name"], "m": s["m"][:]} for s in SUBS]
     st.session_state.fc_mkt        = _saved["fc_mkt"]        if _saved and _saved.get("fc_mkt")        else [{"name": s["name"], "m": s["m"][:]} for s in MARKETING]
     st.session_state.fc_corp26     = _saved["fc_corp26"]     if _saved and _saved.get("fc_corp26")     else [dict(p) for p in CORP26]
-    st.session_state.fc_courses    = _saved["fc_courses"]    if _saved and _saved.get("fc_courses")    else [dict(c) for c in COURSES]
+    st.session_state.fc_courses    = [_sanitize_course(dict(c)) for c in _saved["fc_courses"]]    if _saved and _saved.get("fc_courses")    else [dict(c) for c in COURSES]
     st.session_state.fc_corp_h2    = _saved["fc_corp_h2"]    if _saved and _saved.get("fc_corp_h2")    else [dict(p) for p in CORP_H2_DEFAULT]
     st.session_state.fc_courses_h2 = _saved["fc_courses_h2"] if _saved and _saved.get("fc_courses_h2") else [dict(c) for c in COURSES_H2_DEFAULT]
 
@@ -987,12 +1007,20 @@ elif page == "🎓 Courses P&L":
 
     # Persist edits — merge back into full fc_courses (don't wipe other months)
     def _row_to_course(r):
-        return {"name": str(r.get("Program") or ""), "month": str(r.get("Month") or "Jan"),
-                "students": int(r.get("Students") or 0), "price": float(r.get("Price w/VAT ₾") or 0),
-                "lecturer": float(r.get("Lecturer Fee ₾") or 0), "inst": float(r.get("Installment ₾") or 0),
-                "zoom": float(r.get("Zoom ₾") or 0), "mkt": float(r.get("Advertising ₾") or 0),
-                "mat": float(r.get("Merch ₾") or 0), "rev": float(r.get("Revenue ₾") or 0),
-                "net_adj": (lambda v: float(v) if (v is not None and v == v) else None)(r.get("Net Profit ₾"))}
+        _np = r.get("Net Profit ₾")
+        _np_safe = _safe_num(_np, None) if (_np is not None and _np == _np) else None
+        return _sanitize_course({
+            "name": str(r.get("Program") or ""), "month": str(r.get("Month") or "Jan"),
+            "students": _safe_num(r.get("Students"), 0),
+            "price":    _safe_num(r.get("Price w/VAT ₾")),
+            "lecturer": _safe_num(r.get("Lecturer Fee ₾")),
+            "inst":     _safe_num(r.get("Installment ₾")),
+            "zoom":     _safe_num(r.get("Zoom ₾")),
+            "mkt":      _safe_num(r.get("Advertising ₾")),
+            "mat":      _safe_num(r.get("Merch ₾")),
+            "rev":      _safe_num(r.get("Revenue ₾")),
+            "net_adj":  _np_safe,
+        })
     _edited_list = [_row_to_course(r) for _, r in edited_courses.iterrows()
                     if str(r.get("Program") or "").strip()]
     if _is_full_view:
