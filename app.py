@@ -1944,8 +1944,14 @@ elif page == "💵 Cash Flow":
     CF_MONTHS = ["Jun (pending)", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     CF_IDX    = [5, 6, 7, 8, 9, 10, 11]
 
-    def _corp_month(period):
-        return period.replace("–", "-").split("-")[0].strip()[:3]
+    def _corp_month_cf(period):
+        """Map period string to start month name, handles Q3/Q4 notation."""
+        p = period.replace("–", "-").strip()
+        if p in ["Q1"]: return "Jan"
+        if p in ["Q2"]: return "Apr"
+        if p in ["Q3"]: return "Jul"
+        if p in ["Q4"]: return "Oct"
+        return p.split("-")[0].strip()[:3]
 
     cf_rows = []
     balance = opening
@@ -1954,13 +1960,18 @@ elif page == "💵 Cash Flow":
         _is_jun_pending = month == "Jun (pending)"
         _month_key = "Jun" if _is_jun_pending else month
 
-        # Cash IN: H2 forecast courses (zero for Jun pending)
-        _courses_m = [] if _is_jun_pending else [c for c in st.session_state.fc_courses_h2 if c.get("month") == _month_key]
-        course_rev = sum(cpnl(c)["rv"] for c in _courses_m)
+        # Cash IN: H2 forecast courses + any fc_courses rows in this month (e.g. GITA payment)
+        _courses_h2_m  = [] if _is_jun_pending else [c for c in st.session_state.fc_courses_h2
+                                                      if c.get("month") == _month_key and str(c.get("name","")).strip()]
+        _courses_fc_m  = [] if _is_jun_pending else [c for c in st.session_state.fc_courses
+                                                      if c.get("month") == _month_key]
+        _courses_m = _courses_h2_m + _courses_fc_m
+        course_rev = sum(cpnl(c)["rv"] for c in _courses_m if c.get("students", 0) == 0 and c.get("net_adj") is not None) + \
+                     sum(cpnl(c)["rv"] for c in _courses_m if c.get("students", 0) > 0)
 
         # Cash IN: H2 corporate projects (zero for Jun pending)
         corp_rev = 0 if _is_jun_pending else sum(p["revenue"] for p in st.session_state.fc_corp_h2
-                       if _corp_month(p.get("period", "")) == _month_key)
+                       if _corp_month_cf(p.get("period", "")) == _month_key)
 
         total_in = course_rev + corp_rev
 
@@ -1969,73 +1980,89 @@ elif page == "💵 Cash Flow":
                      sum(s["m"][i] for s in st.session_state.fc_sub) +
                      sum(s["m"][i] for s in st.session_state.fc_mkt))
 
-        # Cash OUT: lecturer fees (paid end of course month)
-        lec_out = sum(c["lecturer"] for c in _courses_m)
+        # Cash OUT: lecturer fees (paid end of course month, only real courses)
+        lec_out = sum(c["lecturer"] for c in _courses_m if c.get("students", 0) > 0)
 
         # Cash OUT: other variable costs (mkt, mat, zoom) + corp COG
-        var_out  = sum(c["mkt"] + c["mat"] + c["zoom"] for c in _courses_m)
+        var_out  = sum(c["mkt"] + c["mat"] + c["zoom"] for c in _courses_m if c.get("students", 0) > 0)
         corp_cog = 0 if _is_jun_pending else sum(p["cog"] for p in st.session_state.fc_corp_h2
-                       if _corp_month(p.get("period", "")) == _month_key)
+                       if _corp_month_cf(p.get("period", "")) == _month_key)
 
         total_out = fixed_out + lec_out + var_out + corp_cog
         net = total_in - total_out
         balance += net
 
         cf_rows.append({
-            "Month": month,
-            "Revenue In ₾": int(total_in),
-            "Fixed Costs ₾": int(fixed_out),
-            "Lecturer Fees ₾": int(lec_out),
-            "Other Costs ₾": int(var_out + corp_cog),
-            "Total Out ₾": int(total_out),
-            "Net Cash ₾": int(net),
-            "Balance ₾": int(balance),
+            "month": month,
+            "income": int(total_in),
+            "costs": int(total_out),
+            "net": int(net),
+            "balance": int(balance),
         })
 
     df_cf = pd.DataFrame(cf_rows)
 
-    _end_bal = df_cf["Balance ₾"].iloc[-1]
-    _best_month  = df_cf.loc[df_cf["Net Cash ₾"].idxmax(), "Month"]
-    _worst_month = df_cf.loc[df_cf["Net Cash ₾"].idxmin(), "Month"]
+    _end_bal     = df_cf["balance"].iloc[-1]
+    _best_month  = df_cf.loc[df_cf["net"].idxmax(), "month"]
+    _worst_month = df_cf.loc[df_cf["net"].idxmin(), "month"]
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1: kpi("Current Balance", fmt(opening), "Jun 2026 (today)", "kpi-pos")
-    with col2: kpi("Projected Dec Balance", fmt(_end_bal), "after H2 costs + revenue", "kpi-pos" if _end_bal >= opening else "kpi-neg")
-    with col3: kpi("Best Month", _best_month, fmt(df_cf.loc[df_cf["Net Cash ₾"].idxmax(), "Net Cash ₾"]) + " net", "kpi-pos")
-    with col4: kpi("Weakest Month", _worst_month, fmt(df_cf.loc[df_cf["Net Cash ₾"].idxmin(), "Net Cash ₾"]) + " net", "kpi-warn")
+    col1, col2 = st.columns(2)
+    with col1: kpi("Current Balance",      fmt(opening),  "Jun 2026 (today)", "kpi-pos")
+    with col2: kpi("Projected Dec Balance", fmt(_end_bal), "after H2 costs + revenue",
+                   "kpi-pos" if _end_bal >= opening else "kpi-neg")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Cash flow table
-    st.dataframe(df_cf, use_container_width=True, hide_index=True,
-        column_config={
-            "Month":           st.column_config.TextColumn("Month", width="small"),
-            "Revenue In ₾":    st.column_config.NumberColumn("Revenue In ₾",    format="₾ %d"),
-            "Fixed Costs ₾":   st.column_config.NumberColumn("Fixed Costs ₾",   format="₾ %d"),
-            "Lecturer Fees ₾": st.column_config.NumberColumn("Lecturer Fees ₾", format="₾ %d"),
-            "Other Costs ₾":   st.column_config.NumberColumn("Other Costs ₾",   format="₾ %d"),
-            "Total Out ₾":     st.column_config.NumberColumn("Total Out ₾",     format="₾ %d"),
-            "Net Cash ₾":      st.column_config.NumberColumn("Net Cash ₾",      format="₾ %d"),
-            "Balance ₾":       st.column_config.NumberColumn("Balance ₾",       format="₾ %d"),
-        })
+    # ── Clean cash flow table ─────────────────────────────────────────────────
+    rows_html = ""
+    for _, r in df_cf.iterrows():
+        net_col   = f'<span style="color:#16a34a;font-weight:600">+₾{r["net"]:,}</span>' \
+                    if r["net"] >= 0 else \
+                    f'<span style="color:#ef4444;font-weight:600">-₾{abs(r["net"]):,}</span>'
+        bal_color = "#16a34a" if r["balance"] >= opening else "#b45309"
+        is_pending = r["month"] == "Jun (pending)"
+        row_bg = "background:#f9fafb;" if is_pending else ""
+        income_str = f'₾{r["income"]:,}' if r["income"] > 0 else "—"
+        rows_html += f"""
+        <tr style="{row_bg}border-bottom:1px solid #e5e7eb;">
+            <td style="padding:10px 14px;font-weight:{'600' if is_pending else '400'};color:#374151">{r["month"]}</td>
+            <td style="padding:10px 14px;text-align:right;color:#16a34a">{income_str}</td>
+            <td style="padding:10px 14px;text-align:right;color:#6b7280">₾{r["costs"]:,}</td>
+            <td style="padding:10px 14px;text-align:right">{net_col}</td>
+            <td style="padding:10px 14px;text-align:right;font-weight:600;color:{bal_color}">₾{r["balance"]:,}</td>
+        </tr>"""
+
+    st.markdown(f"""
+    <table style="width:100%;border-collapse:collapse;font-size:14px;font-family:Inter,sans-serif;">
+      <thead>
+        <tr style="background:#f3f4f6;border-bottom:2px solid #e5e7eb;">
+          <th style="padding:10px 14px;text-align:left;color:#6b7280;font-weight:600">Month</th>
+          <th style="padding:10px 14px;text-align:right;color:#6b7280;font-weight:600">Income</th>
+          <th style="padding:10px 14px;text-align:right;color:#6b7280;font-weight:600">Fixed Costs</th>
+          <th style="padding:10px 14px;text-align:right;color:#6b7280;font-weight:600">Net</th>
+          <th style="padding:10px 14px;text-align:right;color:#6b7280;font-weight:600">Balance</th>
+        </tr>
+      </thead>
+      <tbody>{rows_html}</tbody>
+    </table>
+    """, unsafe_allow_html=True)
 
     # Running balance chart
     st.markdown("<br>", unsafe_allow_html=True)
     fig_cf = go.Figure()
-    _bal_colors = ["#16a34a" if v >= opening else "#ef4444" for v in df_cf["Balance ₾"]]
     fig_cf.add_trace(go.Bar(
-        name="Net Cash", x=df_cf["Month"], y=df_cf["Net Cash ₾"],
-        marker_color=["#16a34a" if v >= 0 else "#ef4444" for v in df_cf["Net Cash ₾"]],
+        name="Net Cash", x=df_cf["month"], y=df_cf["net"],
+        marker_color=["#16a34a" if v >= 0 else "#ef4444" for v in df_cf["net"]],
         opacity=0.5, yaxis="y2",
-        text=[fmt(v) for v in df_cf["Net Cash ₾"]],
+        text=[fmt(v) for v in df_cf["net"]],
         textposition="outside", textfont=dict(size=9, color="#6b7280"),
     ))
     fig_cf.add_trace(go.Scatter(
-        name="Running Balance", x=df_cf["Month"], y=df_cf["Balance ₾"],
+        name="Running Balance", x=df_cf["month"], y=df_cf["balance"],
         mode="lines+markers",
         line=dict(color="#30B143", width=2.5),
         marker=dict(size=7, color="#30B143"),
-        text=[fmt(v) for v in df_cf["Balance ₾"]],
+        text=[fmt(v) for v in df_cf["balance"]],
         textposition="top center", textfont=dict(size=9, color="#30B143"),
     ))
     fig_cf.add_hline(y=opening, line_dash="dot", line_color="#9ca3af", line_width=1,
@@ -2047,9 +2074,9 @@ elif page == "💵 Cash Flow":
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
                     font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
         xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#374151")),
-        yaxis=dict(title="Balance ₾", showgrid=True, gridcolor="#e5e7eb",
+        yaxis=dict(title="Balance (₾)", showgrid=True, gridcolor="#e5e7eb",
                    tickfont=dict(size=10, color="#6b7280")),
-        yaxis2=dict(title="Net Cash ₾", overlaying="y", side="right",
+        yaxis2=dict(title="Net (₾)", overlaying="y", side="right",
                     showgrid=False, tickfont=dict(size=10, color="#6b7280")),
         barmode="relative",
     )
