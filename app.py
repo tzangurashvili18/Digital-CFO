@@ -608,7 +608,7 @@ if page == "📊 Dashboard":
     q3_fixed = q3_sal + q3_sub
     _q3_courses = [c for c in (st.session_state.fc_courses + st.session_state.fc_courses_h2)
                    if c.get("month") in ["Jul","Aug","Sep"]]
-    q3_course_rev   = sum(cpnl(c)["rx"] for c in _q3_courses if c.get("students",0) > 0)
+    q3_course_rev   = sum(cpnl(c)["rx"] for c in _q3_courses)  # include payment rows for quarterly view
     q3_course_costs = sum(cpnl(c)["cs"] for c in _q3_courses)
     q3_course_net   = sum(_eff_net(c)   for c in _q3_courses)
     q3_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp_h2 if _corp_q(p.get("period","Q3")) == 3)
@@ -729,19 +729,19 @@ if page == "📊 Dashboard":
          "Course Income ₾": int(q2_course_rev), "Corp Income ₾": int(q2_corp_rev), "Total Income ₾": int(q2_income),
          "Fixed Costs ₾": int(q2_fixed), "Variable Costs ₾": int(q2_course_costs+q2_corp_cog), "Total Expenses ₾": int(q2_expenses),
          "Net Profit ₾": int(q2_net), "Margin %": round(q2_net/q2_income*100,1) if q2_income else 0},
-        {"Quarter": "Q3 (Jul–Sep)", "Status": "🔮 Pipeline",
-         "Course Income ₾": 0, "Corp Income ₾": int(q3_pipe_rev), "Total Income ₾": int(q3_income),
-         "Fixed Costs ₾": int(q3_fixed), "Variable Costs ₾": int(q3_pipe_cog), "Total Expenses ₾": int(q3_expenses),
+        {"Quarter": "Q3 (Jul–Sep)", "Status": "🔮 Forecast",
+         "Course Income ₾": int(q3_course_rev), "Corp Income ₾": int(q3_corp_rev), "Total Income ₾": int(q3_income),
+         "Fixed Costs ₾": int(q3_fixed), "Variable Costs ₾": int(q3_course_costs+q3_corp_cog), "Total Expenses ₾": int(q3_expenses),
          "Net Profit ₾": int(q3_net), "Margin %": round(q3_net/q3_income*100,1) if q3_income else 0},
         {"Quarter": "Q4 (Oct–Dec)", "Status": "🔮 Pipeline",
          "Course Income ₾": 0, "Corp Income ₾": int(q4_pipe_rev), "Total Income ₾": int(q4_income),
          "Fixed Costs ₾": int(q4_fixed), "Variable Costs ₾": int(q4_pipe_cog), "Total Expenses ₾": int(q4_expenses),
          "Net Profit ₾": int(q4_net), "Margin %": round(q4_net/q4_income*100,1) if q4_income else 0},
         {"Quarter": "FULL YEAR", "Status": "—",
-         "Course Income ₾": int(q1_course_rev+q2_course_rev), "Corp Income ₾": int(q1_corp_rev+q2_corp_rev+q3_pipe_rev+q4_pipe_rev),
+         "Course Income ₾": int(q1_course_rev+q2_course_rev+q3_course_rev+q4_income*0), "Corp Income ₾": int(q1_corp_rev+q2_corp_rev+q3_corp_rev+q4_pipe_rev),
          "Total Income ₾": int(q1_income+q2_income+q3_income+q4_income),
          "Fixed Costs ₾": int(q1_fixed+q2_fixed+q3_fixed+q4_fixed),
-         "Variable Costs ₾": int(q1_course_costs+q1_corp_cog+q2_course_costs+q2_corp_cog+q3_pipe_cog+q4_pipe_cog),
+         "Variable Costs ₾": int(q1_course_costs+q1_corp_cog+q2_course_costs+q2_corp_cog+q3_course_costs+q3_corp_cog+q4_pipe_cog),
          "Total Expenses ₾": int(q1_expenses+q2_expenses+q3_expenses+q4_expenses),
          "Net Profit ₾": int(q1_net+q2_net+q3_net+q4_net),
          "Margin %": round((q1_net+q2_net+q3_net+q4_net)/(q1_income+q2_income+q3_income+q4_income)*100,1) if (q1_income+q2_income+q3_income+q4_income) else 0},
