@@ -571,6 +571,82 @@ if page == "📊 Dashboard":
     ]:
         st.markdown(f"""<div class="insight-card"><span style="font-size:18px">{icon}</span><span style="font-size:13px;color:#374151;line-height:1.6">{text}</span></div>""", unsafe_allow_html=True)
 
+    # ── RISK INDICATORS ───────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 🚨 Risk Indicators")
+    st.markdown('<p style="color:#30B143;margin-top:-12px">Concentration + dependency flags — review monthly</p>', unsafe_allow_html=True)
+
+    # GITA concentration: courses + deferred payment + H2 corp
+    _gita_course_rv = sum(cpnl(c)["rv"] for c in st.session_state.fc_courses
+                          if c["name"].startswith("GITA") and c.get("students", 0) > 0)
+    _gita_payment   = sum(abs(_eff_net(c)) for c in st.session_state.fc_courses
+                          if c["name"].startswith("GITA") and c.get("students", 0) == 0)
+    _gita_corp_h2   = sum(p["revenue"] for p in st.session_state.fc_corp_h2
+                          if "GITA" in p.get("name", ""))
+    _gita_total     = _gita_course_rv + _gita_payment + _gita_corp_h2
+    _gita_pct       = _gita_total / tot_r * 100 if tot_r else 0
+
+    # Lecturer dependency: fee as % of revenue excl. VAT per course
+    _lec_dep = []
+    for c in st.session_state.fc_courses:
+        if c.get("students", 0) > 0:
+            _rx_c = cpnl(c)["rx"]
+            _lp = c["lecturer"] / _rx_c * 100 if _rx_c else 0
+            _lec_dep.append({"name": c["name"], "month": c["month"],
+                             "fee": c["lecturer"], "rx": _rx_c, "pct": _lp})
+    _lec_dep.sort(key=lambda x: x["pct"], reverse=True)
+    _high_lec = [x for x in _lec_dep if x["pct"] > 60]
+    _top_lec  = _lec_dep[0] if _lec_dep else None
+
+    # Single client (non-GITA) concentration
+    _corp_clients = {}
+    for p in st.session_state.fc_corp26:
+        client = p["name"].split("–")[0].strip().split(" ")[0]
+        _corp_clients[client] = _corp_clients.get(client, 0) + p["revenue"]
+    _top_client     = max(_corp_clients, key=_corp_clients.get) if _corp_clients else "—"
+    _top_client_rev = _corp_clients.get(_top_client, 0)
+    _top_client_pct = _top_client_rev / tot_r * 100 if tot_r else 0
+
+    _gita_color = "kpi-neg" if _gita_pct > 40 else ("kpi-warn" if _gita_pct > 25 else "kpi-pos")
+    _lec_color  = "kpi-neg" if len(_high_lec) > 3 else ("kpi-warn" if len(_high_lec) > 1 else "kpi-pos")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        kpi("🏛 GITA Revenue Exposure",
+            pct(_gita_pct),
+            f"{fmt(_gita_total)} of {fmt(tot_r)} total · courses + payment + H2",
+            _gita_color)
+    with col2:
+        kpi("🎤 High Lecturer Dependency",
+            f"{len(_high_lec)} courses",
+            f"lecturer fee >60% of net revenue — {', '.join(x['name'][:12] for x in _high_lec[:2]) or 'none'}",
+            _lec_color)
+    with col3:
+        kpi("🏢 Top Corp Client Exposure",
+            pct(_top_client_pct),
+            f"{_top_client} · {fmt(_top_client_rev)} revenue",
+            "kpi-warn" if _top_client_pct > 20 else "kpi-pos")
+
+    # GITA scenario: what if GITA drops 50%?
+    _gita_impact_50 = _gita_total * 0.5
+    _scenario_net   = ann_course_net + ann_corp_net - ann_fixed - _gita_impact_50
+    _warn_color = "#ef4444" if _gita_pct > 40 else "#d97706"
+    st.markdown(f"""
+    <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:14px 20px;margin-top:12px;
+         display:flex;justify-content:space-between;align-items:center">
+        <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">
+                ⚠️ Scenario: GITA revenue drops 50%
+            </div>
+            <div style="font-size:13px;color:#374151;line-height:1.7">
+                You lose <b style="color:#ef4444">{fmt(_gita_impact_50)}</b> · Full-year net becomes
+                <b style="color:{_warn_color}">{fmt(_scenario_net)}</b>
+                {'— still profitable ✓' if _scenario_net >= 0 else '— <b style="color:#ef4444">loss territory ✗</b>'}
+            </div>
+        </div>
+        <div style="font-size:28px">{'✅' if _scenario_net >= 0 else '🔴'}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # ── QUARTERLY P&L ─────────────────────────────────────────────────────────
     st.markdown("---")
@@ -1324,7 +1400,7 @@ elif page == "📈 Analytics":
     st.markdown("## 📈 Analytics")
     st.markdown('<p style="color:#30B143;margin-top:-12px">Course ROI · Break-Even · What-If Simulator · Cost Breakdown</p>', unsafe_allow_html=True)
 
-    tab1, tab2, tab3, tab4 = st.tabs(["💸 Cost Analytics", "🏆 Course ROI Ranking", "⚖️ Break-Even Analysis", "🎛️ What-If Simulator"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["💸 Cost Analytics", "🏆 Course ROI Ranking", "⚖️ Break-Even Analysis", "🎛️ What-If Simulator", "🚨 Risk Analysis"])
 
     # ── TAB 1: COST ANALYTICS ─────────────────────────────────────────────────
     with tab1:
@@ -1714,6 +1790,125 @@ elif page == "📈 Analytics":
                     f'<span style="font-size:13px;color:#16a34a;line-height:1.6">Your current simulation already exceeds the target of <b>{fmt(target_profit)}</b>. You are on track!</span></div>',
                     unsafe_allow_html=True
                 )
+
+    # ── TAB 5: RISK ANALYSIS ──────────────────────────────────────────────────
+    with tab5:
+        st.markdown("### 🚨 Risk Analysis")
+        st.markdown('<p style="color:#6b7280;font-size:13px;margin-top:-8px">Concentration risk · Lecturer dependency · Scenario modelling</p>', unsafe_allow_html=True)
+
+        # ── GITA CONCENTRATION ────────────────────────────────────────────────
+        st.markdown("#### 🏛 GITA Concentration")
+        _r_gita_crs  = sum(cpnl(c)["rv"] for c in st.session_state.fc_courses
+                           if c["name"].startswith("GITA") and c.get("students", 0) > 0)
+        _r_gita_pay  = sum(abs(_eff_net(c)) for c in st.session_state.fc_courses
+                           if c["name"].startswith("GITA") and c.get("students", 0) == 0)
+        _r_gita_h2   = sum(p["revenue"] for p in st.session_state.fc_corp_h2
+                           if "GITA" in p.get("name", ""))
+        _r_gita_tot  = _r_gita_crs + _r_gita_pay + _r_gita_h2
+        _r_tot_r     = sum(cpnl(c)["rv"] for c in st.session_state.fc_courses) + \
+                       sum(p["revenue"] for p in st.session_state.fc_corp26)
+        _r_gita_pct  = _r_gita_tot / _r_tot_r * 100 if _r_tot_r else 0
+        _r_non_gita  = _r_tot_r - _r_gita_tot
+
+        col1, col2, col3 = st.columns(3)
+        with col1: kpi("GITA Courses Revenue",  fmt(_r_gita_crs), "H1 actuals", "kpi-warn")
+        with col2: kpi("GITA Deferred Payment", fmt(_r_gita_pay), "Jul payment row", "kpi-warn")
+        with col3: kpi("GITA H2 Corp Pipeline", fmt(_r_gita_h2), "forecast", "kpi-warn")
+
+        # Concentration donut
+        st.markdown("<br>", unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">Revenue: GITA vs Everything Else</p>', unsafe_allow_html=True)
+            _c_gita = "#ef4444" if _r_gita_pct > 40 else "#d97706"
+            fig_conc = go.Figure(go.Pie(
+                labels=["GITA", "Other Revenue"],
+                values=[_r_gita_tot, _r_non_gita],
+                hole=0.55,
+                marker=dict(colors=[_c_gita, "#16a34a"], line=dict(color="#ffffff", width=2)),
+                textinfo="label+percent",
+                textfont=dict(size=12),
+                hovertemplate="%{label}: ₾ %{value:,}<extra></extra>",
+            ))
+            fig_conc.update_layout(
+                paper_bgcolor="#ffffff", font=dict(color="#374151", size=11),
+                margin=dict(t=20, b=20, l=10, r=10), height=260,
+                showlegend=False,
+                annotations=[dict(text=f"<b>{pct(_r_gita_pct)}</b><br><span style='font-size:10px'>GITA</span>",
+                                  x=0.5, y=0.5, font_size=14, font_color=_c_gita, showarrow=False)],
+            )
+            st.plotly_chart(fig_conc, use_container_width=True, config={"displayModeBar": False})
+
+        with col2:
+            st.markdown('<p style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">GITA Scenario — Revenue Drop Impact on Net Profit</p>', unsafe_allow_html=True)
+            _ann_net_base = sum(_eff_net(c) for c in st.session_state.fc_courses + st.session_state.fc_courses_h2) + \
+                            sum(p["revenue"]-p["cog"] for p in st.session_state.fc_corp26 + st.session_state.fc_corp_h2) - \
+                            (sum(sum(s["m"]) for s in st.session_state.fc_sal) +
+                             sum(sum(s["m"]) for s in st.session_state.fc_sub) +
+                             sum(sum(s["m"]) for s in st.session_state.fc_mkt))
+            _scenarios = [0, 25, 50, 75, 100]
+            _sc_nets   = [_ann_net_base - _r_gita_tot * d / 100 for d in _scenarios]
+            fig_sc = go.Figure()
+            fig_sc.add_trace(go.Bar(
+                x=[f"-{d}%" for d in _scenarios],
+                y=_sc_nets,
+                marker_color=["#16a34a" if v >= 0 else "#ef4444" for v in _sc_nets],
+                text=[fmt(v) for v in _sc_nets],
+                textposition="outside",
+                textfont=dict(size=10),
+            ))
+            fig_sc.add_shape(type="line", x0=-0.5, y0=0, x1=4.5, y1=0,
+                             line=dict(color="#374151", width=1, dash="dot"))
+            fig_sc.update_layout(
+                paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
+                font=dict(color="#374151", size=11),
+                margin=dict(t=20, b=10, l=10, r=10), height=260,
+                showlegend=False,
+                xaxis=dict(title="GITA revenue drop", showgrid=False, tickfont=dict(size=11, color="#6b7280")),
+                yaxis=dict(showgrid=True, gridcolor="#e5e7eb", tickfont=dict(size=10, color="#6b7280")),
+            )
+            st.plotly_chart(fig_sc, use_container_width=True, config={"displayModeBar": False})
+
+        # ── LECTURER DEPENDENCY ───────────────────────────────────────────────
+        st.markdown("---")
+        st.markdown("#### 🎤 Lecturer Fee Dependency")
+        st.markdown('<p style="color:#6b7280;font-size:13px;margin-top:-8px">Courses where lecturer fee is a high % of revenue excl. VAT — if that lecturer leaves or raises rates, margin collapses</p>', unsafe_allow_html=True)
+
+        _ld_rows = []
+        for c in st.session_state.fc_courses:
+            if c.get("students", 0) > 0:
+                _p = cpnl(c)
+                _lp = c["lecturer"] / _p["rx"] * 100 if _p["rx"] else 0
+                _ld_rows.append({
+                    "Course": c["name"], "Month": c["month"],
+                    "Lecturer Fee ₾": int(c["lecturer"]),
+                    "Revenue excl. VAT ₾": int(_p["rx"]),
+                    "Lecturer % of Rev": round(_lp, 1),
+                    "Net Profit ₾": int(_eff_net(c)),
+                    "Risk": "🔴 High" if _lp > 60 else ("🟡 Medium" if _lp > 40 else "🟢 Low"),
+                })
+        _ld_rows.sort(key=lambda x: x["Lecturer % of Rev"], reverse=True)
+        df_ld = pd.DataFrame(_ld_rows)
+        st.dataframe(df_ld, use_container_width=True, hide_index=True, column_config={
+            "Course":                st.column_config.TextColumn("Course", width="large"),
+            "Month":                 st.column_config.TextColumn("Month", width="small"),
+            "Lecturer Fee ₾":        st.column_config.NumberColumn("Lecturer Fee ₾", format="₾ %d"),
+            "Revenue excl. VAT ₾":   st.column_config.NumberColumn("Rev excl. VAT ₾", format="₾ %d"),
+            "Lecturer % of Rev":     st.column_config.NumberColumn("Lecturer %", format="%.1f%%"),
+            "Net Profit ₾":          st.column_config.NumberColumn("Net Profit ₾", format="₾ %d"),
+            "Risk":                  st.column_config.TextColumn("Risk"),
+        })
+
+        _high_risk = [r for r in _ld_rows if r["Risk"] == "🔴 High"]
+        if _high_risk:
+            _names = ", ".join(r["Course"][:15] for r in _high_risk[:3])
+            st.markdown(
+                f'<div class="insight-card"><span style="font-size:18px">⚠️</span>'
+                f'<span style="font-size:13px;color:#374151;line-height:1.6">'
+                f'<b>{len(_high_risk)} courses</b> have lecturer fees above 60% of net revenue: <b>{_names}</b>. '
+                f'Consider negotiating revenue-share contracts rather than fixed fees to reduce risk.</span></div>',
+                unsafe_allow_html=True
+            )
 
 
 # ── HISTORY ───────────────────────────────────────────────────────────────────
