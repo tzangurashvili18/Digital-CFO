@@ -724,22 +724,10 @@ if page == "📊 Dashboard":
     q4_expenses = q4_fixed + q4_pipe_cog
     q4_net = q4_income - q4_expenses
 
-    # Annual total — direct formula: all courses + all corp − all fixed costs (incl. marketing)
-    _all_courses  = st.session_state.fc_courses + st.session_state.fc_courses_h2
-    _all_corp     = st.session_state.fc_corp26  + st.session_state.fc_corp_h2
-    # Use net_adj (manual override) when set and valid, otherwise use computed net
-    ann_course_net = sum(_eff_net(c) for c in _all_courses)
-    ann_course_rev   = sum(cpnl(c)["rx"] for c in _all_courses)
-    ann_corp_rev  = sum(p["revenue"] for p in _all_corp)
-    ann_corp_cog  = sum(p["cog"]     for p in _all_corp)
-    ann_corp_net  = ann_corp_rev - ann_corp_cog
-    ann_sal       = sum(sum(s["m"])  for s in st.session_state.fc_sal)
-    ann_sub       = sum(sum(s["m"])  for s in st.session_state.fc_sub)
-    ann_mkt       = sum(sum(s["m"])  for s in st.session_state.fc_mkt)
-    ann_fixed     = ann_sal + ann_sub + ann_mkt
-    ann_net       = ann_course_net + ann_corp_net - ann_fixed
-    ann_income    = ann_course_rev + ann_corp_rev
-    ann_expenses  = ann_income - ann_net
+    # Annual total — sum of quarters so the numbers always reconcile
+    ann_income   = q1_income + q2_income + q3_income + q4_income
+    ann_expenses = q1_expenses + q2_expenses + q3_expenses + q4_expenses
+    ann_net      = q1_net + q2_net + q3_net + q4_net
 
     # Annual summary card (compact)
     _act_color = "#16a34a" if ann_net >= 0 else "#ef4444"
