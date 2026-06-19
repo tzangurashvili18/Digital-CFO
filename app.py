@@ -662,187 +662,50 @@ if page == "📊 Dashboard":
 
     # ── QUARTERLY P&L ─────────────────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("## 📅 Quarterly P&L — Company Profitability")
-    st.markdown('<p style="color:#30B143;margin-top:-12px">Income vs Expenses vs Net Profit by quarter</p>', unsafe_allow_html=True)
+    st.markdown("## 📅 Company P&L — 2026")
+    st.markdown('<p style="color:#30B143;margin-top:-12px">All courses + corporate projects − fixed costs</p>', unsafe_allow_html=True)
 
-    # Helper: assign each corp project to ONE quarter based on its START month
-    def _corp_q(period):
-        first = period.replace("–","-").split("-")[0].strip()[:3]
-        if first in ["Jan","Feb","Mar"]: return 1
-        if first in ["Apr","May","Jun"]: return 2
-        if first in ["Jul","Aug","Sep"]: return 3
-        return 4
+    # Full-year P&L using the single consistent formula
+    _all_courses = st.session_state.fc_courses + st.session_state.fc_courses_h2
+    _all_corp    = st.session_state.fc_corp26  + st.session_state.fc_corp_h2
+    ann_course_net = sum(_eff_net(c) for c in _all_courses)
+    ann_course_rev = sum(cpnl(c)["rx"] for c in _all_courses)
+    ann_corp_rev   = sum(p["revenue"] for p in _all_corp)
+    ann_corp_cog   = sum(p["cog"]     for p in _all_corp)
+    ann_corp_net   = ann_corp_rev - ann_corp_cog
+    ann_fixed      = (sum(sum(s["m"]) for s in st.session_state.fc_sal) +
+                      sum(sum(s["m"]) for s in st.session_state.fc_sub) +
+                      sum(sum(s["m"]) for s in st.session_state.fc_mkt))
+    ann_net        = ann_course_net + ann_corp_net - ann_fixed
+    ann_income     = ann_course_rev + ann_corp_rev
+    ann_expenses   = ann_course_rev - ann_course_net + ann_corp_cog + ann_fixed
 
-    # Q1: Jan+Feb+Mar
-    q1_sal = sum(sum(s["m"][i] for i in range(3)) for s in st.session_state.fc_sal)
-    q1_sub = sum(sum(s["m"][i] for i in range(3)) for s in st.session_state.fc_sub)
-    q1_fixed = q1_sal + q1_sub
-    q1_courses = [c for c in st.session_state.fc_courses if c["month"] in ["Jan","Feb","Mar"]]
-    q1_course_rev = sum(cpnl(c)["rx"] for c in q1_courses)
-    q1_course_costs = sum(cpnl(c)["cs"] for c in q1_courses)
-    q1_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp26 if _corp_q(p["period"]) == 1)
-    q1_corp_cog = sum(p["cog"] for p in st.session_state.fc_corp26 if _corp_q(p["period"]) == 1)
-    q1_income = q1_course_rev + q1_corp_rev
-    q1_expenses = q1_fixed + q1_course_costs + q1_corp_cog
-    q1_net = q1_income - q1_expenses
-
-    # Q2: Apr+May+Jun
-    q2_sal = sum(sum(s["m"][i] for i in range(3,6)) for s in st.session_state.fc_sal)
-    q2_sub = sum(sum(s["m"][i] for i in range(3,6)) for s in st.session_state.fc_sub)
-    q2_fixed = q2_sal + q2_sub
-    q2_courses = [c for c in st.session_state.fc_courses if c["month"] in ["Apr","May","Jun"]]
-    q2_course_rev = sum(cpnl(c)["rx"] for c in q2_courses)
-    q2_course_costs = sum(cpnl(c)["cs"] for c in q2_courses)
-    q2_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp26 if _corp_q(p["period"]) == 2)
-    q2_corp_cog = sum(p["cog"] for p in st.session_state.fc_corp26 if _corp_q(p["period"]) == 2)
-    q2_income = q2_course_rev + q2_corp_rev
-    q2_expenses = q2_fixed + q2_course_costs + q2_corp_cog
-    q2_net = q2_income - q2_expenses
-
-    # Q3: Jul+Aug+Sep — uses fc_courses + fc_courses_h2 + fc_corp_h2 (same pattern as Q1/Q2)
-    q3_sal = sum(sum(s["m"][i] for i in range(6,9)) for s in st.session_state.fc_sal)
-    q3_sub = sum(sum(s["m"][i] for i in range(6,9)) for s in st.session_state.fc_sub)
-    q3_fixed = q3_sal + q3_sub
-    _q3_courses = [c for c in (st.session_state.fc_courses + st.session_state.fc_courses_h2)
-                   if c.get("month") in ["Jul","Aug","Sep"]]
-    q3_course_rev   = sum(cpnl(c)["rx"] for c in _q3_courses)  # include payment rows for quarterly view
-    q3_course_costs = sum(cpnl(c)["cs"] for c in _q3_courses)
-    q3_course_net   = sum(_eff_net(c)   for c in _q3_courses)
-    q3_corp_rev = sum(p["revenue"] for p in st.session_state.fc_corp_h2 if _corp_q(p.get("period","Q3")) == 3)
-    q3_corp_cog = sum(p["cog"]     for p in st.session_state.fc_corp_h2 if _corp_q(p.get("period","Q3")) == 3)
-    q3_income   = q3_course_rev + q3_corp_rev
-    q3_expenses = q3_fixed + q3_course_costs + q3_corp_cog
-    q3_net      = q3_course_net + (q3_corp_rev - q3_corp_cog) - q3_fixed
-
-    # Q4: estimated fixed (Oct+Nov+Dec)
-    q4_sal = sum(sum(s["m"][i] for i in range(9,12)) for s in st.session_state.fc_sal)
-    q4_sub = sum(sum(s["m"][i] for i in range(9,12)) for s in st.session_state.fc_sub)
-    q4_fixed = q4_sal + q4_sub
-    q4_pipe_rev = sum(p["rev"] for p in PIPELINE if p["q"] == "Q4")
-    q4_pipe_cog = sum(p["cog"] for p in PIPELINE if p["q"] == "Q4")
-    q4_income = q4_pipe_rev
-    q4_expenses = q4_fixed + q4_pipe_cog
-    q4_net = q4_income - q4_expenses
-
-    # Annual total — sum of quarters so the numbers always reconcile
-    ann_income   = q1_income + q2_income + q3_income + q4_income
-    ann_expenses = q1_expenses + q2_expenses + q3_expenses + q4_expenses
-    ann_net      = q1_net + q2_net + q3_net + q4_net
-
-    # Annual summary card (compact)
     _act_color = "#16a34a" if ann_net >= 0 else "#ef4444"
-    _act_label = "profit" if ann_net >= 0 else "loss"
     st.markdown(f"""
     <div style="background:#ffffff;border:1.5px solid {'#bbf7d0' if ann_net >= 0 else '#fecaca'};
-         border-radius:12px;padding:14px 22px;margin-bottom:16px;
+         border-radius:12px;padding:20px 28px;margin-bottom:20px;
          display:flex;justify-content:space-between;align-items:center">
         <div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:4px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;margin-bottom:6px">
                 📊 Full-Year Net · Courses + Corp − Fixed Costs
             </div>
-            <div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:{_act_color}">
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;color:{_act_color}">
                 {fmt(ann_net)}
             </div>
         </div>
-        <div style="text-align:right;font-size:12px;color:#6b7280;line-height:1.8">
-            <div>↑ {fmt(ann_income)} income</div>
-            <div>↓ {fmt(ann_expenses)} costs</div>
+        <div style="text-align:right;font-size:13px;color:#6b7280;line-height:2">
+            <div>↑ {fmt(ann_income)} income (excl. VAT)</div>
+            <div>↓ {fmt(ann_expenses)} total costs</div>
             <div style="color:#9ca3af">Margin {pct(ann_net/ann_income*100 if ann_income else 0)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # KPI summary row
-    col1,col2,col3,col4 = st.columns(4)
-    quarters = [
-        ("Q1 · Jan–Mar", q1_income, q1_expenses, q1_net, "Actuals"),
-        ("Q2 · Apr–Jun", q2_income, q2_expenses, q2_net, "Actuals"),
-        ("Q3 · Jul–Sep", q3_income, q3_expenses, q3_net, "Forecast" if _q3_courses or st.session_state.fc_corp_h2 else "Pipeline est."),
-        ("Q4 · Oct–Dec", q4_income, q4_expenses, q4_net, "Pipeline est."),
-    ]
-    for col, (label, income, expenses, net, tag) in zip([col1,col2,col3,col4], quarters):
-        with col:
-            color = "kpi-pos" if net >= 0 else "kpi-neg"
-            st.markdown(f"""
-            <div class="kpi-card">
-                <div class="kpi-label">{label}</div>
-                <div class="kpi-value {color}">{fmt(net)}</div>
-                <div class="kpi-sub">↑ {fmt(income)} income · ↓ {fmt(expenses)} costs<br>
-                <span style="font-size:10px;color:#16a34a">{tag}</span></div>
-            </div>
-            """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Waterfall / grouped bar chart
-    fig_q = go.Figure()
-    qs = ["Q1\nActuals","Q2\nActuals","Q3\nPipeline","Q4\nPipeline"]
-    incomes   = [q1_income,   q2_income,   q3_income,   q4_income]
-    expenses_ = [q1_expenses, q2_expenses, q3_expenses, q4_expenses]
-    nets      = [q1_net,      q2_net,      q3_net,      q4_net]
-
-    fig_q.add_trace(go.Bar(name="Income", x=qs, y=incomes, marker_color="#16a34a",
-        text=[fmt(v) for v in incomes], textposition="outside", textfont=dict(size=10,color="#16a34a")))
-    fig_q.add_trace(go.Bar(name="Expenses", x=qs, y=expenses_, marker_color="#ef4444",
-        text=[fmt(v) for v in expenses_], textposition="outside", textfont=dict(size=10,color="#ef4444")))
-    fig_q.add_trace(go.Bar(name="Net Profit", x=qs, y=nets, marker_color="#3b82f6",
-        text=[fmt(v) for v in nets], textposition="outside", textfont=dict(size=10,color="#3b82f6")))
-
-    fig_q.update_layout(
-        barmode="group",
-        bargap=0.3,
-        bargroupgap=0.08,
-        paper_bgcolor="#ffffff", plot_bgcolor="#f9fafb",
-        font=dict(color="#374151", size=11),
-        margin=dict(t=30, b=20, l=10, r=10),
-        height=320,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
-                    font=dict(color="#374151"), bgcolor="rgba(0,0,0,0)"),
-        xaxis=dict(showgrid=False, tickfont=dict(size=11, color="#374151")),
-        yaxis=dict(showgrid=True, gridcolor="#e5e7eb", tickfont=dict(size=10, color="#6b7280")),
-    )
-    st.plotly_chart(fig_q, use_container_width=True, config={"displayModeBar": False})
-
-    # Detailed breakdown table
-    st.markdown("### 📊 Quarterly Breakdown Detail")
-    q_table = pd.DataFrame([
-        {"Quarter": "Q1 (Jan–Mar)", "Status": "✅ Actuals",
-         "Course Income ₾": int(q1_course_rev), "Corp Income ₾": int(q1_corp_rev), "Total Income ₾": int(q1_income),
-         "Fixed Costs ₾": int(q1_fixed), "Variable Costs ₾": int(q1_course_costs+q1_corp_cog), "Total Expenses ₾": int(q1_expenses),
-         "Net Profit ₾": int(q1_net), "Margin %": round(q1_net/q1_income*100,1) if q1_income else 0},
-        {"Quarter": "Q2 (Apr–Jun)", "Status": "✅ Actuals",
-         "Course Income ₾": int(q2_course_rev), "Corp Income ₾": int(q2_corp_rev), "Total Income ₾": int(q2_income),
-         "Fixed Costs ₾": int(q2_fixed), "Variable Costs ₾": int(q2_course_costs+q2_corp_cog), "Total Expenses ₾": int(q2_expenses),
-         "Net Profit ₾": int(q2_net), "Margin %": round(q2_net/q2_income*100,1) if q2_income else 0},
-        {"Quarter": "Q3 (Jul–Sep)", "Status": "🔮 Forecast",
-         "Course Income ₾": int(q3_course_rev), "Corp Income ₾": int(q3_corp_rev), "Total Income ₾": int(q3_income),
-         "Fixed Costs ₾": int(q3_fixed), "Variable Costs ₾": int(q3_course_costs+q3_corp_cog), "Total Expenses ₾": int(q3_expenses),
-         "Net Profit ₾": int(q3_net), "Margin %": round(q3_net/q3_income*100,1) if q3_income else 0},
-        {"Quarter": "Q4 (Oct–Dec)", "Status": "🔮 Pipeline",
-         "Course Income ₾": 0, "Corp Income ₾": int(q4_pipe_rev), "Total Income ₾": int(q4_income),
-         "Fixed Costs ₾": int(q4_fixed), "Variable Costs ₾": int(q4_pipe_cog), "Total Expenses ₾": int(q4_expenses),
-         "Net Profit ₾": int(q4_net), "Margin %": round(q4_net/q4_income*100,1) if q4_income else 0},
-        {"Quarter": "FULL YEAR", "Status": "—",
-         "Course Income ₾": int(q1_course_rev+q2_course_rev+q3_course_rev+q4_income*0), "Corp Income ₾": int(q1_corp_rev+q2_corp_rev+q3_corp_rev+q4_pipe_rev),
-         "Total Income ₾": int(q1_income+q2_income+q3_income+q4_income),
-         "Fixed Costs ₾": int(q1_fixed+q2_fixed+q3_fixed+q4_fixed),
-         "Variable Costs ₾": int(q1_course_costs+q1_corp_cog+q2_course_costs+q2_corp_cog+q3_course_costs+q3_corp_cog+q4_pipe_cog),
-         "Total Expenses ₾": int(q1_expenses+q2_expenses+q3_expenses+q4_expenses),
-         "Net Profit ₾": int(q1_net+q2_net+q3_net+q4_net),
-         "Margin %": round((q1_net+q2_net+q3_net+q4_net)/(q1_income+q2_income+q3_income+q4_income)*100,1) if (q1_income+q2_income+q3_income+q4_income) else 0},
-    ])
-
-    st.dataframe(q_table, use_container_width=True, hide_index=True,
-        column_config={
-            "Course Income ₾": st.column_config.NumberColumn(format="₾ %d"),
-            "Corp Income ₾": st.column_config.NumberColumn(format="₾ %d"),
-            "Total Income ₾": st.column_config.NumberColumn(format="₾ %d"),
-            "Fixed Costs ₾": st.column_config.NumberColumn(format="₾ %d"),
-            "Variable Costs ₾": st.column_config.NumberColumn(format="₾ %d"),
-            "Total Expenses ₾": st.column_config.NumberColumn(format="₾ %d"),
-            "Net Profit ₾": st.column_config.NumberColumn(format="₾ %d"),
-            "Margin %": st.column_config.NumberColumn(format="%.1f%%"),
-        })
+    # Simple 3-line breakdown
+    col1, col2, col3 = st.columns(3)
+    with col1: kpi("Course Net",    fmt(ann_course_net), "all courses excl. VAT", "kpi-pos" if ann_course_net >= 0 else "kpi-neg")
+    with col2: kpi("Corporate Net", fmt(ann_corp_net),   "revenue − COG",         "kpi-pos" if ann_corp_net   >= 0 else "kpi-neg")
+    with col3: kpi("Fixed Costs",   fmt(ann_fixed),      "salaries + subs + mkt", "kpi-warn")
 
 # ── FIXED COSTS ───────────────────────────────────────────────────────────────
 elif page == "📌 Fixed Costs":
